@@ -11,7 +11,7 @@ TEST_SRC=$(wildcard tests/*.c)
 LIB_SRC=$(wildcard *.c) # https://runebook.dev/ru/docs/gnu_make/wildcard-function
 TEST_OBJS=$(addprefix $(DIR_BUILD),$(notdir $(TEST_SRC:.c=.o)))
 IF_OBJS=$(addprefix $(DIR_BUILD),$(notdir $(IF_SRC:.c=.o)))
-LIB_OBJS:=$(addprefix $(DIR_BUILD),$(notdir $(LIB_SRC:.c=.o)))
+LIB_OBJS:=$(notdir $(LIB_SRC:.c=.o))
 LIB = libsnake.a
 LIB_NAME = snake
 
@@ -20,10 +20,10 @@ RM:=-rm -rf
 
 .phony: all, clean, dvi, test, gcov_report $(LIB) ext1_flag 
 
-all: clean $(LIB) test
+all:  clean $(LIB) test
 
 clean:
-	$(RM) $(DIR_BUILD)*.o $(DIR_BUILD)*.info $(DIR_BUILD)*.gcov $(DIR_BUILD)*.gcda $(DIR_BUILD)*.gcno $(DIR_BUILD)$(LIB) $(DIR_BUILD)$(LIB_NAME)_test
+	$(RM) *.o $(DIR_BUILD)*.info $(DIR_BUILD)*.gcov $(DIR_BUILD)*.gcda $(DIR_BUILD)*.gcno $(DIR_BUILD)$(LIB) $(DIR_BUILD)$(LIB_NAME)_test
 
 test: test_nl
 	$(DIR_BUILD)$(LIB_NAME)_test
@@ -49,7 +49,7 @@ $(DIR_BUILD)$(LIB): $(LIB_OBJS)
 
 
 $(LIB_OBJS): $(LIB_SRC)
-	$(CC) $(CFLAGS) $(DIR_LIB)$(patsubst %.o,%.c,$(notdir $@)) $(GCOV) -o $(DIR_BUILD)$(notdir $@)
+	$(CC) $(CFLAGS) $(DIR_LIB)$(patsubst %.o,%.c,$(notdir $@)) $(GCOV) -o $@
 
 $(TEST_OBJS): $(TEST_SRC)
 	$(CC) $(CFLAGS) $(DIR_TESTS)$(patsubst %.o,%.c,$(notdir $@)) -o $(DIR_BUILD)$(notdir $@) 

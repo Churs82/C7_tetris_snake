@@ -109,7 +109,7 @@ static void spawn() {
 
 static void moveright() {
   if (checkBounds(-1))
-    for (short i = 0; i < ROWS_MAP + FIGURE_H; i++)
+    for (short i = 0; i < ROWS_MAP; i++)
       for (short j = COLS_MAP - 1; j >= 0; j--)
         if (game_info.field[i][j] > 1) {
           game_info.field[i][j + 1] = game_info.field[i][j];
@@ -119,7 +119,7 @@ static void moveright() {
 
 static void moveleft() {
   if (checkBounds(1))
-    for (short i = 0; i < ROWS_MAP + FIGURE_H; i++)
+    for (short i = 0; i < ROWS_MAP; i++)
       for (short j = 0; j < COLS_MAP; j++)
         if (game_info.field[i][j] > 1) {
           game_info.field[i][j - 1] = game_info.field[i][j];
@@ -128,7 +128,7 @@ static void moveleft() {
 }
 
 static void rotate() {
-  int right = 0, top = 0, bottom = ROWS_MAP + FIGURE_H, left = COLS_MAP;
+  int right = 0, top = 0, bottom = ROWS_MAP, left = COLS_MAP;
   findBounds(&left, &top, &right, &bottom);
   short possibility = 1;
   int color = 0;
@@ -139,7 +139,7 @@ static void rotate() {
         int new_row = top - (j - left);
         int new_col = left + (i - bottom);
         if (new_col < 0 || new_row < 0 || new_col >= COLS_MAP ||
-            new_row >= ROWS_MAP + FIGURE_H ||
+            new_row >= ROWS_MAP ||
             game_info.field[new_row][new_col] == 1)
           possibility = 0;
         else if (game_info.field[new_row][new_col] == 0)
@@ -147,7 +147,7 @@ static void rotate() {
         else if (game_info.field[new_row][new_col] == color)
           game_info.field[new_row][new_col]++;
       }
-  for (short i = 0; i < ROWS_MAP + FIGURE_H; i++)
+  for (short i = 0; i < ROWS_MAP; i++)
     for (short j = 0; j < COLS_MAP; j++)
       if (game_info.field[i][j] < 0)
         game_info.field[i][j] = possibility * color;
@@ -159,7 +159,7 @@ static void rotate() {
 
 static void findBounds(int *left, int *top, int *right, int *bottom) {
   for (short j = 0; j < COLS_MAP; j++)
-    for (short i = 0; i < ROWS_MAP + FIGURE_H; i++)
+    for (short i = 0; i < ROWS_MAP; i++)
       if (game_info.field[i][j] > 1) {
         if (*right <= j) *right = j;
         if (*top <= i) *top = i;
@@ -175,7 +175,7 @@ static void down() {
   else {
     spawn_sw();
     for (short j = 0; j < COLS_MAP; j++) {
-      for (short i = 0; i < ROWS_MAP + FIGURE_H; i++) {
+      for (short i = 0; i < ROWS_MAP; i++) {
         if (game_info.field[i][j] > 1) {
           game_info.field[i - 1][j] = game_info.field[i][j];
           game_info.field[i][j] = 0;
@@ -187,7 +187,7 @@ static void down() {
 }
 
 static void attach() {
-  for (short i = 0; i < ROWS_MAP + FIGURE_H; i++)
+  for (short i = 0; i < ROWS_MAP; i++)
     for (short j = 0; j < COLS_MAP; j++)
       if (game_info.field[i][j] > 1) game_info.field[i][j] = 1;
   anihilate();
@@ -253,27 +253,22 @@ static void masshift(int start) {
 static short checkBounds(short dir) {
   short ret = 1;
   for (short j = 0; j < COLS_MAP && ret; j++)
-    for (short i = 0; i < ROWS_MAP + FIGURE_H && ret; i++)
+    for (short i = 0; i < ROWS_MAP && ret; i++)
       ret = !(game_info.field[i][j] > 1 &&
               (i - !dir < 0 || j - dir < 0 || j - dir >= COLS_MAP ||
-               i - !dir >= ROWS_MAP + FIGURE_H ||
+               i - !dir >= ROWS_MAP ||
                game_info.field[i - !dir][j - dir] == 1));
   return ret;
 }
 
 static void doexit() {
   if (game_info.field) {
-    for (short i = 0; i < ROWS_MAP + FIGURE_H; i++)
+    for (short i = 0; i < ROWS_MAP; i++)
       if (game_info.field[i]) free(game_info.field[i]);
     free(game_info.field);
     game_info.field = NULL;
   }
-  if (game_info.next) {
-    for (short i = 0; i < FIGURE_H; i++)
-      if (game_info.next[i]) free(game_info.next[i]);
-    free(game_info.next);
-    game_info.next = NULL;
-  }
+
   game_info.speed = 0;
   game_info.level = 0;
   exitstate_sw();

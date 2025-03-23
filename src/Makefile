@@ -18,9 +18,9 @@ IF_OBJS=$(addprefix $(DIR_BUILD),$(notdir $(IF_SRC:.c=.o)))
 OS_MAC_UX=-lsubunit -lm
 RM:=-rm -rf
 
-.phony: all, install, uninstall, clean, dvi, dist, test, gcov_report $(PROG_NAME) $(LIB) ext1_flag 
+.phony: all, install, uninstall, clean, dvi, dist, test, gcov_report $(PROG_NAME) ext1_flag 
 
-all: clang clean libtetris.a libsnake.a test tetris snake
+all: clang clean libs test tetris snake
 
 install: $(PROG_NAME) 
 	-mkdir $(DIR_INSTALL)
@@ -31,7 +31,8 @@ uninstall:
 
 clean:
 	$(RM) $(DIR_BUILD)*.o $(DIR_BUILD)*.info $(DIR_BUILD)*.gcov $(DIR_BUILD)*.gcda $(DIR_BUILD)*.gcno
-
+	$(MAKE) -C brick_game/tetris clean
+	$(MAKE) -C brick_game/snake clean
 dvi:
 
 dist: $(PROG_NAME)
@@ -90,8 +91,8 @@ ext1_flag:
 	
 clang:
 #	find . -type f \( -name "*.c" -o -name "*.h" \) -exec clang-format -i {} \;
-	find . -type f \( -name "*.c" -o -name "*.h" \) -exec clang-format -i -style=file:../materials/linters/.clang-format {} \;
+	find . -type f \( -name "*.c" -o -name "*.h" \) -exec clang-format -i {} \;
 
 check_format: 
-	find . -type f \( -name "*.c" -o -name "*.h" \) -exec clang-format -n -style=file:../materials/linters/.clang-format {} \;
+	find . -type f \( -name "*.c" -o -name "*.h" \) -exec clang-format -n {} \;
 	cppcheck --enable=all --suppress=missingIncludeSystem .
