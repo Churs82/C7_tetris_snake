@@ -80,10 +80,6 @@ test:
 	$(MAKE) -C brick_game/tetris test
 	$(MAKE) -C brick_game/snake test
 
-ifeq ($(OS),Darwin)
-	$(eval OS_MAC_UX=-L/opt/homebrew/lib)
-endif
-	$(CC) $(FLAGS) $(GCOV) $(TEST_OBJS) -o $(DIR_BUILD)$(PROG_NAME)_test $(LFLAGS) -l$(LIB_NAME) $(TSTFLAGS) $(OS_MAC_UX) -L. -L$(DIR_BUILD)
 
 ext1_flag:
 #	add parametrs

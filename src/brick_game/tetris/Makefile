@@ -7,7 +7,7 @@ TSTFLAGS = -lcheck
 SHELL = /bin/sh
 DIR_BUILD=../../out/
 DIR_TESTS=../../tests/
-TEST_SRC=$(wildcard tests/*.c)
+TEST_SRC=$(wildcard ../../tests/$(LIB_NAME)_*.c)
 LIB_SRC=$(wildcard *.c) # https://runebook.dev/ru/docs/gnu_make/wildcard-function
 TEST_OBJS=$(addprefix $(DIR_BUILD),$(notdir $(TEST_SRC:.c=.o)))
 IF_OBJS=$(addprefix $(DIR_BUILD),$(notdir $(IF_SRC:.c=.o)))
@@ -24,9 +24,6 @@ all:  clean $(LIB) test
 
 clean:
 	$(RM) *.o $(DIR_BUILD)*.info $(DIR_BUILD)*.gcov $(DIR_BUILD)*.gcda $(DIR_BUILD)*.gcno $(DIR_BUILD)$(LIB) $(DIR_BUILD)$(LIB_NAME)_test
-
-test: test_nl
-	$(DIR_BUILD)$(LIB_NAME)_test
 
 gcov_report: clean ext1_flag $(LIB) test
 	-lcov -t "$(LIB_NAME)_report" -o $(DIR_BUILD)$(LIB_NAME)_report.info -c -d $(DIR_BUILD)
@@ -55,6 +52,9 @@ $(TEST_OBJS): $(TEST_SRC)
 	$(CC) $(CFLAGS) $(DIR_TESTS)$(patsubst %.o,%.c,$(notdir $@)) -o $(DIR_BUILD)$(notdir $@) 
 
 lib: $(LIB)
+
+test: test_nl
+	$(DIR_BUILD)$(LIB_NAME)_test
 
 test_nl: $(LIB) $(TEST_OBJS)
 
