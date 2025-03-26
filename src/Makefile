@@ -33,6 +33,7 @@ clean:
 	$(RM) $(DIR_BUILD)*.o $(DIR_BUILD)*.info $(DIR_BUILD)*.gcov $(DIR_BUILD)*.gcda $(DIR_BUILD)*.gcno
 	$(MAKE) -C brick_game/tetris clean
 	$(MAKE) -C brick_game/snake clean
+
 dvi:
 
 dist: $(PROG_NAME)
