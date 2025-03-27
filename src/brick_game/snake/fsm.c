@@ -7,6 +7,7 @@
 
 static GameInfo_t* game_info() { static GameInfo_t game_info; return &game_info; }
 static game_state* state() { static game_state state; return &state; }
+static Direction_t* dir() { static Direction_t dir = Left; return &dir; }
 
 static void checkTime();
 static void start();
@@ -76,6 +77,14 @@ static void checkTime() {
   }
 }
 
+/**
+ * @brief Initialize game state.
+ *
+ * Sets speed, score, pause state, and level to their starting values.
+ * If the game field is not yet allocated, allocate it.
+ * Set the game state to START.
+ * Read the high score from the file specified in HS_FILE.
+ */
 static void start() {
   game_info()->speed = 1;
   game_info()->score = 0;
@@ -97,35 +106,49 @@ static void start() {
   }
 }
 
-
+/**
+ * @brief Spawns a new Apple on the game field.
+ *
+ * This function selects a random position on the game field and checks if it's 
+ * occupied. If the position is occupied, it recursively tries another position.
+ * Once an unoccupied position is found, it places an Apple there and transitions 
+ * the game state to MOVING.
+ */
 static void spawn() {
   int bibidibabidiboo = rand() % (COLS_MAP * ROWS_MAP);
-  if (game_info()->field[bibidibabidiboo / COLS_MAP][bibidibabidiboo % COLS_MAP]) {
-    spawn();
-    return;
-  } else {
-    game_info()->field[bibidibabidiboo / COLS_MAP][bibidibabidiboo % COLS_MAP] = 1;
-  }
+  if (game_info()->field[bibidibabidiboo / COLS_MAP][bibidibabidiboo % COLS_MAP]) spawn();
+  else game_info()->field[bibidibabidiboo / COLS_MAP][bibidibabidiboo % COLS_MAP] = 1;
+  move_sw();
 }
 
-static void moveright() {
-  if (checkBounds(-1))
-    for (short i = 0; i < ROWS_MAP; i++)
-      for (short j = COLS_MAP - 1; j >= 0; j--)
-        if (game_info()->field[i][j] > 1) {
-          game_info()->field[i][j + 1] = game_info()->field[i][j];
-          game_info()->field[i][j] = 0;
-        }
+/**
+ * @brief Initialize Snake on the game field.
+ *
+ * Puts the initial snake head at the center of the map and the rest of the snake
+ * to the right of the head. The length of the snake is determined by INITIAL_LEN.
+ * After placing the snake, it transitions the game state to SPAWN so that an Apple
+ * can be spawned.
+ */
+static void putSnake(){
+  short start_h = ROWS_MAP / 2 - 1;
+  short start_w = COLS_MAP / 2 - INITIAL_LEN / 2;
+  game_info()->field[start_h][start_w] = 3;
+  for (short i = 1; i <= INITIAL_LEN; i++) 
+    game_info()->field[start_h][start_w+i] = 2;
+  spawn_sw();
 }
 
-static void moveleft() {
-  if (checkBounds(1))
-    for (short i = 0; i < ROWS_MAP; i++)
-      for (short j = 0; j < COLS_MAP; j++)
-        if (game_info()->field[i][j] > 1) {
-          game_info()->field[i][j - 1] = game_info()->field[i][j];
-          game_info()->field[i][j] = 0;
+
+static void move() {
+  for (short i = 0; i < ROWS_MAP; i++)
+    for (short j = COLS_MAP - 1; j >= 0; j--)
+        if (game_info()->field[i][j] > 2) {
+          short last_i = i;
+          short last_j = j;
+
         }
+  else
+    gameover_sw();
 }
 
 static void rotate() {
