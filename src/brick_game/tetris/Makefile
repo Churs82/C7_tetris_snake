@@ -44,7 +44,6 @@ $(DIR_BUILD)$(LIB): $(LIB_OBJS)
 	ar r $@ $(LIB_OBJS)
 	ranlib $@
 
-
 $(LIB_OBJS): $(LIB_SRC)
 	$(CC) $(CFLAGS) $(DIR_LIB)$(patsubst %.o,%.c,$(notdir $@)) $(GCOV) -o $@
 

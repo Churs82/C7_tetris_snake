@@ -12,6 +12,12 @@
 #define LEVEL_UP_SCORE 5
 #define HS_FILE "~/games/snake_hs.conf"
 
+#define INTRO_MESSAGE                                                      \
+  " Press ENTER to start! ***********************        Controls:       " \
+  "arrows - move,         spacebar - speedup,     ESC - exit, p - pause  "
+#define EXIT_MESSAGE " Press ENTER to resume  or ESC to exit!"
+#define GAMEOVER_MESSAGE "Press ENTER to restart or ESC to exit!"
+
 typedef enum {
   Start,
   Pause,

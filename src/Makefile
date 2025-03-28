@@ -27,12 +27,13 @@ install: $(PROG_NAME)
 	cp $(DIR_BUILD)$(PROG_NAME) $(DIR_INSTALL)
 
 uninstall: 
-	$(RM) $(DIR_INSTALL)$(PROG_NAME) $(DIR_INSTALL)tetris_hs.conf
+	$(RM) $(DIR_INSTALL)$(PROG_NAME) $(DIR_INSTALL)*_hs.conf
 
 clean:
 	$(RM) $(DIR_BUILD)*.o $(DIR_BUILD)*.info $(DIR_BUILD)*.gcov $(DIR_BUILD)*.gcda $(DIR_BUILD)*.gcno
 	$(MAKE) -C brick_game/tetris clean
 	$(MAKE) -C brick_game/snake clean
+	$(RM) $(DIR_BUILD)*
 
 dvi:
 
@@ -60,12 +61,15 @@ else
 	open $(DIR_BUILD)report/index.html
 endif
 
+games: tetris snake
 
-$(PROG_NAME): $(DIR_BUILD)$(PROG_NAME)
+tetris: $(eval PROG_NAME=tetris) $(eval MACROS=TETRIS) lib_$(PROG_NAME) $(DIR_BUILD)$(PROG_NAME)
 
+
+snake: lib_snake
 
 $(DIR_BUILD)$(PROG_NAME): $(LIB) $(IF_OBJS)
-	$(CC) $(FLAGS) $(GCOV) $(IF_OBJS) -l$(LIB_NAME) -o $(DIR_BUILD)$(PROG_NAME) $(LFLAGS) $(OS_MAC_UX) -L. -L$(DIR_BUILD)
+	$(CC) $(FLAGS) $(GCOV) $(IF_OBJS) -D$(MACROS) -o $(DIR_BUILD)$(PROG_NAME) -l$(PROG_NAME) $(LFLAGS) $(OS_MAC_UX) -L. -L$(DIR_BUILD)
 
 $(IF_OBJS): $(IF_SRC)
 	$(CC) $(CFLAGS) $(DIR_IF)$(patsubst %.o,%.c,$(notdir $@)) -o $(DIR_BUILD)$(notdir $@)
@@ -73,14 +77,21 @@ $(IF_OBJS): $(IF_SRC)
 $(TEST_OBJS): $(TEST_SRC)
 	$(CC) $(CFLAGS) $(DIR_TESTS)$(patsubst %.o,%.c,$(notdir $@)) -o $(DIR_BUILD)$(notdir $@) 
 
-libs:  
+libs:  lib_tetris lib_snake
+
+lib_tetris:
 	$(MAKE) -C brick_game/tetris lib
+
+lib_snake:
 	$(MAKE) -C brick_game/snake lib
 
-test:
-	$(MAKE) -C brick_game/tetris test
-	$(MAKE) -C brick_game/snake test
+test: test_tetris test_snake
 
+test_tetris:
+	$(MAKE) -C brick_game/tetris test
+
+test_snake:
+	$(MAKE) -C brick_game/snake test
 
 ext1_flag:
 #	add parametrs
