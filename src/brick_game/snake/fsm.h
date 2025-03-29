@@ -30,14 +30,6 @@
 #define FSM_TRANSFER \
   (act_t[EXIT_STATE + 1]) { NULL, spawn, checkTime, down, attach, NULL, NULL }
 
-typedef enum {
-  Last,
-  Left,
-  Right,
-  Up,
-  Down
-} Direction_t;
-
 typedef void (*act_t)();
 
 void _userAction(UserAction_t action);

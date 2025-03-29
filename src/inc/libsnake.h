@@ -3,14 +3,17 @@
 
 #include <stdbool.h>
 
-#include "defines.h"
+#define ROWS_MAP 20
+#define COLS_MAP 10
 
-#define INITIAL_SPEED 1
-#define INITIAL_LEVEL 1
-#define MAX_LEVEL 10
-#define INITIAL_LEN 4
-#define LEVEL_UP_SCORE 5
-#define HS_FILE "~/games/snake_hs.conf"
+#define SUCCESS 0
+#define ERROR 1
+
+#define FIGURE_W 4
+#define FIGURE_H 4
+
+#define DIRECTION_MASK 192
+#define HEAD_MASK 256
 
 #define INTRO_MESSAGE                                                      \
   " Press ENTER to start! ***********************        Controls:       " \

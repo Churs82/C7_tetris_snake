@@ -1,9 +1,7 @@
-#include "libsnake.h"
-
 #include <sys/time.h>
 #include <time.h>
-
 #include "fsm.h"
+#include "libsnake.h"
 
 void userInput(UserAction_t action, bool hold) {
   if (!updateCurrentState().pause || action == Pause || action == Terminate)

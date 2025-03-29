@@ -1,13 +1,10 @@
-#include "fsm.h"
-
 #include <sys/time.h>
 #include <time.h>
-
+#include "fsm.h"
 #include "libsnake.h"
 
 static GameInfo_t* game_info() { static GameInfo_t game_info; return &game_info; }
 static game_state* state() { static game_state state; return &state; }
-static Direction_t* dir() { static Direction_t dir = Left; return &dir; }
 
 static void checkTime();
 static void start();
@@ -272,17 +269,32 @@ static void masshift(int start) {
 }
 
 /// @brief Check if figure neigbors are free
-/// @param dir 1 - left, 0 down, -1 - right
-/// @return 1 if there is free space, 0 if not
+/// @param dir 0 - left, 1 right, 2 - up, 3 - down
+/// @return 1 if there is free space, 0 if not, -1 there is no snake head
 static short checkBounds(short dir) {
-  short ret = 1;
-  for (short j = 0; j < COLS_MAP && ret; j++)
-    for (short i = 0; i < ROWS_MAP && ret; i++)
-      ret = !(game_info()->field[i][j] > 1 &&
-              (i - !dir < 0 || j - dir < 0 || j - dir >= COLS_MAP ||
-               i - !dir >= ROWS_MAP ||
-               game_info()->field[i - !dir][j - dir] == 1));
-  return ret;
+  short ret = 0;
+  for (short j = 0; j < COLS_MAP && !ret; j++)
+    for (short i = 0; i < ROWS_MAP && !ret; i++)
+      if (game_info()->field[i][j] & HEAD_MASK)
+        switch (dir) {
+          case 0:
+            ret = !(j - 1 < 0 || game_info()->field[i][j - 1] != 0);
+            ++ret;
+            break;
+          case 1:
+            ret = !(j + 1 >= COLS_MAP || game_info()->field[i][j + 1] != 0) ;
+            ++ret;
+            break;
+          case 2:
+            ret = !(i - 1 < 0 || game_info()->field[i - 1][j] != 0);
+            ++ret;
+            break;
+          case 3:
+            ret = !(i + 1 >= ROWS_MAP || game_info()->field[i + 1][j] != 0);
+            ++ret;
+            break;
+        }
+  return --ret;
 }
 
 static void doexit() {

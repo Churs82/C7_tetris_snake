@@ -1,7 +1,5 @@
 #include "../inc/interface.h"
 
-#include "interface.h"
-
 void print_overlay(void) {
   INIT_COLORS;
   attron(COLOR_PAIR(0));
@@ -62,9 +60,9 @@ void print_stats(GameInfo_t game_info) {
       for (int j = 0; j < FIGURE_W; j++) {
         if (game_info.next[i][j] > 1) {
           MVADDCH(15 + i, BOARD_M + 7 + j * BOARD_SCALE - 1,
-                  ACS_CKBOARD | COLOR_PAIR(game_info.next[i][j]));
+                  ACS_CKBOARD |  COLOR_PAIR(game_info.next[i][j] & COLOR_MASK));
           MVADDCH(15 + i, BOARD_M + 7 + j * BOARD_SCALE,
-                  ACS_CKBOARD | COLOR_PAIR(game_info.next[i][j]));
+                  ACS_CKBOARD |  COLOR_PAIR(game_info.next[i][j] & COLOR_MASK));
         } else {
           MVADDCH(15 + i, BOARD_M + 7 + j * BOARD_SCALE - 1,
                   ' ' | COLOR_PAIR(0));
@@ -88,7 +86,7 @@ void print_board(GameInfo_t game_info) {
       for (int j = 0; j < COLS_MAP; j++) {
         if (game_info.field[i][j] > 0) {
           PRINT_OBJ(ROWS_MAP - i, j + MAP_PADDING,
-                    ACS_CKBOARD | COLOR_PAIR(game_info.field[i][j]));
+                    ACS_CKBOARD | COLOR_PAIR(game_info.field[i][j] & COLOR_MASK));
         } else {
           PRINT_CHAR(ROWS_MAP - i, j + MAP_PADDING, '.');
         }

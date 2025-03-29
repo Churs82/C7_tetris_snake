@@ -63,10 +63,11 @@ endif
 
 games: tetris snake
 
+snake: $(eval PROG_NAME=snake) $(eval MACROS=SNAKE) lib_$(PROG_NAME) $(DIR_BUILD)$(PROG_NAME)
+
+
 tetris: $(eval PROG_NAME=tetris) $(eval MACROS=TETRIS) lib_$(PROG_NAME) $(DIR_BUILD)$(PROG_NAME)
 
-
-snake: lib_snake
 
 $(DIR_BUILD)$(PROG_NAME): $(LIB) $(IF_OBJS)
 	$(CC) $(FLAGS) $(GCOV) $(IF_OBJS) -D$(MACROS) -o $(DIR_BUILD)$(PROG_NAME) -l$(PROG_NAME) $(LFLAGS) $(OS_MAC_UX) -L. -L$(DIR_BUILD)

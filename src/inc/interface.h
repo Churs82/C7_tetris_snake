@@ -4,9 +4,7 @@
 #include <locale.h>
 #include <ncurses.h>
 #include <string.h>
-
-#include "defines.h"
-#include "libtetris.h"
+#include "game.h"
 
 #define BOARDS_BEGIN 1
 #define BOARD_SCALE 2
@@ -52,13 +50,8 @@
   init_pair(17, COLOR_MAGENTA, COLOR_WHITE); \
   init_pair(18, COLOR_CYAN, COLOR_WHITE); \
   init_pair(19, COLOR_YELLOW, COLOR_WHITE);
-  
 
-
-
-
-
-  
+#define COLOR_MASK 63
 
 #define PRINT_OBJ(y, x, c)                                                     \
   for (int scale_iterator = 0; scale_iterator < BOARD_SCALE; scale_iterator++) \
