@@ -1,105 +1,110 @@
 # Linux, Darwin or Windows_NT
-OS=$(shell uname -s)
-CC := gcc
-FLAGS := -I inc -std=c99 -Wall -Wpedantic -fstack-protector-strong -g #-Werror
-CFLAGS:=$(FLAGS) -c
-LFLAGS = -lncurses
-TSTFLAGS = -lcheck
-SHELL = /bin/sh
-DIR_BUILD=$(shell pwd)/out/
-DIR_INSTALL=~/games/
-DIR_TESTS=tests/
-DIR_IF=gui/cli/
-TEST_SRC=$(wildcard tests/*.c)
-IF_SRC=$(wildcard gui/cli/*.c)
-TEST_OBJS=$(addprefix $(DIR_BUILD),$(notdir $(TEST_SRC:.c=.o)))
-IF_OBJS=$(addprefix $(DIR_BUILD),$(notdir $(IF_SRC:.c=.o)))
+OS:=$(shell uname -s)
+SHELL:=/bin/sh
+PWD:=$(shell pwd)
+export DIR_BUILD:=$(PWD)/out/
+export DIR_GAMES:=$(PWD)/brick_game/
+export DIR_IF:=$(PWD)/gui/
 
-OS_MAC_UX=-lsubunit -lm
+DIR_INSTALL:=~/games/
+GAMES:=$(notdir $(wildcard $(DIR_GAMES)*))
+LIBS:=$(addprefix lib, $(GAMES))
+INTERFACES:=$(notdir $(wildcard $(DIR_IF)*))
+
+OS_MAC_UX:=-lsubunit -lm
 RM:=-rm -rf
 
-.phony: all, install, uninstall, clean, dvi, dist, test, gcov_report $(PROG_NAME) ext1_flag 
+ifeq ($(OS),Darwin)
+OPEN_CMD := open
+endif
 
-all: clang clean libs test tetris snake
+ifeq ($(OS),Linux)
+OPEN_CMD := xdg-open
+ADD_LDFLAGS = $(OS_MAC_UX)
+endif
 
-install: $(PROG_NAME) 
+.phony: all, install, uninstall, clean, dvi, dist, test, gcov_report, clang 
+
+all: clang clean libs test games
+
+install: games 
 	-mkdir $(DIR_INSTALL)
-	cp $(DIR_BUILD)$(PROG_NAME) $(DIR_INSTALL)
+	for game in $(GAMES); do \
+		for interface in $(INTERFACES); do \
+        	cp $(DIR_BUILD)$$game$$interface $(DIR_INSTALL); \
+		done \
+    done
 
-uninstall: 
-	$(RM) $(DIR_INSTALL)$(PROG_NAME) $(DIR_INSTALL)*_hs.conf
+uninstall:
+	for game in $(GAMES); do \
+		for interface in $(INTERFACES); do \
+        	$(RM) $(DIR_INSTALL)$$game$$interface $(DIR_INSTALL)$$game_hs.conf; \
+		done \
+    done
 
 clean:
-	$(RM) $(DIR_BUILD)*.o $(DIR_BUILD)*.info $(DIR_BUILD)*.gcov $(DIR_BUILD)*.gcda $(DIR_BUILD)*.gcno
-	$(MAKE) -C brick_game/tetris clean
-	$(MAKE) -C brick_game/snake clean
+	for game in $(GAMES); do \
+		$(MAKE) -C $(DIR_GAMES)$$game clean; \
+	done 
 	$(RM) $(DIR_BUILD)*
+	@echo "***===Cleaned===***"
 
-dvi:
+# open custom documentation
+dvi: doxygen_doc 
+	$(OPEN_CMD) documentation/Documentation.html
 
-dist: $(PROG_NAME)
+# generate doxygen documentation from source code comments
+doxygen_doc: documentation/Doxyfile
+	doxygen documentation/Doxyfile
+
+# open doxygen documentation
+doxygen_open: doxygen_doc
+	$(OPEN_CMD) documentation/html/index.html
+
+dist: $(GAMES)
 	echo tar-`sed \
 	-e '/version_string/!d' \
 	-e 's/[^0-9.]*\([0-9.]*\).*/\1/' \
 	-e q version.c` > .fname
 	-rm -rf `cat .fname`
 	mkdir `cat .fname`
-	ln $(DIR_BUILD)$(PROG_NAME) `cat .fname`
-	tar chzf `cat .fname`.tar.gz `cat .fname`
-	-rm -rf `cat .fname` .fname
+	for game in $(GAMES); do \
+		ln $$game `cat .fname`; \
+		tar chzf `cat .fname`.tar.gz `cat .fname`; \
+		-rm -rf `cat .fname` .fname; \
+	done
 
-gcov_report: clean ext1_flag $(LIB) test
-	-lcov -t "$(LIB_NAME)_report" -o $(DIR_BUILD)$(LIB_NAME)_report.info -c -d $(DIR_BUILD)
-	-geninfo $(DIR_BUILD) -o $(DIR_BUILD)$(LIB_NAME)_report.info
-	-genhtml -o $(DIR_BUILD)report $(DIR_BUILD)$(LIB_NAME)_report.info
+gcov_report: clean ext1_flag test
 	-mkdir $(DIR_BUILD)report
+	for lib in $(notdir $(LIBS)); do \
+		lcov -t "$$lib_report" -o $(DIR_BUILD)$$lib_report.info -c -d $(DIR_BUILD); \
+		geninfo $(DIR_BUILD) -o $(DIR_BUILD)$$lib_report.info; \
+		genhtml -o $(DIR_BUILD)report $(DIR_BUILD)$$lib_report.info; \
+	done
+	@echo "-----------------------------Trying GCOV----------------------------"
 	cd $(DIR_BUILD)
-	-@python3 -m gcovr -r . --html --html-details -o $(DIR_BUILD)report/index.html --exclude test
-ifeq ($(OS), Windows_NT) 
-	start $(DIR_BUILD)report/index.html
-else
-	open $(DIR_BUILD)report/index.html
-endif
+	-@python3  -m gcovr --verbose -r $(DIR_BUILD) --html --html-details -o $(DIR_BUILD)report/index.html --exclude test
+	$(OPEN_CMD) $(DIR_BUILD)report/index.html
 
-games: tetris snake
+libs:  
+	for lib in $(GAMES); do \
+		$(MAKE) -C $(DIR_GAMES)$$lib lib; \
+	done
 
-snake: $(eval PROG_NAME=snake) $(eval MACROS=SNAKE) lib_$(PROG_NAME) $(DIR_BUILD)$(PROG_NAME)
+games:
+	for interface in $(INTERFACES); do \
+		$(MAKE) -C $(DIR_IF)$$interface $(GAMES); \
+	done 
 
-
-tetris: $(eval PROG_NAME=tetris) $(eval MACROS=TETRIS) lib_$(PROG_NAME) $(DIR_BUILD)$(PROG_NAME)
-
-
-$(DIR_BUILD)$(PROG_NAME): $(LIB) $(IF_OBJS)
-	$(CC) $(FLAGS) $(GCOV) $(IF_OBJS) -D$(MACROS) -o $(DIR_BUILD)$(PROG_NAME) -l$(PROG_NAME) $(LFLAGS) $(OS_MAC_UX) -L. -L$(DIR_BUILD)
-
-$(IF_OBJS): $(IF_SRC)
-	$(CC) $(CFLAGS) $(DIR_IF)$(patsubst %.o,%.c,$(notdir $@)) -o $(DIR_BUILD)$(notdir $@)
-
-$(TEST_OBJS): $(TEST_SRC)
-	$(CC) $(CFLAGS) $(DIR_TESTS)$(patsubst %.o,%.c,$(notdir $@)) -o $(DIR_BUILD)$(notdir $@) 
-
-libs:  lib_tetris lib_snake
-
-lib_tetris:
-	$(MAKE) -C brick_game/tetris lib
-
-lib_snake:
-	$(MAKE) -C brick_game/snake lib
-
-test: test_tetris test_snake
-
-test_tetris:
-	$(MAKE) -C brick_game/tetris test
-
-test_snake:
-	$(MAKE) -C brick_game/snake test
+test: libs
+	for lib in $(GAMES); do \
+		$(MAKE) -C $(DIR_GAMES)$$lib test; \
+	done
 
 ext1_flag:
-#	add parametrs
-	$(eval GCOV=-fprofile-arcs -ftest-coverage -coverage)
+	$(eval export GCOV:=-fprofile-arcs -ftest-coverage -coverage)
 	
 clang:
-#	find . -type f \( -name "*.c" -o -name "*.h" \) -exec clang-format -i {} \;
 	find . -type f \( -name "*.c" -o -name "*.h" \) -exec clang-format -i {} \;
 
 check_format: 

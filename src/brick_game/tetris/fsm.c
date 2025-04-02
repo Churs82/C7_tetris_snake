@@ -1,6 +1,8 @@
+#include "fsm.h"
+
 #include <sys/time.h>
 #include <time.h>
-#include "fsm.h"
+
 #include "libtetris.h"
 
 static GameInfo_t game_info = {0};

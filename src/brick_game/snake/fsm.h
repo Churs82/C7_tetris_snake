@@ -15,7 +15,7 @@
         /* SPAWN */ {NULL, pausetoggle, exitstate_sw, NULL,           \
                      NULL, NULL,        NULL,         NULL},          \
         /* MOVING */ {NULL,      pausetoggle, exitstate_sw, moveleft, \
-                      moveright, moveup, movedown, move},  \
+                      moveright, moveup,      movedown,     move},    \
         /* DOWNSHIFTING */ {NULL, pausetoggle, exitstate_sw, NULL,    \
                             NULL, NULL,        NULL,         NULL},   \
         /* ATTACHING */ {NULL, pausetoggle, exitstate_sw, NULL, NULL, \
@@ -37,7 +37,5 @@ void _userAction(UserAction_t action);
 GameInfo_t _updateCurrentState();
 
 game_state _getState();
-
-
 
 #endif

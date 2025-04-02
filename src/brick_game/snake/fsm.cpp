@@ -1,10 +1,18 @@
+#include "fsm.h"
+
 #include <sys/time.h>
 #include <time.h>
-#include "fsm.h"
+
 #include "libsnake.h"
 
-static GameInfo_t* game_info() { static GameInfo_t game_info; return &game_info; }
-static game_state* state() { static game_state state; return &state; }
+static GameInfo_t *game_info() {
+  static GameInfo_t game_info;
+  return &game_info;
+}
+static game_state *state() {
+  static game_state state;
+  return &state;
+}
 
 static void checkTime();
 static void start();
@@ -106,46 +114,48 @@ static void start() {
 /**
  * @brief Spawns a new Apple on the game field.
  *
- * This function selects a random position on the game field and checks if it's 
+ * This function selects a random position on the game field and checks if it's
  * occupied. If the position is occupied, it recursively tries another position.
- * Once an unoccupied position is found, it places an Apple there and transitions 
- * the game state to MOVING.
+ * Once an unoccupied position is found, it places an Apple there and
+ * transitions the game state to MOVING.
  */
 static void spawn() {
   int bibidibabidiboo = rand() % (COLS_MAP * ROWS_MAP);
-  if (game_info()->field[bibidibabidiboo / COLS_MAP][bibidibabidiboo % COLS_MAP]) spawn();
-  else game_info()->field[bibidibabidiboo / COLS_MAP][bibidibabidiboo % COLS_MAP] = 1;
+  if (game_info()
+          ->field[bibidibabidiboo / COLS_MAP][bibidibabidiboo % COLS_MAP])
+    spawn();
+  else
+    game_info()->field[bibidibabidiboo / COLS_MAP][bibidibabidiboo % COLS_MAP] =
+        1;
   move_sw();
 }
 
 /**
  * @brief Initialize Snake on the game field.
  *
- * Puts the initial snake head at the center of the map and the rest of the snake
- * to the right of the head. The length of the snake is determined by INITIAL_LEN.
- * After placing the snake, it transitions the game state to SPAWN so that an Apple
- * can be spawned.
+ * Puts the initial snake head at the center of the map and the rest of the
+ * snake to the right of the head. The length of the snake is determined by
+ * INITIAL_LEN. After placing the snake, it transitions the game state to SPAWN
+ * so that an Apple can be spawned.
  */
-static void putSnake(){
+static void putSnake() {
   short start_h = ROWS_MAP / 2 - 1;
   short start_w = COLS_MAP / 2 - INITIAL_LEN / 2;
   game_info()->field[start_h][start_w] = 3;
-  for (short i = 1; i <= INITIAL_LEN; i++) 
-    game_info()->field[start_h][start_w+i] = 2;
+  for (short i = 1; i <= INITIAL_LEN; i++)
+    game_info()->field[start_h][start_w + i] = 2;
   spawn_sw();
 }
-
 
 static void move() {
   for (short i = 0; i < ROWS_MAP; i++)
     for (short j = COLS_MAP - 1; j >= 0; j--)
-        if (game_info()->field[i][j] > 2) {
-          short last_i = i;
-          short last_j = j;
+      if (game_info()->field[i][j] > 2) {
+        short last_i = i;
+        short last_j = j;
 
-        }
-  else
-    gameover_sw();
+      } else
+        gameover_sw();
 }
 
 static void rotate() {
@@ -160,8 +170,7 @@ static void rotate() {
         int new_row = top - (j - left);
         int new_col = left + (i - bottom);
         if (new_col < 0 || new_row < 0 || new_col >= COLS_MAP ||
-            new_row >= ROWS_MAP ||
-            game_info()->field[new_row][new_col] == 1)
+            new_row >= ROWS_MAP || game_info()->field[new_row][new_col] == 1)
           possibility = 0;
         else if (game_info()->field[new_row][new_col] == 0)
           game_info()->field[new_row][new_col] = -color;
@@ -243,7 +252,8 @@ static void anihilate() {
 static void scoreAdd(int scoreadd) {
   static int last_score;
   game_info()->score += scoreadd;
-  if (game_info()->score - last_score > LEVEL_UP_SCORE && game_info()->level < 10) {
+  if (game_info()->score - last_score > LEVEL_UP_SCORE &&
+      game_info()->level < 10) {
     game_info()->level++;
     last_score = game_info()->score;
   }
@@ -275,14 +285,13 @@ static short checkBounds(short dir) {
   short ret = 0;
   for (short j = 0; j < COLS_MAP && !ret; j++)
     for (short i = 0; i < ROWS_MAP && !ret; i++)
-      if (game_info()->field[i][j] & HEAD_MASK)
-        switch (dir) {
+      if (game_info()->field[i][j] & HEAD_MASK) switch (dir) {
           case 0:
             ret = !(j - 1 < 0 || game_info()->field[i][j - 1] != 0);
             ++ret;
             break;
           case 1:
-            ret = !(j + 1 >= COLS_MAP || game_info()->field[i][j + 1] != 0) ;
+            ret = !(j + 1 >= COLS_MAP || game_info()->field[i][j + 1] != 0);
             ++ret;
             break;
           case 2:

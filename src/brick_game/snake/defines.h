@@ -1,7 +1,6 @@
 #ifndef DEFINES_H
 #define DEFINES_H
 
-
 #define INITIAL_SPEED 1
 #define INITIAL_LEVEL 1
 #define MAX_LEVEL 10
