@@ -15,7 +15,7 @@ DIR_TESTS?=../../tests/
 TEST_SRC:=$(wildcard $(DIR_TESTS)$(LIB_NAME)_*.c)
 LIB_SRC:=$(wildcard *.cpp) # https://runebook.dev/ru/docs/gnu_make/wildcard-function
 TEST_OBJS=$(addprefix $(DIR_BUILD),$(notdir $(TEST_SRC:.c=.o)))
-LIB_OBJS:=$(addprefix $(DIR_BUILD),$(notdir $(LIB_SRC:.cpp=.o)))
+LIB_OBJS:=$(LIB_SRC:.cpp=.o)
 
 OS_MAC_UX:=-lsubunit -lm
 RM:=-rm -rf
@@ -25,7 +25,7 @@ RM:=-rm -rf
 all: lib test
 
 clean:
-	$(RM) $(LIB_OBJS) $(DIR_BUILD)$(LIB_NAME).info $(DIR_BUILD)$(LIB_NAME).gcov $(DIR_BUILD)$(LIB_NAME).gcda $(DIR_BUILD)$(LIB_NAME).gcno $(DIR_BUILD)$(LIB_NAME)_test $(TEST_OBJS) $(DIR_BUILD)$(LIB)
+	$(RM) $(LIB_OBJS) *.info *.gcov *.gcda *.gcno $(DIR_BUILD)$(LIB_NAME)_test $(TEST_OBJS) $(DIR_BUILD)$(LIB)
 
 $(LIB_NAME) $(LIB): $(DIR_BUILD)$(LIB)
 
@@ -34,7 +34,7 @@ $(DIR_BUILD)$(LIB): $(LIB_OBJS)
 	ranlib $@
 
 $(LIB_OBJS): $(LIB_SRC)
-	$(CC) $(CFLAGS) $(DIR_LIB)$(patsubst %.o,%.cpp,$(notdir $@)) $(GCOV) -o $@
+	$(CC) $(CFLAGS) $(DIR_LIB)$(patsubst %.o,%.cpp,$(notdir $@)) $(COV_FLAGS) -o $@
 
 $(TEST_OBJS): $(TEST_SRC)
 	$(CC) $(CFLAGS) $(DIR_TESTS)$(patsubst %.o,%.cpp,$(notdir $@)) -o $(DIR_BUILD)$(notdir $@) 
@@ -50,7 +50,7 @@ ifeq ($(OS),Darwin)
 	$(eval export OS_MAC_UX:=-L/opt/homebrew/lib)
 endif
 
-	$(CC) $(FLAGS) $(GCOV) $(TEST_OBJS) -o $(DIR_BUILD)$(LIB_NAME)_test $(LFLAGS) -l$(LIB_NAME) $(TSTFLAGS) $(OS_MAC_UX) -L. -L$(DIR_BUILD)
+	$(CC) $(FLAGS) $(COV_FLAGS) $(TEST_OBJS) -o $(DIR_BUILD)$(LIB_NAME)_test $(LFLAGS) -l$(LIB_NAME) $(TSTFLAGS) $(OS_MAC_UX) -L. -L$(DIR_BUILD)
 
 leak_check: clean test_nl
 

@@ -76,14 +76,14 @@ dist: $(GAMES)
 
 gcov_report: clean ext1_flag test
 	-mkdir $(DIR_BUILD)report
-	for lib in $(notdir $(LIBS)); do \
-		lcov -t "$$lib_report" -o $(DIR_BUILD)$$lib_report.info -c -d $(DIR_BUILD); \
-		geninfo $(DIR_BUILD) -o $(DIR_BUILD)$$lib_report.info; \
-		genhtml -o $(DIR_BUILD)report $(DIR_BUILD)$$lib_report.info; \
+	for lib in $(GAMES); do \
+		lcov -t "lib$${lib}_report" -o $(DIR_BUILD)lib$${lib}_report.info -c -d $(DIR_GAMES)$$lib; \
+		geninfo $(DIR_GAMES)$$lib -o $(DIR_BUILD)lib$${lib}_report.info; \
+		genhtml -o $(DIR_BUILD)report $(DIR_BUILD)lib$${lib}_report.info; \
+		echo "-----------------------------Trying GCOV----------------------------"; \
+		python3 -m gcovr --verbose -r $(DIR_GAMES)$$lib --html --html-details -o $(DIR_BUILD)report/index.html --exclude test; \
 	done
-	@echo "-----------------------------Trying GCOV----------------------------"
-	cd $(DIR_BUILD)
-	-@python3  -m gcovr --verbose -r $(DIR_BUILD) --html --html-details -o $(DIR_BUILD)report/index.html --exclude test
+
 	$(OPEN_CMD) $(DIR_BUILD)report/index.html
 
 libs:  
@@ -102,7 +102,7 @@ test: libs
 	done
 
 ext1_flag:
-	$(eval export GCOV:=-fprofile-arcs -ftest-coverage -coverage)
+	$(eval export COV_FLAGS:=-ftest-coverage -coverage)
 	
 clang:
 	find . -type f \( -name "*.c" -o -name "*.h" \) -exec clang-format -i {} \;
