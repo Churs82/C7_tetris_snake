@@ -1,5 +1,5 @@
-#ifndef SNAKE_LIB_H
-#define SNAKE_LIB_H
+#ifndef LIB_H
+#define LIB_H
 
 #include <stdbool.h>
 
@@ -8,7 +8,6 @@
 
 #define SUCCESS 0
 #define ERROR 1
-
 #define FIGURE_W 4
 #define FIGURE_H 4
 
@@ -20,6 +19,8 @@
   "arrows - move,         spacebar - speedup,     ESC - exit, p - pause  "
 #define EXIT_MESSAGE " Press ENTER to resume  or ESC to exit!"
 #define GAMEOVER_MESSAGE "Press ENTER to restart or ESC to exit!"
+#define WIN_MESSAGE "You have won!!!" \
+  "Press ENTER to restart or ESC to exit!"
 
 typedef enum {
   Start,

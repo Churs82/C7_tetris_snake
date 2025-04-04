@@ -4,7 +4,7 @@
 #include <check.h>
 #include <stdio.h>
 
-#include "libtetris.h"
+#include "lib.h"
 
 #define TESTS tetris_test_fsm(),
 

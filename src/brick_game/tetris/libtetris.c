@@ -1,4 +1,4 @@
-#include "libtetris.h"
+#include "lib.h"
 
 #include <sys/time.h>
 #include <time.h>

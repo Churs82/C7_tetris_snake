@@ -6,7 +6,7 @@
 #include <stdlib.h>
 
 #include "defines.h"
-#include "libtetris.h"
+#include "lib.h"
 
 /* STATE\SIGNAL: START PAUSE TERMINATE LEFT RIGHT UP DOWN ACTION */
 #define FSM_TABLE                                                     \

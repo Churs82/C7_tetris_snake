@@ -31,7 +31,7 @@ install: games
 	-mkdir $(DIR_INSTALL)
 	for game in $(GAMES); do \
 		for interface in $(INTERFACES); do \
-        	cp $(DIR_BUILD)$$game$$interface $(DIR_INSTALL); \
+        	cp $(DIR_BUILD)$${game}_$$interface $(DIR_INSTALL); \
 		done \
     done
 
@@ -86,14 +86,17 @@ gcov_report: clean ext1_flag test
 
 	$(OPEN_CMD) $(DIR_BUILD)report/index.html
 
-libs:  
-	for lib in $(GAMES); do \
-		$(MAKE) -C $(DIR_GAMES)$$lib lib; \
-	done
+libs:  $(LIBS)
 
-games:
+$(LIBS): 
+	$(MAKE) -C $(DIR_GAMES)$(patsubst lib%,%,$@) lib; \
+
+games: $(GAMES)
+
+$(GAMES): 
+	$(MAKE) -C $(DIR_GAMES)$@ lib
 	for interface in $(INTERFACES); do \
-		$(MAKE) -C $(DIR_IF)$$interface $(GAMES); \
+		$(MAKE) -C $(DIR_IF)$$interface $@; \
 	done 
 
 test: libs

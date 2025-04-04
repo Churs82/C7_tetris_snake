@@ -3,7 +3,7 @@
 #include <sys/time.h>
 #include <time.h>
 
-#include "libsnake.h"
+#include "lib.h"
 
 static GameInfo_t *game_info() {
   static GameInfo_t game_info;
