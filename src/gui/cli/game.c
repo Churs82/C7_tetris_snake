@@ -9,9 +9,19 @@ int main(void) {
   return SUCCESS;
 }
 
+/**
+ * @brief The main game loop.
+ *
+ * Prints the game field and handles user input.
+ *
+ * The loop will break if the game is in the EXIT_STATE and the speed is 0.
+ *
+ * @return void
+ */
 void game_loop() {
   bool break_flag = 1;
   int signal = -1;
+  
   while (break_flag) {
     if (getState() == START)
       print_intro();
@@ -21,10 +31,13 @@ void game_loop() {
       print_exit();
     else
       print_board(updateCurrentState());
+    
+    /* User input */  
     signal = GET_USER_INPUT;
     if (signal > -1) {
       userInput(get_signal(signal), false);
     }
+        
     break_flag = updateCurrentState().speed > 0;
   }
 }

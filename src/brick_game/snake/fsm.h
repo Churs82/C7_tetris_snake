@@ -14,18 +14,14 @@
     {spawn_sw, NULL, doexit, NULL, NULL, NULL, NULL, NULL},           \
         /* SPAWN */ {NULL, pausetoggle, exitstate_sw, NULL,           \
                      NULL, NULL,        NULL,         NULL},          \
-        /* MOVING */ {NULL,      pausetoggle, exitstate_sw, moveleft, \
+        /* ROTATING */ {NULL,      pausetoggle, exitstate_sw, moveleft, \
                       moveright, moveup,      movedown,     move},    \
-        /* DOWNSHIFTING */ {NULL, pausetoggle, exitstate_sw, NULL,    \
+        /* MOVING */ {NULL, pausetoggle, exitstate_sw, NULL,    \
                             NULL, NULL,        NULL,         NULL},   \
-        /* ATTACHING */ {NULL, pausetoggle, exitstate_sw, NULL, NULL, \
-                         NULL, NULL,        NULL}, /* GAME_OVER       \
-                                                    */                \
-        {restart, NULL, doexit, NULL, NULL, NULL, NULL, NULL},        \
-    /* EXIT_STATE */ {                                                \
-      move_sw, NULL, doexit, NULL, NULL, NULL, NULL, NULL             \
-    }                                                                 \
-  }
+        /* WIN */ {restart, NULL, doexit, NULL, NULL, NULL, NULL, NULL}, \
+        /* GAME_OVER */  {restart, NULL, doexit, NULL, NULL, NULL, NULL, NULL},      \
+    /* EXIT_STATE */ { move_sw, NULL, doexit, NULL, NULL, NULL, NULL, NULL}} \                                                                 
+
 /* START SPAWN MOVING DOWNSHIFTING ATTACHING GAME_OVER EXIT_STATE */
 #define FSM_TRANSFER \
   (act_t[EXIT_STATE + 1]) { NULL, spawn, checkTime, down, attach, NULL, NULL }

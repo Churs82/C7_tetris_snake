@@ -1,0 +1,31 @@
+# Set project name
+PROJECT_NAME           = "Brick Games"
+
+# Set output directory for documentation
+OUTPUT_DIRECTORY       = documentation
+
+# Paths to scan for source code documentation
+INPUT                  = ../.
+
+# Enable recursive scanning
+RECURSIVE              = YES
+
+# Extract documentation from all documented code elements
+EXTRACT_ALL            = YES
+
+# Enable HTML output (for browsing documentation)
+GENERATE_HTML          = YES
+
+# Disable LaTeX (optional)
+GENERATE_LATEX         = NO
+
+# Enable Markdown support for detailed descriptions
+MARKDOWN_SUPPORT       = YES
+
+# Include private and protected members in the documentation
+EXTRACT_PRIVATE        = YES
+EXTRACT_PROTECTED      = YES
+
+# Show files in documentation
+SHOW_FILES             = YES
+SHOW_USED_FILES        = YES
