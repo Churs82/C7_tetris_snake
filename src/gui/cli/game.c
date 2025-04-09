@@ -14,21 +14,47 @@ int main(void) {
  *
  * Prints the game field and handles user input.
  *
- * The loop will break if the game is in the EXIT_STATE and the speed is 0.
+ * The loop will break if the game field is null, indicating the game has ended.
  *
  * @return void
  */
 void game_loop() {
-  int signal = -1;
+  intro();  
+
   GameInfo_t game_info = updateCurrentState();
 
   while (game_info.field) {
+    
     print_board(game_info);
+    
     /* User input */  
-    signal = GET_USER_INPUT;
+    int signal = GET_USER_INPUT;
     if (signal > -1) {
-      userInput(get_signal(signal), false);
+      if(get_signal(signal) == Terminate){
+        end_game();
+      } else {
+        userInput(get_signal(signal), false);
+      }
     }
+
     game_info = updateCurrentState();
   }
+}
+
+void intro(){
+  print_intro();
+  int signal = -1;
+  while (get_signal(signal) != Start && get_signal(signal) != Terminate) {
+    signal = GET_USER_INPUT;
+  }
+  userInput(get_signal(signal), false);
+}
+
+void end_game() {
+  print_exit();
+  int signal = -1;
+  while (get_signal(signal) != Start && get_signal(signal) != Terminate) {
+    signal = GET_USER_INPUT;
+  }
+  userInput(get_signal(signal), false);
 }

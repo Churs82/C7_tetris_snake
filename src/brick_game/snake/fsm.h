@@ -33,9 +33,15 @@ typedef void (*act_t)();
 typedef enum {
   START = 0,
   SPAWN,
+<<<<<<< HEAD
   ROTATING,
   MOVING,
   WIN,
+=======
+  MOVING,
+  DOWN_SHIFTING,
+  ATTACHING,
+>>>>>>> 5ad8463 (p2p compatibility in tetris)
   GAME_OVER,
   EXIT_STATE,
 } game_state;

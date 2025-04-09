@@ -28,7 +28,7 @@
   }
 /* START SPAWN MOVING DOWNSHIFTING ATTACHING GAME_OVER EXIT_STATE */
 #define FSM_TRANSFER \
-  (act_t[EXIT_STATE + 1]) { NULL, spawn, checkTime, down, attach, NULL, NULL }
+  (act_t[EXIT_STATE + 1]) { NULL, spawn, checkTime, down, attach, NULL, doexit }
 
 typedef void (*act_t)();
 

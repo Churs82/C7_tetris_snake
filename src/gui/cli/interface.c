@@ -102,9 +102,19 @@ void print_board(GameInfo_t game_info) {
   refresh();
 }
 
+/**
+ * @brief Translates a user input key into a corresponding UserAction_t.
+ *
+ * Iterates through the possible user actions and matches the given
+ * user input key with the predefined key map. Returns the UserAction_t
+ * that corresponds to the input key. Defaults to 'Up' if no match is found.
+ *
+ * @param user_input The input key to be translated.
+ * @return The UserAction_t corresponding to the given input key.
+ */
+
 UserAction_t get_signal(int user_input) {
-  UserAction_t ret = Up;
-  for (UserAction_t i = Start; i <= Action; i++)
-    if (KEYMAP[i] == user_input) ret = i;
+  UserAction_t ret = Start;
+  while(ret <= Action && KEYMAP[ret] != user_input) ++ret;
   return ret;
 }

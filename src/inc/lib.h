@@ -15,9 +15,8 @@
 #define HEAD_MASK 1<<8
 
 #define INTRO_MESSAGE                                                      \
-  " Press ENTER to start! ***********************        Controls:       " \
-  "arrows - move,         spacebar - speedup,     ESC - exit, p - pause  "
-#define EXIT_MESSAGE " Press ENTER to resume  or ESC to exit!"
+  " Press ENTER to start or Esc to exit! ***********************"
+#define EXIT_MESSAGE " Press ENTER to resume or ESC to exit!"
 #define GAMEOVER_MESSAGE "Press ENTER to restart or ESC to exit!"
 #define WIN_MESSAGE \
   "You won!!!"      \

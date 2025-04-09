@@ -47,7 +47,7 @@ static void move_sw() { state = MOVING; }
 static void exitstate_sw() { state = EXIT_STATE; }
 
 void _userAction(UserAction_t action) {
-  game_info.pause = 0;
+  if (action != Pause) game_info.pause = 0;
   if (FSM_TABLE[state][action]) FSM_TABLE[state][action]();
 }
 
@@ -66,7 +66,7 @@ static void checkTime() {
 
   if (!last_time.tv_sec || game_info.pause ||
       last_time.tv_sec > current_time.tv_sec)
-    last_time = current_time;
+    last_time = game_info.pause ? last_time : current_time;
   else if (((current_time.tv_sec * CLOCKS_PER_SEC + current_time.tv_usec) -
             (last_time.tv_sec * CLOCKS_PER_SEC + last_time.tv_usec)) >=
            CLOCKS_PER_SEC * 2 / game_info.speed) {
@@ -92,7 +92,6 @@ static void start() {
     for (int i = 0; i < ROWS_MAP + FIGURE_H; i++)
       game_info.field[i] = (int *)calloc(COLS_MAP, sizeof(int));
   }
-  state = START;
 
   FILE *hsfile = fopen(HS_FILE, "r");
   if (hsfile) {
