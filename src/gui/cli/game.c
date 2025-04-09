@@ -19,25 +19,16 @@ int main(void) {
  * @return void
  */
 void game_loop() {
-  bool break_flag = 1;
   int signal = -1;
-  
-  while (break_flag) {
-    if (getState() == START)
-      print_intro();
-    else if (getState() == GAME_OVER)
-      print_gameover();
-    else if (getState() == EXIT_STATE)
-      print_exit();
-    else
-      print_board(updateCurrentState());
-    
+  GameInfo_t game_info = updateCurrentState();
+
+  while (game_info.field) {
+    print_board(game_info);
     /* User input */  
     signal = GET_USER_INPUT;
     if (signal > -1) {
       userInput(get_signal(signal), false);
     }
-        
-    break_flag = updateCurrentState().speed > 0;
+    game_info = updateCurrentState();
   }
 }

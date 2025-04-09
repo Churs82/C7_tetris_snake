@@ -47,14 +47,13 @@ static void move_sw() { state = MOVING; }
 static void exitstate_sw() { state = EXIT_STATE; }
 
 void _userAction(UserAction_t action) {
-  if (game_info.pause) checkTime();
-  if (!game_info.pause || action == Pause)
-    if (FSM_TABLE[state][action]) FSM_TABLE[state][action]();
+  game_info.pause = 0;
+  if (FSM_TABLE[state][action]) FSM_TABLE[state][action]();
 }
 
 GameInfo_t _updateCurrentState() {
-  if (game_info.speed == 0 && state != EXIT_STATE) start();
-  if (!game_info.pause && FSM_TRANSFER[state]) FSM_TRANSFER[state]();
+  if (!game_info.field && state != EXIT_STATE) start();
+  if (FSM_TRANSFER[state]) FSM_TRANSFER[state]();
   return game_info;
 }
 

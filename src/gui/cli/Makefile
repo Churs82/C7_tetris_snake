@@ -23,8 +23,8 @@ RM:=-rm -rf
 all: games
 
 clean:
-	for game in $(GAMES); do \
-        $(RM) $(DIR_BUILD)$${game}_$(IF_NAME); \
+	-for game in $(GAMES); do \        
+		$(RM) $(DIR_BUILD)$${game}_$(IF_NAME); \
     done
 	$(RM) $(IF_OBJS)
 

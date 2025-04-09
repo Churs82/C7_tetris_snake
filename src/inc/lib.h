@@ -19,7 +19,7 @@
   "arrows - move,         spacebar - speedup,     ESC - exit, p - pause  "
 #define EXIT_MESSAGE " Press ENTER to resume  or ESC to exit!"
 #define GAMEOVER_MESSAGE "Press ENTER to restart or ESC to exit!"
-#define WIN_MESSAGE "You have won!!!" \
+#define WIN_MESSAGE "You won!!!" \
   "Press ENTER to restart or ESC to exit!"
 
 typedef enum {

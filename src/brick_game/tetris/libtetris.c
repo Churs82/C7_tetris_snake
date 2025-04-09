@@ -6,7 +6,6 @@
 #include "fsm.h"
 
 void userInput(UserAction_t action, bool hold) {
-  if (!updateCurrentState().pause || action == Pause || action == Terminate)
     _userAction(action);
 }
 

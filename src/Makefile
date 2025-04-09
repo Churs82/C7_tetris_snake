@@ -43,11 +43,17 @@ uninstall:
     done
 
 clean:
-	for game in $(GAMES); do \
+	@echo "===Cleaning game libraries==="
+	-for game in $(GAMES); do \
 		$(MAKE) -C $(DIR_GAMES)$$game clean; \
+	done
+	@echo "===Cleaning interfaces and game executables==="
+	-for interface in $(INTERFACES); do \
+		$(MAKE) -C $(DIR_IF)$$interface clean; \
 	done 
+	@echo "===Cleaning out directory==="
 	$(RM) $(DIR_BUILD)*
-	@echo "***===Cleaned===***"
+	@echo "===Cleaned==="
 
 # open custom documentation
 dvi: doxygen_doc 
