@@ -9,6 +9,24 @@ namespace s21 {
 
 class snake_game {
  private:
+
+  typedef void (s21::snake_game::*act_t)();
+  
+ /* STATE\SIGNAL: START PAUSE TERMINATE LEFT RIGHT UP DOWN ACTION */
+  act_t fsm_table[EXIT_STATE + 1][Action + 1] = {
+      /* START */ {s21::snake_game::spawn_sw, NULL, doexit, NULL, NULL, NULL, NULL, NULL},
+      /* SPAWN */ {NULL, pausetoggle, doexit, NULL, NULL, NULL, NULL, NULL},
+      /* ROTATING */ {NULL, pausetoggle, doexit, moveleft, moveright, moveup,
+                      movedown, move},
+      /* MOVING */ {NULL, pausetoggle, doexit, NULL, NULL, NULL, NULL, NULL},
+      /* WIN */ {restart, NULL, doexit, NULL, NULL, NULL, NULL, NULL},
+      /* GAME_OVER */ {restart, NULL, doexit, NULL, NULL, NULL, NULL, NULL},
+      /* EXIT_STATE */ {rotating_sw, NULL, doexit, NULL, NULL, NULL, NULL, NULL}
+  };
+
+/* START SPAWN ROTATING MOVING WIN GAME_OVER EXIT_STATE */
+act_t fsm_transfer[EXIT_STATE + 1] { NULL, spawn, checkTime, move, NULL, NULL, NULL };
+  
   GameInfo_t game_info;
 
   game_state state;
@@ -112,30 +130,21 @@ class snake_game {
       case DIRECTION_DOWN:
         new_head_ptr = head_ptr + COLS_MAP;
         break;
-    }
-
-
-    for (short i = 0; i < ROWS_MAP; i++)
-      for (short j = COLS_MAP - 1; j >= 0; j--)
-        if (game_info.field[i][j] > 2) {
-          short last_i = i;
-          short last_j = j;
-
-        } else
-          gameover_sw();
+    
   }
+}
 
   int *head() {
     for (short i = 0; i < ROWS_MAP; i++)
       for (short j = 0; j < COLS_MAP; j++)
-        if (game_info.field[i][j] & HEAD_MASK == HEAD_MASK)
+        if ((game_info.field[i][j] & HEAD_MASK )== HEAD_MASK)
           return &game_info.field[i][j];
   }
 
-  void moveright() { *(head()) = *(head()) ^ DIRECTION_MASK | DIRECTION_LEFT; }
-  void moveleft() { *(head()) = *(head()) ^ DIRECTION_MASK | DIRECTION_RIGHT; }
-  void moveup() { *(head()) = *(head()) ^ DIRECTION_MASK | DIRECTION_DOWN; }
-  void movedown() { *(head()) = *(head()) ^ DIRECTION_MASK | DIRECTION_UP; }
+  void moveright() { *(head()) = (*(head()) ^ DIRECTION_MASK) | DIRECTION_LEFT; }
+  void moveleft() { *(head()) = (*(head()) ^ DIRECTION_MASK) | DIRECTION_RIGHT; }
+  void moveup() { *(head()) = (*(head()) ^ DIRECTION_MASK) | DIRECTION_DOWN; }
+  void movedown() { *(head()) = (*(head()) ^ DIRECTION_MASK) | DIRECTION_UP; }
 
   void rotating_sw() { state = ROTATING; }
   void spawn_sw() { state = SPAWN; }
@@ -144,14 +153,6 @@ class snake_game {
   void gameover_sw() { state = GAME_OVER; }
   void exitstate_sw() { state = EXIT_STATE; }
   void pausetoggle() { game_info.pause = !game_info.pause; }
-
-  void doexit();
-  void restart();
-
-  short checkBounds(short dir);
-  void scoreAdd(int scoreadd);
-  void updateHighScore();
-  void findBounds(int *left, int *top, int *right, int *bottom);
 
   void findBounds(int *left, int *top, int *right, int *bottom) {
     for (short j = 0; j < COLS_MAP; j++)
@@ -163,23 +164,6 @@ class snake_game {
           if (*bottom >= i) *bottom = i;
         }
     while (*left + *top - *bottom >= COLS_MAP) *left = *left - 1;
-  }
-
-  void down() {
-    if (!checkBounds(0))
-      attach_sw();
-    else {
-      spawn_sw();
-      for (short j = 0; j < COLS_MAP; j++) {
-        for (short i = 0; i < ROWS_MAP; i++) {
-          if (game_info.field[i][j] > 1) {
-            game_info.field[i - 1][j] = game_info.field[i][j];
-            game_info.field[i][j] = 0;
-            rotating_sw();
-          }
-        }
-      }
-    }
   }
 
   void attach() {
@@ -297,12 +281,12 @@ class snake_game {
   void _userAction(UserAction_t action) {
     if (game_info.pause) checkTime();
     if (!game_info.pause || action == Pause)
-      if (FSM_TABLE[state][action]) FSM_TABLE[state][action]();
+      if (fsm_table[state][action]) fsm_table[state][action]();
   }
 
   GameInfo_t _updateCurrentState() {
     if (game_info.speed == 0 && state != EXIT_STATE) start();
-    if (!game_info.pause && FSM_TRANSFER[state]) FSM_TRANSFER[state]();
+    if (!game_info.pause && fsm_transfer[state]) fsm_transfer[state]();
     return game_info;
   }
 
