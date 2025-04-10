@@ -11,15 +11,16 @@
 #define FIGURE_W 4
 #define FIGURE_H 4
 
-#define DIRECTION_MASK 192
-#define HEAD_MASK 256
+#define DIRECTION_MASK 3<<6
+#define HEAD_MASK 1<<8
 
 #define INTRO_MESSAGE                                                      \
   " Press ENTER to start! ***********************        Controls:       " \
   "arrows - move,         spacebar - speedup,     ESC - exit, p - pause  "
 #define EXIT_MESSAGE " Press ENTER to resume  or ESC to exit!"
 #define GAMEOVER_MESSAGE "Press ENTER to restart or ESC to exit!"
-#define WIN_MESSAGE "You won!!!" \
+#define WIN_MESSAGE \
+  "You won!!!"      \
   "Press ENTER to restart or ESC to exit!"
 
 typedef enum {
@@ -43,20 +44,8 @@ typedef struct {
   int pause;
 } GameInfo_t;
 
-typedef enum {
-  START = 0,
-  SPAWN,
-  MOVING,
-  DOWN_SHIFTING,
-  ATTACHING,
-  GAME_OVER,
-  EXIT_STATE,
-} game_state;
-
 void userInput(UserAction_t action, bool hold);
 
 GameInfo_t updateCurrentState();
-
-game_state getState();
 
 #endif

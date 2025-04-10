@@ -32,6 +32,16 @@
 
 typedef void (*act_t)();
 
+typedef enum {
+  START = 0,
+  SPAWN,
+  MOVING,
+  DOWN_SHIFTING,
+  ATTACHING,
+  GAME_OVER,
+  EXIT_STATE,
+} game_state;
+
 void _userAction(UserAction_t action);
 
 GameInfo_t _updateCurrentState();

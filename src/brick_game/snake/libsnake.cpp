@@ -1,9 +1,8 @@
-#include "lib.h"
-
 #include <sys/time.h>
 #include <time.h>
 
 #include "fsm.h"
+#include "lib.h"
 
 void userInput(UserAction_t action, bool hold) {
   if (!updateCurrentState().pause || action == Pause || action == Terminate)
