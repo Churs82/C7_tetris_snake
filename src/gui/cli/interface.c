@@ -56,8 +56,8 @@ void print_stats(GameInfo_t game_info) {
   MVPRINTW(3, BOARD_M + 8, "%7d", game_info.score);
   MVPRINTW(7, BOARD_M + 8, "%7d", game_info.high_score);
   MVPRINTW(11, BOARD_M + 8, "%7d", game_info.level);
-  #ifdef FIGURE_H
-  #ifdef FIGURE_W
+#ifdef FIGURE_H
+#ifdef FIGURE_W
   if (game_info.next)
     for (int i = 0; i < FIGURE_H; i++) {
       for (int j = 0; j < FIGURE_W; j++) {
@@ -73,8 +73,8 @@ void print_stats(GameInfo_t game_info) {
         }
       }
     }
-  #endif
-  #endif
+#endif
+#endif
   if (game_info.pause) {
     attrset(A_BLINK | COLOR_PAIR(1));
     MVPRINTW(21, BOARD_M + 4, "%-12s", "Pause");
@@ -115,6 +115,6 @@ void print_board(GameInfo_t game_info) {
 
 UserAction_t get_signal(int user_input) {
   UserAction_t ret = Start;
-  while(ret <= Action && KEYMAP[ret] != user_input) ++ret;
+  while (ret <= Action && KEYMAP[ret] != user_input) ++ret;
   return ret;
 }

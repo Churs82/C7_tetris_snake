@@ -8,8 +8,6 @@
 #include "defines.h"
 #include "lib.h"
 
-
-
 typedef enum {
   START = 0,
   SPAWN,

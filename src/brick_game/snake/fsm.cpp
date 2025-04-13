@@ -9,24 +9,25 @@ namespace s21 {
 
 class snake_game {
  private:
-
   typedef void (s21::snake_game::*act_t)();
-  
- /* STATE\SIGNAL: START PAUSE TERMINATE LEFT RIGHT UP DOWN ACTION */
+
+  /* STATE\SIGNAL: START PAUSE TERMINATE LEFT RIGHT UP DOWN ACTION */
   act_t fsm_table[EXIT_STATE + 1][Action + 1] = {
-      /* START */ {s21::snake_game::spawn_sw, NULL, doexit, NULL, NULL, NULL, NULL, NULL},
+      /* START */ {s21::snake_game::spawn_sw, NULL, doexit, NULL, NULL, NULL,
+                   NULL, NULL},
       /* SPAWN */ {NULL, pausetoggle, doexit, NULL, NULL, NULL, NULL, NULL},
-      /* ROTATING */ {NULL, pausetoggle, doexit, moveleft, moveright, moveup,
-                      movedown, move},
+      /* ROTATING */
+      {NULL, pausetoggle, doexit, moveleft, moveright, moveup, movedown, move},
       /* MOVING */ {NULL, pausetoggle, doexit, NULL, NULL, NULL, NULL, NULL},
       /* WIN */ {restart, NULL, doexit, NULL, NULL, NULL, NULL, NULL},
       /* GAME_OVER */ {restart, NULL, doexit, NULL, NULL, NULL, NULL, NULL},
-      /* EXIT_STATE */ {rotating_sw, NULL, doexit, NULL, NULL, NULL, NULL, NULL}
-  };
+      /* EXIT_STATE */
+      {rotating_sw, NULL, doexit, NULL, NULL, NULL, NULL, NULL}};
 
-/* START SPAWN ROTATING MOVING WIN GAME_OVER EXIT_STATE */
-act_t fsm_transfer[EXIT_STATE + 1] { NULL, spawn, checkTime, move, NULL, NULL, NULL };
-  
+  /* START SPAWN ROTATING MOVING WIN GAME_OVER EXIT_STATE */
+  act_t fsm_transfer[EXIT_STATE + 1]{NULL, spawn, checkTime, move,
+                                     NULL, NULL,  NULL};
+
   GameInfo_t game_info;
 
   game_state state;
@@ -113,11 +114,10 @@ act_t fsm_transfer[EXIT_STATE + 1] { NULL, spawn, checkTime, move, NULL, NULL, N
   }
 
   void move() {
-    int* head_ptr = head();
+    int *head_ptr = head();
     int direction = *head_ptr & DIRECTION_MASK;
-    int * new_head_ptr;
-    switch (direction)
-    {
+    int *new_head_ptr;
+    switch (direction) {
       case DIRECTION_LEFT:
         new_head_ptr = head_ptr - 1;
         break;
@@ -130,19 +130,22 @@ act_t fsm_transfer[EXIT_STATE + 1] { NULL, spawn, checkTime, move, NULL, NULL, N
       case DIRECTION_DOWN:
         new_head_ptr = head_ptr + COLS_MAP;
         break;
-    
+    }
   }
-}
 
   int *head() {
     for (short i = 0; i < ROWS_MAP; i++)
       for (short j = 0; j < COLS_MAP; j++)
-        if ((game_info.field[i][j] & HEAD_MASK )== HEAD_MASK)
+        if ((game_info.field[i][j] & HEAD_MASK) == HEAD_MASK)
           return &game_info.field[i][j];
   }
 
-  void moveright() { *(head()) = (*(head()) ^ DIRECTION_MASK) | DIRECTION_LEFT; }
-  void moveleft() { *(head()) = (*(head()) ^ DIRECTION_MASK) | DIRECTION_RIGHT; }
+  void moveright() {
+    *(head()) = (*(head()) ^ DIRECTION_MASK) | DIRECTION_LEFT;
+  }
+  void moveleft() {
+    *(head()) = (*(head()) ^ DIRECTION_MASK) | DIRECTION_RIGHT;
+  }
   void moveup() { *(head()) = (*(head()) ^ DIRECTION_MASK) | DIRECTION_DOWN; }
   void movedown() { *(head()) = (*(head()) ^ DIRECTION_MASK) | DIRECTION_UP; }
 

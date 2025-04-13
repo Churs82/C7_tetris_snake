@@ -8,7 +8,7 @@ using s21::snake::model;
 
 void userInput(UserAction_t action, bool hold) {
   if (!updateCurrentState().pause || action == Pause || action == Terminate)
-  userAction(action);
+    userAction(action);
 }
 
 GameInfo_t updateCurrentState() { return updateState(); }

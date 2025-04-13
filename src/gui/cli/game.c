@@ -19,18 +19,17 @@ int main(void) {
  * @return void
  */
 void game_loop() {
-  intro();  
+  intro();
 
   GameInfo_t game_info = updateCurrentState();
 
   while (game_info.field) {
-    
     print_board(game_info);
-    
-    /* User input */  
+
+    /* User input */
     int signal = GET_USER_INPUT;
     if (signal > -1) {
-      if(get_signal(signal) == Terminate){
+      if (get_signal(signal) == Terminate) {
         end_game();
       } else {
         userInput(get_signal(signal), false);
@@ -41,7 +40,7 @@ void game_loop() {
   }
 }
 
-void intro(){
+void intro() {
   print_intro();
   int signal = -1;
   while (get_signal(signal) != Start && get_signal(signal) != Terminate) {

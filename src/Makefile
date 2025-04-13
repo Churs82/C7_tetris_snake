@@ -114,8 +114,8 @@ ext1_flag:
 	$(eval export COV_FLAGS:=-ftest-coverage -coverage)
 	
 clang:
-	find . -type f \( -name "*.c" -o -name "*.h" \) -exec clang-format -i {} \;
+	find . -type f \( -name "*.c" -o -name "*.cpp" -o -name "*.h" -o -name "*.hpp" \) -exec clang-format -i {} \;
 
 check_format: 
-	find . -type f \( -name "*.c" -o -name "*.h" \) -exec clang-format -n {} \;
+	find . -type f \( -name "*.c" -o -name "*.cpp" -o -name "*.h" -o -name "*.hpp" \) -exec clang-format -n {} \;
 	cppcheck --enable=all --suppress=missingIncludeSystem .

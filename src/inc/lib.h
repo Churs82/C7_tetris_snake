@@ -11,10 +11,10 @@
 #define FIGURE_W 4
 #define FIGURE_H 4
 
-#define DIRECTION_MASK 3<<6
-#define HEAD_MASK 1<<8
+#define DIRECTION_MASK 3 << 6
+#define HEAD_MASK 1 << 8
 
-#define INTRO_MESSAGE                                                      \
+#define INTRO_MESSAGE \
   " Press ENTER to start or Esc to exit! ***********************"
 #define EXIT_MESSAGE " Press ENTER to resume or ESC to exit!"
 #define GAMEOVER_MESSAGE "Press ENTER to restart or ESC to exit!"
