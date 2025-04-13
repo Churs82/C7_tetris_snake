@@ -18,26 +18,14 @@ namespace s21::snake {
     protected:
         // to allow state changes
         model* fsm_{ nullptr };
+        GameInfo_t game_info;
     };
     
-    class MyState1 : public State
-    {
-        public:
-            MyState1(){};
-            virtual void Enter() override {};
-            virtual void Exit() override {};
-    };
-    
-    class MyState2 : public State
-    {
-        public:
-            MyState2(){};
-            virtual void Enter() override {};
-            virtual void Exit() override {};
-    };
     
     class model 
     {
+        
+
         public:
             class factory
             {
