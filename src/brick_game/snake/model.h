@@ -1,6 +1,8 @@
 #pragma once
+#include <functional>
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "defines.h"
 #include "lib.h"
@@ -16,20 +18,26 @@ class State {
   virtual void Enter() = 0;
   virtual void Exit() = 0;
 
+  void Start() {};
+  void Pause() {};
+  void Terminate() {};
+  void Left() {};
+  void Right() {};
+  void Down() {};
+  void Up() {};
+  void Action() {};
+
  protected:
   // to allow state changes
   model* fsm_{nullptr};
-  GameInfo_t game_info;
 };
 
 class model {
  public:
   class factory {
    public:
-    template <typename T, typename... Args>
-    static std::unique_ptr<model> create(Args&&... args) {
-      auto fsm_ptr =
-          new model(std::make_unique<T>(std::forward<Args>(args)...));
+    static std::unique_ptr<model> create() {
+      auto fsm_ptr = new model(std::make_unique<Start_state>());
       return std::unique_ptr<model>(fsm_ptr);
     }
   };
@@ -55,8 +63,25 @@ class model {
     state_->Enter();
   }
 
+  GameInfo_t updateState() {
+    if (state_ != nullptr) state_->Enter();
+    return *game_info_;
+  }
+
+  void userAction(UserAction_t action) {
+    if (state_ != nullptr) state_->Exit();
+    auto actionMap = new std::vector<std::function<void()>>{
+        {state_->Start()}, {state_->Pause()},  {state_->Terminate()},
+        {state_->Left()},  {state_->Right()},  {state_->Down()},
+        {state_->Up()},    {state_->Action()},
+    };
+
+    state_->(actionMap[action])();
+  }
+
  private:
   std::unique_ptr<State> state_;
+  std::unique_ptr<GameInfo_t> game_info_;
 };
 
 };  // namespace s21::snake

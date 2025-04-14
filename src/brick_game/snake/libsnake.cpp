@@ -6,9 +6,14 @@
 
 using s21::snake::model;
 
-void userInput(UserAction_t action, bool hold) {
-  if (!updateCurrentState().pause || action == Pause || action == Terminate)
-    userAction(action);
+static model* getModel() {
+  static std::unique_ptr<model> instance = s21::snake::model::factory::create();
+  return instance.get();
 }
 
-GameInfo_t updateCurrentState() { return updateState(); }
+void userInput(UserAction_t action, bool hold) {
+  if (!updateCurrentState().pause || action == Pause || action == Terminate)
+    getModel()->userAction(action);
+}
+
+GameInfo_t updateCurrentState() { return getModel()->updateState(); }
