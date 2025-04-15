@@ -71,12 +71,12 @@ class model {
   void userAction(UserAction_t action) {
     if (state_ != nullptr) state_->Exit();
     auto actionMap = new std::vector<std::function<void()>>{
-        {state_->Start()}, {state_->Pause()},  {state_->Terminate()},
-        {state_->Left()},  {state_->Right()},  {state_->Down()},
-        {state_->Up()},    {state_->Action()},
+        [this]{state_->Start();}, [this]{state_->Pause();},  [this]{state_->Terminate();},
+        [this]{state_->Left();},  [this]{state_->Right();},  [this]{state_->Down();},
+        [this] {state_->Up();},    [this]{state_->Action();},
     };
 
-    state_->(actionMap[action])();
+    (*actionMap)[action]();
   }
 
  private:
