@@ -76,7 +76,7 @@ class model {
         [this] {state_->Up();},    [this]{state_->Action();},
     };
 
-    (actionMap[action])();
+    (*actionMap)[action]();
   }
 
  private:
