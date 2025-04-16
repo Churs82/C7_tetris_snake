@@ -17,7 +17,6 @@ class State {
   void SetFsm(model* fsm) { fsm_ = fsm; }
   virtual void Enter() = 0;
   virtual void Exit() = 0;
-
   void Start() {};
   void Pause() {};
   void Terminate() {};
@@ -34,15 +33,16 @@ class State {
 
 class model {
  public:
-  class factory {
+  class instance {
    public:
-    static std::unique_ptr<model> create() {
-      auto fsm_ptr = new model(std::make_unique<Start_state>());
+    template <class T = Start_state>
+    static std::unique_ptr<model> get() {
+      static auto fsm_ptr = new model(std::make_unique<T>());
       return std::unique_ptr<model>(fsm_ptr);
-    }
+    };
   };
 
-  friend class factory;
+  friend class instance;
 
  private:
   model(std::unique_ptr<State> state = nullptr) : state_(std::move(state)) {}
@@ -76,7 +76,7 @@ class model {
         [this] {state_->Up();},    [this]{state_->Action();},
     };
 
-    (*actionMap)[action]();
+    (actionMap[action])();
   }
 
  private:
