@@ -9,17 +9,43 @@
 
 namespace s21::snake {
 
-class State;
+class model;  
+class State {
+    public:
+     virtual ~State() = default;
+     void SetFsm(model* fsm) { fsm_ = fsm; }
+     virtual void Enter() {};
+     virtual void Exit() {};
+     virtual void Update() {};
+     virtual void Start() {};
+     virtual void Pause();
+     virtual void Terminate();
+     virtual void Left() {};
+     virtual void Right() {};
+     virtual void Down() {};
+     virtual void Up() {};
+     virtual void Action() {};
+   
+    protected:
+     model* fsm_{nullptr};
+  };
+
+  struct Start_state;
+  struct Spawn_state;
+  struct Rotation_state;
+  struct Moving_state;
+  struct Exit_state;
 
 class model {
  public:
-  class instance {
-   public:
+  class instance{
+    public:
     template <class T = Start_state>
     static model* get() {
       static model fsm_ptr = model(std::make_unique<T>());
       return &fsm_ptr;
     }
+         
   };
 
   friend class instance;
@@ -63,8 +89,8 @@ class model {
   std::unique_ptr<GameInfo_t> game_info_;
 
  public:
-  void TogglePause() { game_info_->pause = !game_info_->pause; }
-  void Exit() { TransitionTo<Exit_state>(); }
+  void TogglePause();
+  void Exit();
   void RotateLeft() {};
   void RotateRight() {};
   void RotateUp() {};
@@ -76,25 +102,8 @@ class model {
   void CheckTimer() {};
 };
 
-class State {
- public:
-  virtual ~State() = default;
-  void SetFsm(model* fsm) { fsm_ = fsm; }
-  virtual void Enter() {};
-  virtual void Exit() {};
-  virtual void Update() {};
-  virtual void Start() {};
-  virtual void Pause() { fsm_->TogglePause(); };
-  virtual void Terminate() { fsm_->Exit(); };
-  virtual void Left() {};
-  virtual void Right() {};
-  virtual void Down() {};
-  virtual void Up() {};
-  virtual void Action() {};
-
- protected:
-  model* fsm_{nullptr};
-};
+void State::Pause() { fsm_->TogglePause(); };
+void State::Terminate() { fsm_->Exit(); };
 
 struct Start_state : public State {
   void Start() override { fsm_->TransitionTo<Spawn_state>(); }
@@ -113,7 +122,6 @@ struct Rotation_state : public State {
   void Right() override { fsm_->RotateRight(); }
   void Down() override { fsm_->RotateDown(); }
   void Up() override { fsm_->RotateUp(); }
-  void Down() override { fsm_->RotateDown(); }
 };
 
 struct Exit_state : public State {

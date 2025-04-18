@@ -4,7 +4,7 @@
 #include <locale.h>
 #include <ncurses.h>
 #include <string.h>
-
+#include "lib.h"
 #include "game.h"
 
 #define BOARDS_BEGIN 1
