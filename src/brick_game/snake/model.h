@@ -1,4 +1,7 @@
 #pragma once
+#ifndef MODEL_H
+#define MODEL_H
+
 #include <functional>
 #include <memory>
 #include <utility>
@@ -18,8 +21,8 @@ class State {
      virtual void Exit() {};
      virtual void Update() {};
      virtual void Start() {};
-     virtual void Pause();
-     virtual void Terminate();
+     virtual void Pause() {};
+     virtual void Terminate() {};
      virtual void Left() {};
      virtual void Right() {};
      virtual void Down() {};
@@ -102,9 +105,6 @@ class model {
   void CheckTimer() {};
 };
 
-void State::Pause() { fsm_->TogglePause(); };
-void State::Terminate() { fsm_->Exit(); };
-
 struct Start_state : public State {
   void Start() override { fsm_->TransitionTo<Spawn_state>(); }
   void Exit() override { fsm_->SpawnSnake(); }
@@ -116,6 +116,8 @@ struct Spawn_state : public State {
 };
 
 struct Rotation_state : public State {
+  void Pause() override { fsm_->TogglePause(); };
+  void Terminate() override { fsm_->Exit(); };
   void Enter() override { fsm_->StartTimer(); }
   void Update() override { fsm_->CheckTimer(); }
   void Left() override { fsm_->RotateLeft(); }
@@ -129,3 +131,4 @@ struct Exit_state : public State {
 };
 
 };  // namespace s21::snake
+#endif

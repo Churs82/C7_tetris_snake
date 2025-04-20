@@ -21,7 +21,9 @@
 #define WIN_MESSAGE \
   "You won!!!"      \
   "Press ENTER to restart or ESC to exit!"
-
+#ifdef __cplusplus
+extern "C" {
+#endif
 typedef enum {
   Start,
   Pause,
@@ -46,5 +48,7 @@ typedef struct {
 void userInput(UserAction_t action, bool hold);
 
 GameInfo_t updateCurrentState();
-
+#ifdef __cplusplus
+}
+#endif
 #endif

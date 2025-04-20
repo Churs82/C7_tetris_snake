@@ -115,6 +115,6 @@ void print_board(GameInfo_t game_info) {
 
 UserAction_t get_signal(int user_input) {
   UserAction_t ret = Start;
-  while (ret <= Action && KEYMAP[ret] != user_input) ++ret;
+  while (ret <= Action && KEYMAP[ret] != user_input) ret+=1;
   return ret;
 }
