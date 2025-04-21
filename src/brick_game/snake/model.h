@@ -56,7 +56,14 @@ class model {
   friend class instance;
 
  private:
-  model();
+  model(std::unique_ptr<State> state = nullptr) : state_(std::move(state)) 
+  {
+    game_info_ = std::make_unique<GameInfo_t>();
+    game_info_.get()->field = new int*[ROWS_MAP];
+    for (short i = 0; i < ROWS_MAP; i++) game_info_.get()->field[i] = new int[COLS_MAP];
+    game_info_.get()->next = new int*[FIGURE_H];
+    for (short i = 0; i < FIGURE_H; i++) game_info_.get()->next[i] = new int[FIGURE_W];
+  }
 
  public:
   template <typename T>
