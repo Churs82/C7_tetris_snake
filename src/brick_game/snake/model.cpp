@@ -2,11 +2,7 @@
 
 namespace s21::snake {
 
-model::model() {
-  this->state_ = std::make_unique<Start_state>();
-  this->state_->SetFsm(this);
-  this->state_->Enter();
-}
+model::model() { TransitionTo<Start_state>(); }
 
 void model::TogglePause() { game_info_->pause = !game_info_->pause; }
 void model::DeleteGI() {
@@ -30,6 +26,7 @@ void model::DeleteGI() {
   }
 }
 void model::InitGI() {
+  //game_info_ = GI_unique_ptr(new GameInfo_t, [this] { this->DeleteGI(); });
   game_info_ = GI_unique_ptr(new GameInfo_t);
   game_info_->pause = false;
   game_info_->score = 0;

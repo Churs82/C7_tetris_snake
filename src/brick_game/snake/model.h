@@ -40,9 +40,10 @@ struct Moving_state;
 struct Exit_state;
 
 class model {
+  //using GI_unique_ptr = std::unique_ptr<GameInfo_t, std::function<void()>>;
   using GI_unique_ptr = std::unique_ptr<GameInfo_t>;
-
  public:
+ /** Singleton */
   class instance {
    public:
     template <class T = Start_state>
