@@ -12,54 +12,55 @@
 
 namespace s21::snake {
 
-class model;  
+class model;
 class State {
-    public:
-     virtual ~State() = default;
-     void SetFsm(model* fsm) { fsm_ = fsm; }
-     virtual void Enter() {};
-     virtual void Exit() {};
-     virtual void Update() {};
-     virtual void Start() {};
-     virtual void Pause() {};
-     virtual void Terminate() {};
-     virtual void Left() {};
-     virtual void Right() {};
-     virtual void Down() {};
-     virtual void Up() {};
-     virtual void Action() {};
-   
-    protected:
-     model* fsm_{nullptr};
-  };
+ public:
+  virtual ~State() = default;
+  void SetFsm(model* fsm) { fsm_ = fsm; }
+  virtual void Enter(){};
+  virtual void Exit(){};
+  virtual void Update(){};
+  virtual void Start(){};
+  virtual void Pause();
+  virtual void Terminate();
+  virtual void Left(){};
+  virtual void Right(){};
+  virtual void Down(){};
+  virtual void Up(){};
+  virtual void Action(){};
 
-  struct Start_state;
-  struct Spawn_state;
-  struct Rotation_state;
-  struct Moving_state;
-  struct Exit_state;
+ protected:
+  model* fsm_{nullptr};
+};
+
+struct Start_state;
+struct Spawn_state;
+struct Rotation_state;
+struct Moving_state;
+struct Exit_state;
 
 class model {
+  using GI_unique_ptr = std::unique_ptr<GameInfo_t>;
+
  public:
-  class instance{
-    public:
+  class instance {
+   public:
     template <class T = Start_state>
     static model* get() {
-      static model fsm_ptr = model(std::make_unique<T>());
+      static model fsm_ptr = model();
       return &fsm_ptr;
     }
-         
   };
 
   friend class instance;
 
  private:
-  model(std::unique_ptr<State> state = nullptr) : state_(std::move(state)) {}
+  model();
 
  public:
   template <typename T>
   void TransitionTo() {
-    if (state_ != nullptr) state_->Exit();
+    if (state_.get() != nullptr) state_->Exit();
     state_ = std::make_unique<T>();
     state_->SetFsm(this);
     state_->Enter();
@@ -71,7 +72,6 @@ class model {
   };
 
   void userAction(UserAction_t action) {
-    if (state_ != nullptr) state_->Exit();
     const std::unique_ptr<std::vector<std::function<void()>>> actionMap{
         new std::vector<std::function<void()>>{
             [this] { state_->Start(); },
@@ -83,30 +83,31 @@ class model {
             [this] { state_->Up(); },
             [this] { state_->Action(); },
         }};
-    if (game_info_->pause) TogglePause();
     if (actionMap->size() > action) (*actionMap)[action]();
   };
 
  private:
   std::unique_ptr<State> state_;
-  std::unique_ptr<GameInfo_t> game_info_;
+  GI_unique_ptr game_info_;
 
  public:
   void TogglePause();
-  void Exit();
-  void RotateLeft() {};
-  void RotateRight() {};
-  void RotateUp() {};
-  void RotateDown() {};
-  void SpawnSnake() {};
-  void SpawnApple() {};
-  void MoveSnake() {};
-  void StartTimer() {};
-  void CheckTimer() {};
+  void InitGI();
+  void DeleteGI();
+  void RotateLeft(){};
+  void RotateRight(){};
+  void RotateUp(){};
+  void RotateDown(){};
+  void SpawnSnake(){};
+  void SpawnApple(){};
+  void MoveSnake(){};
+  void StartTimer(){};
+  void CheckTimer(){};
 };
 
 struct Start_state : public State {
-  void Start() override { fsm_->TransitionTo<Spawn_state>(); }
+  void Enter() override { fsm_->InitGI(); }
+  void Update() override { fsm_->TransitionTo<Spawn_state>(); }
   void Exit() override { fsm_->SpawnSnake(); }
 };
 
@@ -116,8 +117,6 @@ struct Spawn_state : public State {
 };
 
 struct Rotation_state : public State {
-  void Pause() override { fsm_->TogglePause(); };
-  void Terminate() override { fsm_->Exit(); };
   void Enter() override { fsm_->StartTimer(); }
   void Update() override { fsm_->CheckTimer(); }
   void Left() override { fsm_->RotateLeft(); }
@@ -127,7 +126,7 @@ struct Rotation_state : public State {
 };
 
 struct Exit_state : public State {
-  void Enter() override { fsm_->Exit(); }
+  void Enter() override { fsm_->DeleteGI(); }
 };
 
 };  // namespace s21::snake

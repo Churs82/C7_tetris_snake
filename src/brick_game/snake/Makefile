@@ -37,7 +37,7 @@ $(LIB_OBJS): $(LIB_SRC)
 	$(CC) $(CFLAGS) $(DIR_LIB)$(patsubst %.o,%.cpp,$(notdir $@)) $(COV_FLAGS) -o $@
 
 $(TEST_OBJS): $(TEST_SRC)
-	$(CC) $(CFLAGS) $(DIR_TESTS)$(patsubst %.o,%.cpp,$(notdir $@)) -o $@
+	$(CC) $(CFLAGS) $(DIR_TESTS)$(patsubst %.o,%.c,$(notdir $@)) -o $@
 
 lib: $(LIB)
 

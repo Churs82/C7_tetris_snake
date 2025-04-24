@@ -4,7 +4,7 @@
 #include <check.h>
 #include <stdio.h>
 
-#include "libsnake.h"
+#include "lib.h"
 
 #define TESTS snake_test_fsm(),
 
