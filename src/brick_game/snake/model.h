@@ -15,7 +15,7 @@ namespace s21::snake {
 class model;
 class State {
  public:
-  State(model* fsm): fsm_(fsm) { Enter(); }
+  State(model* fsm): fsm_(fsm) {}
   virtual void Enter(){};
   virtual void Exit(){};
   virtual void Update(){};
@@ -27,9 +27,7 @@ class State {
   virtual void Down(){};
   virtual void Up(){};
   virtual void Action(){};
-  ~State() {
-    Exit();
-  }
+ 
  protected:
   model* fsm_{nullptr};
 };
@@ -62,9 +60,7 @@ class model {
  public:
   template <typename T>
   void TransitionTo() {
-    if(state_.get() != nullptr) state_->Exit();
     state_ = std::make_unique<T>(this);
-    state_->Enter();
   }
 
   GameInfo_t updateState() {
@@ -108,20 +104,20 @@ class model {
 
 struct Start_state : public State {
   using State::State;
-  void Enter() override { fsm_->InitGI(); }
+  Start_state(model* fsm) : State(fsm) {fsm_->InitGI();}
   void Update() override { fsm_->TransitionTo<Spawn_state>(); }
-  void Exit() override { fsm_->SpawnSnake(); }
+  ~Start_state() { fsm_->SpawnSnake(); }
 };
 
 struct Spawn_state : public State {
   using State::State;
-  void Enter() override { fsm_->SpawnApple(); }
+  Spawn_state(model* fsm) : State(fsm) { fsm_->SpawnApple(); }
   void Update() override { fsm_->TransitionTo<Rotation_state>(); }
 };
 
 struct Rotation_state : public State {
   using State::State;
-  void Enter() override { fsm_->StartTimer(); }
+  Rotation_state(model* fsm) : State(fsm) { fsm_->StartTimer(); }
   void Update() override { fsm_->CheckTimer(); }
   void Left() override { fsm_->RotateLeft(); }
   void Right() override { fsm_->RotateRight(); }
@@ -131,7 +127,7 @@ struct Rotation_state : public State {
 
 struct Exit_state : public State {
   using State::State;
-  void Enter() override { fsm_->DeleteGI(); }
+  Exit_state(model* fsm) : State(fsm) { fsm_->DeleteGI(); }
 };
 
 };  // namespace s21::snake
