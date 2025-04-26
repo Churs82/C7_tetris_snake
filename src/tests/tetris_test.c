@@ -1,18 +1,5 @@
 #include "tetris_test.h"
 
-void printBoardTest(GameInfo_t game_info) {
-  for (int i = ROWS_MAP - 1; i >= 0; i--) {
-    for (int j = 0; j < COLS_MAP; j++) {
-      if (game_info.field[i][j] == 0) {
-        printf(" *");
-      } else {
-        printf(" %d", game_info.field[i][j]);
-      }
-    }
-    printf("\n");
-  }
-}
-
 int main(void) {
   int failed = 0;
   int total = 0;

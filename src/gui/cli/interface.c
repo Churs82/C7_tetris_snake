@@ -30,8 +30,6 @@ void print_msg(char *msg) {
 
 void print_intro(void) { print_msg(INTRO_MESSAGE); }
 void print_exit(void) { print_msg(EXIT_MESSAGE); }
-void print_gameover(void) { print_msg(GAMEOVER_MESSAGE); }
-void print_win(void) { print_msg(WIN_MESSAGE); }
 
 void print_rectangle(int top_y, int bottom_y, int left_x, int right_x) {
   MVADDCH(top_y, left_x, ACS_ULCORNER);
@@ -39,9 +37,10 @@ void print_rectangle(int top_y, int bottom_y, int left_x, int right_x) {
   int i = left_x + 1;
 
   for (; i < right_x; i++) MVADDCH(top_y, i, ACS_HLINE);
-  MVADDCH(top_y, i, ACS_URCORNER);
 
-  for (int i = top_y + 1; i < bottom_y; i++) {
+  MVADDCH(top_y, i, ACS_URCORNER);
+  i = top_y + 1;
+  for (; i < bottom_y; i++) {
     MVADDCH(i, left_x, ACS_VLINE);
     MVADDCH(i, right_x, ACS_VLINE);
   }
@@ -56,8 +55,7 @@ void print_stats(GameInfo_t game_info) {
   MVPRINTW(3, BOARD_M + 8, "%7d", game_info.score);
   MVPRINTW(7, BOARD_M + 8, "%7d", game_info.high_score);
   MVPRINTW(11, BOARD_M + 8, "%7d", game_info.level);
-#ifdef FIGURE_H
-#ifdef FIGURE_W
+
   if (game_info.next)
     for (int i = 0; i < FIGURE_H; i++) {
       for (int j = 0; j < FIGURE_W; j++) {
@@ -73,8 +71,7 @@ void print_stats(GameInfo_t game_info) {
         }
       }
     }
-#endif
-#endif
+
   if (game_info.pause) {
     attrset(A_BLINK | COLOR_PAIR(1));
     MVPRINTW(21, BOARD_M + 4, "%-12s", "Pause");

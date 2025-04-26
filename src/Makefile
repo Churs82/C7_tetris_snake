@@ -119,3 +119,6 @@ clang:
 check_format: 
 	find . -type f \( -name "*.c" -o -name "*.cpp" -o -name "*.h" -o -name "*.hpp" \) -exec clang-format -n {} \;
 	cppcheck --enable=all --suppress=missingIncludeSystem .
+
+cppcheck:
+	cppcheck --enable=all --suppress=missingIncludeSystem --error-exitcode=1 --check-config ./

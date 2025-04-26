@@ -1,8 +1,8 @@
 #include "tetris_test.h"
 START_TEST(tetris_test_init_1) {
-  GameInfo_t gs = updateCurrentState();
+  updateCurrentState();
   userInput(Terminate, false);
-  gs = updateCurrentState();
+  GameInfo_t gs = updateCurrentState();
   ck_assert_int_eq(gs.speed, 0);
 }
 END_TEST
@@ -15,7 +15,7 @@ START_TEST(tetris_test_gameover) {
     userInput(Down, false);
     updateCurrentState();
   }
-  ck_assert_int_eq(getState(), GAME_OVER);
+  ck_assert_ptr_eq(updateCurrentState().field, NULL);
   userInput(Start, false);
   userInput(Terminate, false);
   userInput(Terminate, false);
@@ -31,10 +31,10 @@ START_TEST(tetris_test_move) {
   userInput(Down, false);
   for (int i = 0; i < 10; i++) userInput(Right, false);
   userInput(Action, false);
-  updateCurrentState();
+  GameInfo_t gs = updateCurrentState();
   userInput(Terminate, false);
   userInput(Terminate, false);
-  ck_assert_int_eq(getState(), EXIT_STATE);
+  ck_assert_ptr_eq(gs.field, NULL);
 }
 END_TEST
 

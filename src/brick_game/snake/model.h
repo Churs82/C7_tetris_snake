@@ -15,7 +15,7 @@ namespace s21::snake {
 class model;
 class State {
  public:
-  State(model* fsm) : fsm_(fsm) {}
+  explicit State(model* fsm) : fsm_(fsm) {}
   virtual void Enter(){};
   virtual void Exit(){};
   virtual void Update(){};
@@ -105,20 +105,20 @@ class model {
 
 struct Start_state : public State {
   using State::State;
-  Start_state(model* fsm) : State(fsm) { fsm_->InitGI(); }
+  explicit Start_state(model* fsm) : State(fsm) { fsm_->InitGI(); }
   void Update() override { fsm_->TransitionTo<Spawn_state>(); }
   ~Start_state() { fsm_->SpawnSnake(); }
 };
 
 struct Spawn_state : public State {
   using State::State;
-  Spawn_state(model* fsm) : State(fsm) { fsm_->SpawnApple(); }
+  explicit Spawn_state(model* fsm) : State(fsm) { fsm_->SpawnApple(); }
   void Update() override { fsm_->TransitionTo<Rotation_state>(); }
 };
 
 struct Rotation_state : public State {
   using State::State;
-  Rotation_state(model* fsm) : State(fsm) { fsm_->StartTimer(); }
+  explicit Rotation_state(model* fsm) : State(fsm) { fsm_->StartTimer(); }
   void Update() override { fsm_->CheckTimer(); }
   void Left() override { fsm_->RotateLeft(); }
   void Right() override { fsm_->RotateRight(); }
@@ -128,7 +128,7 @@ struct Rotation_state : public State {
 
 struct Exit_state : public State {
   using State::State;
-  Exit_state(model* fsm) : State(fsm) { fsm_->DeleteGI(); }
+  explicit Exit_state(model* fsm) : State(fsm) { fsm_->DeleteGI(); }
 };
 
 };  // namespace s21::snake

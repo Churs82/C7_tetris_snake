@@ -1,8 +1,8 @@
 #include "snake_test.h"
 START_TEST(snake_test_init_1) {
-  GameInfo_t gs = updateCurrentState();
+  updateCurrentState();
   userInput(Terminate, false);
-  gs = updateCurrentState();
+  GameInfo_t gs = updateCurrentState();
   ck_assert_int_eq(gs.speed, 0);
 }
 END_TEST
