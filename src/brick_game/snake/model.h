@@ -15,8 +15,7 @@ namespace s21::snake {
 class model;
 class State {
  public:
-  virtual ~State() = default;
-  void SetFsm(model* fsm) { fsm_ = fsm; }
+  State(model* fsm): fsm_(fsm) { Enter(); }
   virtual void Enter(){};
   virtual void Exit(){};
   virtual void Update(){};
@@ -28,7 +27,9 @@ class State {
   virtual void Down(){};
   virtual void Up(){};
   virtual void Action(){};
-
+  ~State() {
+    Exit();
+  }
  protected:
   model* fsm_{nullptr};
 };
@@ -56,21 +57,13 @@ class model {
   friend class instance;
 
  private:
-  model(std::unique_ptr<State> state = nullptr) : state_(std::move(state)) 
-  {
-    game_info_ = std::make_unique<GameInfo_t>();
-    game_info_.get()->field = new int*[ROWS_MAP];
-    for (short i = 0; i < ROWS_MAP; i++) game_info_.get()->field[i] = new int[COLS_MAP];
-    game_info_.get()->next = new int*[FIGURE_H];
-    for (short i = 0; i < FIGURE_H; i++) game_info_.get()->next[i] = new int[FIGURE_W];
-  }
+  model();
 
  public:
   template <typename T>
   void TransitionTo() {
-    if (state_.get() != nullptr) state_->Exit();
-    state_ = std::make_unique<T>();
-    state_->SetFsm(this);
+    if(state_.get() != nullptr) state_->Exit();
+    state_ = std::make_unique<T>(this);
     state_->Enter();
   }
 
@@ -114,17 +107,20 @@ class model {
 };
 
 struct Start_state : public State {
+  using State::State;
   void Enter() override { fsm_->InitGI(); }
   void Update() override { fsm_->TransitionTo<Spawn_state>(); }
   void Exit() override { fsm_->SpawnSnake(); }
 };
 
 struct Spawn_state : public State {
+  using State::State;
   void Enter() override { fsm_->SpawnApple(); }
   void Update() override { fsm_->TransitionTo<Rotation_state>(); }
 };
 
 struct Rotation_state : public State {
+  using State::State;
   void Enter() override { fsm_->StartTimer(); }
   void Update() override { fsm_->CheckTimer(); }
   void Left() override { fsm_->RotateLeft(); }
@@ -134,6 +130,7 @@ struct Rotation_state : public State {
 };
 
 struct Exit_state : public State {
+  using State::State;
   void Enter() override { fsm_->DeleteGI(); }
 };
 
