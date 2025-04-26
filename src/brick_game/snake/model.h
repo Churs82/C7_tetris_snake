@@ -15,7 +15,7 @@ namespace s21::snake {
 class model;
 class State {
  public:
-  State(model* fsm): fsm_(fsm) {}
+  State(model* fsm) : fsm_(fsm) {}
   virtual void Enter(){};
   virtual void Exit(){};
   virtual void Update(){};
@@ -27,7 +27,7 @@ class State {
   virtual void Down(){};
   virtual void Up(){};
   virtual void Action(){};
- 
+
  protected:
   model* fsm_{nullptr};
 };
@@ -39,10 +39,11 @@ struct Moving_state;
 struct Exit_state;
 
 class model {
-  //using GI_unique_ptr = std::unique_ptr<GameInfo_t, std::function<void()>>;
+  // using GI_unique_ptr = std::unique_ptr<GameInfo_t, std::function<void()>>;
   using GI_unique_ptr = std::unique_ptr<GameInfo_t>;
+
  public:
- /** Singleton */
+  /** Singleton */
   class instance {
    public:
     template <class T = Start_state>
@@ -104,7 +105,7 @@ class model {
 
 struct Start_state : public State {
   using State::State;
-  Start_state(model* fsm) : State(fsm) {fsm_->InitGI();}
+  Start_state(model* fsm) : State(fsm) { fsm_->InitGI(); }
   void Update() override { fsm_->TransitionTo<Spawn_state>(); }
   ~Start_state() { fsm_->SpawnSnake(); }
 };

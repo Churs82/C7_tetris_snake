@@ -26,7 +26,7 @@ void model::DeleteGI() {
   }
 }
 void model::InitGI() {
-  //game_info_ = GI_unique_ptr(new GameInfo_t, [this] { this->DeleteGI(); });
+  // game_info_ = GI_unique_ptr(new GameInfo_t, [this] { this->DeleteGI(); });
   game_info_ = GI_unique_ptr(new GameInfo_t);
   game_info_->pause = false;
   game_info_->score = 0;
