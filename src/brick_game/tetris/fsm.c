@@ -57,7 +57,7 @@ GameInfo_t _updateCurrentState() {
   return game_info;
 }
 
-game_state _getState() { return state; }
+// game_state _getState() { return state; }
 
 static void checkTime() {
   static struct timeval last_time;

@@ -114,11 +114,11 @@ ext1_flag:
 	$(eval export COV_FLAGS:=-ftest-coverage -coverage)
 	
 clang:
-	find . -type f \( -name "*.c" -o -name "*.cpp" -o -name "*.h" -o -name "*.hpp" \) -exec clang-format -i {} \;
+	find . -type f \( -name "*.c" -o -name "*.cpp" -o -name "*.h" -o -name "*.hpp" \) -exec clang-format-18 -i {} \;
 
 check_format: 
-	find . -type f \( -name "*.c" -o -name "*.cpp" -o -name "*.h" -o -name "*.hpp" \) -exec clang-format -n {} \;
-	cppcheck --enable=all --suppress=missingIncludeSystem .
+	find . -type f \( -name "*.c" -o -name "*.cpp" -o -name "*.h" -o -name "*.hpp" \) -exec clang-format-18 -n {} \;
+	cppcheck --enable=all --suppress=missingIncludeSystem -I ./inc ./
 
 cppcheck:
-	cppcheck --enable=all --suppress=missingIncludeSystem --error-exitcode=1 --check-config ./
+	cppcheck --enable=all --suppress=missingIncludeSystem --error-exitcode=1 --check-config -I ./inc ./

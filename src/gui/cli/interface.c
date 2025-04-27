@@ -1,4 +1,4 @@
-#include "../inc/interface.h"
+#include "interface.h"
 
 void print_overlay(void) {
   INIT_COLORS;
