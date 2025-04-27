@@ -58,9 +58,9 @@
 #define PRINT_OBJ(y, x, c)                                                     \
   for (int scale_iterator = 0; scale_iterator < BOARD_SCALE; scale_iterator++) \
     mvaddch(BOARDS_BEGIN + (y),                                                \
-            BOARDS_BEGIN + (x)*BOARD_SCALE - scale_iterator, c);
+            BOARDS_BEGIN + (x) * BOARD_SCALE - scale_iterator, c);
 #define PRINT_CHAR(y, x, c) \
-  mvaddch(BOARDS_BEGIN + (y), BOARDS_BEGIN + (x)*BOARD_SCALE - 1, c)
+  mvaddch(BOARDS_BEGIN + (y), BOARDS_BEGIN + (x) * BOARD_SCALE - 1, c)
 
 #define BOARD_CLEAN                                               \
   for (int clean_board_y = BOARDS_BEGIN + 1;                      \

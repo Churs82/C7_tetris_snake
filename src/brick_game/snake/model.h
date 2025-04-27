@@ -16,17 +16,15 @@ class model;
 class State {
  public:
   explicit State(model* fsm) : fsm_(fsm) {}
-  virtual void Enter(){};
-  virtual void Exit(){};
-  virtual void Update(){};
-  virtual void Start(){};
+  virtual void Update() {};
+  virtual void Start() {};
   virtual void Pause();
   virtual void Terminate();
-  virtual void Left(){};
-  virtual void Right(){};
-  virtual void Down(){};
-  virtual void Up(){};
-  virtual void Action(){};
+  virtual void Left() {};
+  virtual void Right() {};
+  virtual void Down() {};
+  virtual void Up() {};
+  virtual void Action() {};
 
  protected:
   model* fsm_{nullptr};
@@ -44,19 +42,22 @@ class model {
 
  public:
   /** Singleton */
-  class instance {
-   public:
-    template <class T = Start_state>
+  struct instance {
     static model* get() {
-      static model fsm_ptr = model();
-      return &fsm_ptr;
+      static std::unique_ptr<model> fsm_ptr(new model());
+      return fsm_ptr.get();
     }
   };
-
   friend class instance;
 
  private:
   model();
+  const std::vector<std::function<void()>> actionMap{
+      [this] { state_->Start(); },     [this] { state_->Pause(); },
+      [this] { state_->Terminate(); }, [this] { state_->Left(); },
+      [this] { state_->Right(); },     [this] { state_->Down(); },
+      [this] { state_->Up(); },        [this] { state_->Action(); },
+  };
 
  public:
   template <typename T>
@@ -70,18 +71,7 @@ class model {
   };
 
   void userAction(UserAction_t action) {
-    const std::unique_ptr<std::vector<std::function<void()>>> actionMap{
-        new std::vector<std::function<void()>>{
-            [this] { state_->Start(); },
-            [this] { state_->Pause(); },
-            [this] { state_->Terminate(); },
-            [this] { state_->Left(); },
-            [this] { state_->Right(); },
-            [this] { state_->Down(); },
-            [this] { state_->Up(); },
-            [this] { state_->Action(); },
-        }};
-    if (actionMap->size() > action) (*actionMap)[action]();
+    if (actionMap.size() > action) actionMap[action]();
   };
 
  private:
@@ -92,15 +82,15 @@ class model {
   void TogglePause();
   void InitGI();
   void DeleteGI();
-  void RotateLeft(){};
-  void RotateRight(){};
-  void RotateUp(){};
-  void RotateDown(){};
-  void SpawnSnake(){};
-  void SpawnApple(){};
-  void MoveSnake(){};
-  void StartTimer(){};
-  void CheckTimer(){};
+  void RotateLeft() {};
+  void RotateRight() {};
+  void RotateUp() {};
+  void RotateDown() {};
+  void SpawnSnake() {};
+  void SpawnApple() {};
+  void MoveSnake() {};
+  void StartTimer() {};
+  void CheckTimer() {};
 };
 
 struct Start_state : public State {
