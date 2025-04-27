@@ -2,6 +2,8 @@
 #ifndef MODEL_H
 #define MODEL_H
 
+#include <cstdlib>
+#include <ctime>
 #include <functional>
 #include <memory>
 #include <utility>
@@ -25,6 +27,7 @@ class State {
   virtual void Down() {};
   virtual void Up() {};
   virtual void Action() {};
+  virtual ~State() {};
 
  protected:
   model* fsm_{nullptr};
@@ -62,7 +65,7 @@ class model {
  public:
   template <typename T>
   void TransitionTo() {
-    state_ = std::make_unique<T>(this);
+    state_.reset(new T(this));
   }
 
   GameInfo_t updateState() {
@@ -75,9 +78,9 @@ class model {
   };
 
  private:
-  std::unique_ptr<State> state_;
-  GI_unique_ptr game_info_;
-
+  std::unique_ptr<State> state_{nullptr};
+  GI_unique_ptr game_info_{nullptr};
+  /* Game logic functions */
  public:
   void TogglePause();
   void InitGI();
@@ -86,8 +89,8 @@ class model {
   void RotateRight() {};
   void RotateUp() {};
   void RotateDown() {};
-  void SpawnSnake() {};
-  void SpawnApple() {};
+  void SpawnSnake();
+  void SpawnApple();
   void MoveSnake() {};
   void StartTimer() {};
   void CheckTimer() {};

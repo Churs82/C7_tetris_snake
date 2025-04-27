@@ -11,8 +11,10 @@
 #define FIGURE_W 4
 #define FIGURE_H 4
 
-#define DIRECTION_MASK 3 << 6
-#define HEAD_MASK 1 << 8
+#define DIRECTION_MASK (3 << 6)
+#define HEAD_MASK (1 << 8)
+#define SNAKE_MASK 1
+#define APPLE_MASK 2
 
 #define INTRO_MESSAGE \
   " Press ENTER to start or Esc to exit! ***********************"
