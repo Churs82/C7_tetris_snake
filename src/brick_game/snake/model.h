@@ -2,8 +2,8 @@
 #ifndef MODEL_H
 #define MODEL_H
 
+#include <chrono>
 #include <cstdlib>
-#include <ctime>
 #include <functional>
 #include <memory>
 #include <utility>
@@ -13,6 +13,11 @@
 #include "lib.h"
 
 namespace s21::snake {
+
+using std::chrono::duration_cast;
+using std::chrono::milliseconds;
+using std::chrono::steady_clock;
+using std::chrono::time_point;
 
 class model;
 class State {
@@ -80,7 +85,9 @@ class model {
  private:
   std::unique_ptr<State> state_{nullptr};
   GI_unique_ptr game_info_{nullptr};
-  /* Game logic functions */
+  time_point<steady_clock> timer_;
+
+  /* Game logical functions */
  public:
   void TogglePause();
   void InitGI();
@@ -91,9 +98,9 @@ class model {
   void RotateDown() {};
   void SpawnSnake();
   void SpawnApple();
-  void MoveSnake() {};
-  void StartTimer() {};
-  void CheckTimer() {};
+  void MoveSnake();
+  void StartTimer();
+  void CheckTimer();
 };
 
 struct Start_state : public State {
@@ -117,6 +124,13 @@ struct Rotation_state : public State {
   void Right() override { fsm_->RotateRight(); }
   void Down() override { fsm_->RotateDown(); }
   void Up() override { fsm_->RotateUp(); }
+  void Action() override { fsm_->TransitionTo<Moving_state>(); }
+};
+
+struct Moving_state : public State {
+  using State::State;
+  explicit Moving_state(model* fsm) : State(fsm) { fsm_->MoveSnake(); }
+  void Update() override { fsm_->TransitionTo<Rotation_state>(); }
 };
 
 struct Exit_state : public State {

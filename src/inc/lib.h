@@ -13,6 +13,7 @@
 
 #define DIRECTION_MASK (3 << 6)
 #define HEAD_MASK (1 << 8)
+#define TAIL_MASK (1 << 9)
 #define SNAKE_MASK 1
 #define APPLE_MASK 2
 
