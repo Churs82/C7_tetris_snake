@@ -48,20 +48,17 @@ void State::Pause() { fsm_->TogglePause(); };
 
 /* Gamelogic functions */
 void model::SpawnSnake() {
-  game_info_->field[9][3] = SNAKE_MASK | DIRECTION_LEFT | HEAD_MASK;
+  s_head = {9, 3};
+  s_tail = {9, 6};
+  game_info_->field[9][3] = SNAKE_MASK | DIRECTION_UP | HEAD_MASK;
   game_info_->field[9][4] = SNAKE_MASK | DIRECTION_LEFT;
   game_info_->field[9][5] = SNAKE_MASK | DIRECTION_LEFT;
   game_info_->field[9][6] = SNAKE_MASK | DIRECTION_LEFT | TAIL_MASK;
 }
 
 void model::SpawnApple() {
-  for (int i = 0; i < ROWS_MAP; i++) {
-    for (int j = 0; j < COLS_MAP; j++) {
-      if (game_info_->field[i][j] == APPLE_MASK) game_info_->field[i][j] = 0;
-    }
-  }
-  int x = std::rand() % (COLS_MAP - 1);
-  int y = std::rand() % (ROWS_MAP - 1);
+  int x = std::rand() % COLS_MAP;
+  int y = std::rand() % ROWS_MAP;
   if (game_info_->field[y][x] != 0)
     SpawnApple();
   else
@@ -77,70 +74,95 @@ void model::CheckTimer() {
 }
 
 void model::MoveSnake() {
-  std::array<int, 2> s_head{0};
-  std::array<int, 2> s_tail{0};
-  for (int i = ROWS_MAP - 1; i > 0; i--) {
-    for (int j = COLS_MAP - 1; j > 0; j--) {
-      /* ищем голову змеи */
-      if (game_info_->field[i][j] & HEAD_MASK &&
-          game_info_->field[i][j] & SNAKE_MASK) {
-        s_head = {i, j};
-      }
-      /* ищем хвост змеи */
-      if (game_info_->field[i][j] & TAIL_MASK &&
-          game_info_->field[i][j] & SNAKE_MASK) {
-        s_tail = {i, j};
-      }
-    }
-  }
   int direction = game_info_->field[s_head[0]][s_head[1]] & DIRECTION_MASK;
-  int next_x = s_head[1];
-  int next_y = s_head[0];
   game_info_->field[s_head[0]][s_head[1]] &= ~HEAD_MASK;
   switch (direction) {
     case DIRECTION_UP:
-      next_y--;
+      s_head[0]++;
       break;
     case DIRECTION_DOWN:
-      next_y++;
+      s_head[0]--;
       break;
     case DIRECTION_LEFT:
-      next_x--;
+      s_head[1]--;
       break;
     case DIRECTION_RIGHT:
-      next_x++;
+      s_head[1]++;
       break;
   }
-
-  if (next_x < 0 || next_x >= COLS_MAP || next_y < 0 || next_y >= ROWS_MAP) {
+  /* Проверка на выход за края поля */
+  if (s_head[1] < 0 || s_head[1] >= COLS_MAP || s_head[0] < 0 ||
+      s_head[0] >= ROWS_MAP) {
     TransitionTo<Exit_state>();
   } else {
-    if (game_info_->field[next_y][next_x] & APPLE_MASK) {
-      game_info_->score++;
-      game_info_->field[next_y][next_x] = SNAKE_MASK | HEAD_MASK | direction;
+    if (game_info_->field[s_head[0]][s_head[1]] & APPLE_MASK) {
+      game_info_->score++; /*TODO: snake::addScore() */
+      game_info_->field[s_head[0]][s_head[1]] =
+          SNAKE_MASK | HEAD_MASK | direction;
       TransitionTo<Spawn_state>();
     } else {
       switch (game_info_->field[s_tail[0]][s_tail[1]] & DIRECTION_MASK) {
         case DIRECTION_UP:
-          game_info_->field[s_tail[0] - 1][s_tail[1]] |= TAIL_MASK;
+          game_info_->field[s_tail[0]++][s_tail[1]] = 0;
           break;
         case DIRECTION_DOWN:
-          game_info_->field[s_tail[0] + 1][s_tail[1]] |= TAIL_MASK;
+          game_info_->field[s_tail[0]--][s_tail[1]] = 0;
           break;
         case DIRECTION_LEFT:
-          game_info_->field[s_tail[0]][s_tail[1] - 1] |= TAIL_MASK;
+          game_info_->field[s_tail[0]][s_tail[1]--] = 0;
           break;
         case DIRECTION_RIGHT:
-          game_info_->field[s_tail[0]][s_tail[1] + 1] |= TAIL_MASK;
+          game_info_->field[s_tail[0]][s_tail[1]++] = 0;
           break;
       }
-      game_info_->field[s_tail[0]][s_tail[1]] = 0;
-      if (game_info_->field[next_y][next_x] & SNAKE_MASK) {
+      game_info_->field[s_tail[0]][s_tail[1]] |= TAIL_MASK;
+      if (game_info_->field[s_head[0]][s_head[1]] & SNAKE_MASK) {
         TransitionTo<Exit_state>();
       } else {
-        game_info_->field[next_y][next_x] = SNAKE_MASK | HEAD_MASK | direction;
+        game_info_->field[s_head[0]][s_head[1]] =
+            SNAKE_MASK | HEAD_MASK | direction;
       }
     }
+  }
+}
+
+void model::RotateLeft() {
+  if (s_head[1] - 1 > 0 && s_head[1] - 1 < COLS_MAP &&
+      (game_info_->field[s_head[0]][s_head[1] - 1] == 0 ||
+       game_info_->field[s_head[0]][s_head[1] - 1] & TAIL_MASK ||
+       game_info_->field[s_head[0]][s_head[1] - 1] & APPLE_MASK)) {
+    game_info_->field[s_head[0]][s_head[1]] &= ~DIRECTION_MASK;
+    game_info_->field[s_head[0]][s_head[1]] |= DIRECTION_LEFT;
+  }
+}
+
+void model::RotateRight() {
+  if (s_head[1] + 1 > 0 && s_head[1] + 1 < COLS_MAP &&
+      (game_info_->field[s_head[0]][s_head[1] + 1] == 0 ||
+       game_info_->field[s_head[0]][s_head[1] + 1] & TAIL_MASK ||
+       game_info_->field[s_head[0]][s_head[1] + 1] & APPLE_MASK)) {
+    game_info_->field[s_head[0]][s_head[1]] &= ~DIRECTION_MASK;
+    game_info_->field[s_head[0]][s_head[1]] |= DIRECTION_RIGHT;
+  }
+}
+
+void model::RotateUp() {
+  if (s_head[0] + 1 > 0 && s_head[0] + 1 < ROWS_MAP &&
+      (game_info_->field[s_head[0] + 1][s_head[1]] == 0 ||
+       game_info_->field[s_head[0] + 1][s_head[1]] & TAIL_MASK ||
+       game_info_->field[s_head[0] + 1][s_head[1]] & APPLE_MASK)) {
+    game_info_->field[s_head[0]][s_head[1]] &= ~DIRECTION_MASK;
+    game_info_->field[s_head[0]][s_head[1]] |= DIRECTION_UP;
+  }
+}
+
+void model::RotateDown() {
+  if (s_head[0] - 1 > 0 && s_head[0] - 1 < ROWS_MAP &&
+      (game_info_->field[s_head[0] - 1][s_head[1]] == 0 ||
+       game_info_->field[s_head[0] - 1][s_head[1]] & TAIL_MASK ||
+       game_info_->field[s_head[0] - 1][s_head[1]] & APPLE_MASK)) {
+    game_info_->field[s_head[0]][s_head[1]] &= ~DIRECTION_MASK;
+    game_info_->field[s_head[0]][s_head[1]] |= DIRECTION_DOWN;
   }
 }
 

@@ -32,7 +32,7 @@ class State {
   virtual void Down() {};
   virtual void Up() {};
   virtual void Action() {};
-  virtual ~State() {};
+  virtual ~State(){};
 
  protected:
   model* fsm_{nullptr};
@@ -63,9 +63,14 @@ class model {
   const std::vector<std::function<void()>> actionMap{
       [this] { state_->Start(); },     [this] { state_->Pause(); },
       [this] { state_->Terminate(); }, [this] { state_->Left(); },
-      [this] { state_->Right(); },     [this] { state_->Down(); },
-      [this] { state_->Up(); },        [this] { state_->Action(); },
+      [this] { state_->Right(); },     [this] { state_->Up(); },
+      [this] { state_->Down(); },      [this] { state_->Action(); },
   };
+  std::array<int, 2> s_head{0};
+  std::array<int, 2> s_tail{0};
+  std::unique_ptr<State> state_{nullptr};
+  GI_unique_ptr game_info_{nullptr};
+  time_point<steady_clock> timer_;
 
  public:
   template <typename T>
@@ -82,20 +87,15 @@ class model {
     if (actionMap.size() > action) actionMap[action]();
   };
 
- private:
-  std::unique_ptr<State> state_{nullptr};
-  GI_unique_ptr game_info_{nullptr};
-  time_point<steady_clock> timer_;
-
   /* Game logical functions */
  public:
   void TogglePause();
   void InitGI();
   void DeleteGI();
-  void RotateLeft() {};
-  void RotateRight() {};
-  void RotateUp() {};
-  void RotateDown() {};
+  void RotateLeft();
+  void RotateRight();
+  void RotateUp();
+  void RotateDown();
   void SpawnSnake();
   void SpawnApple();
   void MoveSnake();
