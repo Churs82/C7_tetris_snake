@@ -7,6 +7,7 @@ model::model() { TransitionTo<Start_state>(); }
 void model::TogglePause() { game_info_->pause = !game_info_->pause; }
 void model::DeleteGI() {
   if (game_info_.get() != nullptr) {
+    game_info_->score = 0;
     game_info_->speed = 0;
     game_info_->level = 0;
     if (game_info_->field != nullptr) {
@@ -68,9 +69,10 @@ void model::SpawnApple() {
 void model::StartTimer() { timer_ = steady_clock::now(); }
 
 void model::CheckTimer() {
-  if (duration_cast<milliseconds>(steady_clock::now() - timer_).count() >=
-      2000 / game_info_->speed)
+  if (duration_cast<milliseconds>(steady_clock::now() - timer_).count() >
+      250 + 2000 / game_info_->speed) {
     TransitionTo<Moving_state>();
+  }
 }
 
 void model::MoveSnake() {
@@ -78,91 +80,109 @@ void model::MoveSnake() {
   game_info_->field[s_head[0]][s_head[1]] &= ~HEAD_MASK;
   switch (direction) {
     case DIRECTION_UP:
-      s_head[0]++;
+      ++s_head[0];
       break;
     case DIRECTION_DOWN:
-      s_head[0]--;
+      --s_head[0];
       break;
     case DIRECTION_LEFT:
-      s_head[1]--;
+      --s_head[1];
       break;
     case DIRECTION_RIGHT:
-      s_head[1]++;
+      ++s_head[1];
       break;
   }
-  /* Проверка на выход за края поля */
-  if (s_head[1] < 0 || s_head[1] >= COLS_MAP || s_head[0] < 0 ||
-      s_head[0] >= ROWS_MAP) {
-    TransitionTo<Exit_state>();
+  /* Проверка на выход за края поля или пересечение с хвостом*/
+  if (!CheckBounds(s_head)) {
+    TransitionTo<GameOver_state>();
   } else {
     if (game_info_->field[s_head[0]][s_head[1]] & APPLE_MASK) {
-      game_info_->score++; /*TODO: snake::addScore() */
+      AddScore();
       game_info_->field[s_head[0]][s_head[1]] =
           SNAKE_MASK | HEAD_MASK | direction;
       TransitionTo<Spawn_state>();
     } else {
-      switch (game_info_->field[s_tail[0]][s_tail[1]] & DIRECTION_MASK) {
-        case DIRECTION_UP:
-          game_info_->field[s_tail[0]++][s_tail[1]] = 0;
-          break;
-        case DIRECTION_DOWN:
-          game_info_->field[s_tail[0]--][s_tail[1]] = 0;
-          break;
-        case DIRECTION_LEFT:
-          game_info_->field[s_tail[0]][s_tail[1]--] = 0;
-          break;
-        case DIRECTION_RIGHT:
-          game_info_->field[s_tail[0]][s_tail[1]++] = 0;
-          break;
-      }
-      game_info_->field[s_tail[0]][s_tail[1]] |= TAIL_MASK;
-      if (game_info_->field[s_head[0]][s_head[1]] & SNAKE_MASK) {
-        TransitionTo<Exit_state>();
-      } else {
-        game_info_->field[s_head[0]][s_head[1]] =
-            SNAKE_MASK | HEAD_MASK | direction;
-      }
+      MoveTail();
+      game_info_->field[s_head[0]][s_head[1]] =
+          SNAKE_MASK | HEAD_MASK | direction;
     }
   }
 }
 
+void model::MoveTail() {
+  switch (game_info_->field[s_tail[0]][s_tail[1]] & DIRECTION_MASK) {
+    case DIRECTION_UP:
+      game_info_->field[s_tail[0]++][s_tail[1]] = 0;
+      break;
+    case DIRECTION_DOWN:
+      game_info_->field[s_tail[0]--][s_tail[1]] = 0;
+      break;
+    case DIRECTION_LEFT:
+      game_info_->field[s_tail[0]][s_tail[1]--] = 0;
+      break;
+    case DIRECTION_RIGHT:
+      game_info_->field[s_tail[0]][s_tail[1]++] = 0;
+      break;
+  }
+  game_info_->field[s_tail[0]][s_tail[1]] |= TAIL_MASK;
+}
 void model::RotateLeft() {
-  if (s_head[1] - 1 > 0 && s_head[1] - 1 < COLS_MAP &&
-      (game_info_->field[s_head[0]][s_head[1] - 1] == 0 ||
-       game_info_->field[s_head[0]][s_head[1] - 1] & TAIL_MASK ||
-       game_info_->field[s_head[0]][s_head[1] - 1] & APPLE_MASK)) {
-    game_info_->field[s_head[0]][s_head[1]] &= ~DIRECTION_MASK;
-    game_info_->field[s_head[0]][s_head[1]] |= DIRECTION_LEFT;
+  if (CheckBounds({s_head[0], s_head[1] - 1})) {
+    SetDirection(DIRECTION_LEFT);
+    TransitionTo<Moving_state>();
   }
 }
 
 void model::RotateRight() {
-  if (s_head[1] + 1 > 0 && s_head[1] + 1 < COLS_MAP &&
-      (game_info_->field[s_head[0]][s_head[1] + 1] == 0 ||
-       game_info_->field[s_head[0]][s_head[1] + 1] & TAIL_MASK ||
-       game_info_->field[s_head[0]][s_head[1] + 1] & APPLE_MASK)) {
-    game_info_->field[s_head[0]][s_head[1]] &= ~DIRECTION_MASK;
-    game_info_->field[s_head[0]][s_head[1]] |= DIRECTION_RIGHT;
+  if (CheckBounds({s_head[0], s_head[1] + 1})) {
+    SetDirection(DIRECTION_RIGHT);
+    TransitionTo<Moving_state>();
   }
 }
 
 void model::RotateUp() {
-  if (s_head[0] + 1 > 0 && s_head[0] + 1 < ROWS_MAP &&
-      (game_info_->field[s_head[0] + 1][s_head[1]] == 0 ||
-       game_info_->field[s_head[0] + 1][s_head[1]] & TAIL_MASK ||
-       game_info_->field[s_head[0] + 1][s_head[1]] & APPLE_MASK)) {
-    game_info_->field[s_head[0]][s_head[1]] &= ~DIRECTION_MASK;
-    game_info_->field[s_head[0]][s_head[1]] |= DIRECTION_UP;
+  if (CheckBounds({s_head[0] + 1, s_head[1]})) {
+    SetDirection(DIRECTION_UP);
+    TransitionTo<Moving_state>();
   }
 }
 
 void model::RotateDown() {
-  if (s_head[0] - 1 > 0 && s_head[0] - 1 < ROWS_MAP &&
-      (game_info_->field[s_head[0] - 1][s_head[1]] == 0 ||
-       game_info_->field[s_head[0] - 1][s_head[1]] & TAIL_MASK ||
-       game_info_->field[s_head[0] - 1][s_head[1]] & APPLE_MASK)) {
-    game_info_->field[s_head[0]][s_head[1]] &= ~DIRECTION_MASK;
-    game_info_->field[s_head[0]][s_head[1]] |= DIRECTION_DOWN;
+  if (CheckBounds({s_head[0] - 1, s_head[1]})) {
+    SetDirection(DIRECTION_DOWN);
+    TransitionTo<Moving_state>();
+  }
+}
+
+bool model::CheckBounds(std::array<int, 2> next) {
+  return (next[0] >= 0 && next[0] < ROWS_MAP && next[1] >= 0 &&
+          next[1] < COLS_MAP &&
+          (game_info_->field[next[0]][next[1]] == 0 ||
+           game_info_->field[next[0]][next[1]] & TAIL_MASK ||
+           game_info_->field[next[0]][next[1]] & APPLE_MASK));
+}
+
+void model::SetDirection(int direction) {
+  game_info_->field[s_head[0]][s_head[1]] &= ~DIRECTION_MASK;
+  game_info_->field[s_head[0]][s_head[1]] |= direction;
+}
+
+void model::AddScore(int s_num) {
+  game_info_->score += s_num;
+  game_info_->speed = game_info_->level = game_info_->score / 5 + 1;
+  if (game_info_->score >= ROWS_MAP * COLS_MAP - 4) TransitionTo<Win_state>();
+  if (game_info_->high_score < game_info_->score)
+    game_info_->high_score = game_info_->score;
+}
+
+void model::SplashField() {
+  if (duration_cast<milliseconds>(steady_clock::now() - timer_).count() > 500) {
+    StartTimer();
+    for (auto i = 0; i < ROWS_MAP; i++) {
+      for (auto j = 0; j < COLS_MAP; j++) {
+        game_info_->field[i][j] = !game_info_->field[i][j];
+      }
+    }
   }
 }
 

@@ -22,7 +22,8 @@ using std::chrono::time_point;
 class model;
 class State {
  public:
-  explicit State(model* fsm) : fsm_(fsm) {}
+  State() {};
+  State(model* fsm) : fsm_(fsm) {};
   virtual void Update() {};
   virtual void Start() {};
   virtual void Pause();
@@ -32,7 +33,7 @@ class State {
   virtual void Down() {};
   virtual void Up() {};
   virtual void Action() {};
-  virtual ~State(){};
+  virtual ~State() {};
 
  protected:
   model* fsm_{nullptr};
@@ -43,6 +44,8 @@ struct Spawn_state;
 struct Rotation_state;
 struct Moving_state;
 struct Exit_state;
+struct GameOver_state;
+struct Win_state;
 
 class model {
   // using GI_unique_ptr = std::unique_ptr<GameInfo_t, std::function<void()>>;
@@ -60,31 +63,36 @@ class model {
 
  private:
   model();
+  std::array<int, 2> s_head{0};
+  std::array<int, 2> s_tail{0};
+  State* state_{nullptr};
+  GI_unique_ptr game_info_{nullptr};
+  time_point<steady_clock> timer_;
   const std::vector<std::function<void()>> actionMap{
       [this] { state_->Start(); },     [this] { state_->Pause(); },
       [this] { state_->Terminate(); }, [this] { state_->Left(); },
       [this] { state_->Right(); },     [this] { state_->Up(); },
       [this] { state_->Down(); },      [this] { state_->Action(); },
   };
-  std::array<int, 2> s_head{0};
-  std::array<int, 2> s_tail{0};
-  std::unique_ptr<State> state_{nullptr};
-  GI_unique_ptr game_info_{nullptr};
-  time_point<steady_clock> timer_;
 
  public:
   template <typename T>
   void TransitionTo() {
-    state_.reset(new T(this));
+    delete state_;
+    state_ = new T(this);
   }
+  ~model() { delete state_; }
 
   GameInfo_t updateState() {
-    state_->Update();
+    if (!game_info_->pause) state_->Update();
     return *game_info_;
   };
 
   void userAction(UserAction_t action) {
-    if (actionMap.size() > action) actionMap[action]();
+    if (actionMap.size() > action) {
+      if (action != Pause) game_info_->pause = 0;
+      actionMap[action]();
+    }
   };
 
   /* Game logical functions */
@@ -101,24 +109,37 @@ class model {
   void MoveSnake();
   void StartTimer();
   void CheckTimer();
+  void SplashField();
+
+ private:
+  void MoveTail();
+  void SetDirection(int direction);
+  bool CheckBounds(std::array<int, 2> next);
+  void AddScore(int s_num = 1);
 };
 
 struct Start_state : public State {
-  using State::State;
-  explicit Start_state(model* fsm) : State(fsm) { fsm_->InitGI(); }
+  explicit Start_state(model* fsm) {
+    fsm_ = fsm;
+    fsm_->InitGI();
+  }
   void Update() override { fsm_->TransitionTo<Spawn_state>(); }
   ~Start_state() { fsm_->SpawnSnake(); }
 };
 
 struct Spawn_state : public State {
-  using State::State;
-  explicit Spawn_state(model* fsm) : State(fsm) { fsm_->SpawnApple(); }
+  explicit Spawn_state(model* fsm) {
+    fsm_ = fsm;
+    fsm_->SpawnApple();
+  }
   void Update() override { fsm_->TransitionTo<Rotation_state>(); }
 };
 
 struct Rotation_state : public State {
-  using State::State;
-  explicit Rotation_state(model* fsm) : State(fsm) { fsm_->StartTimer(); }
+  explicit Rotation_state(model* fsm) {
+    fsm_ = fsm;
+    fsm_->StartTimer();
+  }
   void Update() override { fsm_->CheckTimer(); }
   void Left() override { fsm_->RotateLeft(); }
   void Right() override { fsm_->RotateRight(); }
@@ -128,14 +149,36 @@ struct Rotation_state : public State {
 };
 
 struct Moving_state : public State {
-  using State::State;
-  explicit Moving_state(model* fsm) : State(fsm) { fsm_->MoveSnake(); }
+  explicit Moving_state(model* fsm) {
+    fsm_ = fsm;
+    fsm_->MoveSnake();
+  }
   void Update() override { fsm_->TransitionTo<Rotation_state>(); }
 };
 
 struct Exit_state : public State {
-  using State::State;
-  explicit Exit_state(model* fsm) : State(fsm) { fsm_->DeleteGI(); }
+  explicit Exit_state(model* fsm) {
+    fsm_ = fsm;
+    fsm_->DeleteGI();
+  }
+};
+
+struct GameOver_state : public State {
+  explicit GameOver_state(model* fsm) { fsm_ = fsm; }
+  void Update() override { fsm_->SplashField(); }
+  void Start() override {
+    fsm_->DeleteGI();
+    fsm_->TransitionTo<Start_state>();
+  }
+};
+
+struct Win_state : public State {
+  explicit Win_state(model* fsm) { fsm_ = fsm; }
+  void Update() override { fsm_->SplashField(); }
+  void Start() override {
+    fsm_->DeleteGI();
+    fsm_->TransitionTo<Start_state>();
+  }
 };
 
 };  // namespace s21::snake
