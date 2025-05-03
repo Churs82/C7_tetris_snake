@@ -4,13 +4,12 @@ SHELL?:=/bin/sh
 CC := gcc
 CPP :=g++
 PWD?:=$(shell pwd)
-DIR_BUILD?:=../../out/
 DIR_INC=../../inc
 FLAGS := -I $(DIR_INC) -std=c99 -Wall -Wpedantic -fstack-protector-strong -g #-Werror
 LFLAGS := -lncurses
 CFLAGS:=$(FLAGS) -c
-DIR_BUILD?=../../out/
-DIR_GAMES?=../../brick_game/
+DIR_BUILD:=../../out/
+DIR_GAMES:=../../brick_game/
 IF_NAME = $(notdir $(CURDIR))
 GAMES?=$(notdir $(wildcard $(DIR_GAMES)*))
 IF_SRC:=$(wildcard *.c) 

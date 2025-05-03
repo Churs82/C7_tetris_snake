@@ -23,7 +23,7 @@ START_TEST(snake_test_pause) {
 END_TEST
 
 Suite *snake_test_fsm() {
-  Suite *s = suite_create("\033[33m-=FSM tests=-\033[0m");
+  Suite *s = suite_create("\033[33m-=Snake FSM-Model tests=-\033[0m");
   TCase *tc = tcase_create("fsm");
   tcase_add_test(tc, snake_test_init_1);
   tcase_add_test(tc, snake_test_pause);

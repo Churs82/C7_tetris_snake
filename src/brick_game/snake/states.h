@@ -13,8 +13,8 @@ namespace s21::snake {
 class model;
 class State {
  public:
-  State(){};
-  State(model* fsm) : fsm_(fsm){};
+  State() {};
+  State(model* fsm) : fsm_(fsm) {};
   virtual void Update() {};
   virtual void Start() {};
   virtual void Pause();
@@ -24,7 +24,7 @@ class State {
   virtual void Down() {};
   virtual void Up() {};
   virtual void Action() {};
-  virtual ~State(){};
+  virtual ~State() {};
 
  protected:
   model* fsm_{nullptr};
@@ -36,6 +36,6 @@ struct Moving_state;
 struct Exit_state;
 struct GameOver_state;
 struct Win_state;
-}  // namespace s21
+}  // namespace s21::snake
 
 #endif  // SNAKE_STATES_H

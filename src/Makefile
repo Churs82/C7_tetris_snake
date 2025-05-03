@@ -2,9 +2,9 @@
 OS:=$(shell uname -s)
 SHELL:=/bin/sh
 PWD:=$(shell pwd)
-export DIR_BUILD:=$(PWD)/out/
-export DIR_GAMES:=$(PWD)/brick_game/
-export DIR_IF:=$(PWD)/gui/
+export DIR_BUILD:=out/
+export DIR_GAMES:=brick_game/
+export DIR_IF:=gui/
 
 DIR_INSTALL:=~/games/
 GAMES:=$(notdir $(wildcard $(DIR_GAMES)*))
@@ -84,11 +84,12 @@ gcov_report: clean ext1_flag test
 	-mkdir $(DIR_BUILD)report
 	for lib in $(GAMES); do \
 		lcov -t "lib$${lib}_report" -o $(DIR_BUILD)lib$${lib}_report.info -c -d $(DIR_GAMES)$$lib; \
-		geninfo $(DIR_GAMES)$$lib -o $(DIR_BUILD)lib$${lib}_report.info; \
-		genhtml -o $(DIR_BUILD)report $(DIR_BUILD)lib$${lib}_report.info; \
-		echo "-----------------------------Trying GCOV----------------------------"; \
-		python3 -m gcovr --verbose -r $(DIR_GAMES)$$lib --html --html-details -o $(DIR_BUILD)report/index.html --exclude test; \
+		geninfo $(DIR_GAMES)$$lib -o $(DIR_BUILD)lib$${lib}_report.info --no-external --rc branch_coverage=1; \
 	done
+
+	genhtml -o $(DIR_BUILD)report $(DIR_BUILD)lib*_report.info
+	-echo "-----------------------------Trying GCOV----------------------------"
+	python3 -m gcovr --verbose --html --html-details -o $(DIR_BUILD)report/index.html
 
 	$(OPEN_CMD) $(DIR_BUILD)report/index.html
 

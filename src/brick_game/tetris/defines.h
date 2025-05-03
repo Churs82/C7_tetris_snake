@@ -20,6 +20,6 @@
     }                                                                         \
   }
 #define LEVEL_UP_SCORE 600
-#define HS_FILE "~/games/tetris_hs.conf"
+#define HS_FILE "tetris_hs.conf"
 
 #endif
