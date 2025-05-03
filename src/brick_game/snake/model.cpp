@@ -186,4 +186,20 @@ void model::SplashField() {
   }
 }
 
+void model::SaveScore() {
+  std::ofstream file(HS_FILE);
+  if (file.is_open()) {
+    file << game_info_->high_score;
+    file.close();
+  }
+}
+
+void model::LoadScore() {
+  std::ifstream file(HS_FILE);
+  if (file.is_open()) {
+    file >> game_info_->high_score;
+    file.close();
+  }
+}
+
 };  // namespace s21::snake

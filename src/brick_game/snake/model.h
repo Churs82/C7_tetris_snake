@@ -4,6 +4,7 @@
 
 #include <chrono>
 #include <cstdlib>
+#include <fstream>
 #include <functional>
 #include <memory>
 #include <utility>
@@ -11,6 +12,7 @@
 
 #include "defines.h"
 #include "lib.h"
+#include "states.h"
 
 namespace s21::snake {
 
@@ -18,34 +20,6 @@ using std::chrono::duration_cast;
 using std::chrono::milliseconds;
 using std::chrono::steady_clock;
 using std::chrono::time_point;
-
-class model;
-class State {
- public:
-  State() {};
-  State(model* fsm) : fsm_(fsm) {};
-  virtual void Update() {};
-  virtual void Start() {};
-  virtual void Pause();
-  virtual void Terminate();
-  virtual void Left() {};
-  virtual void Right() {};
-  virtual void Down() {};
-  virtual void Up() {};
-  virtual void Action() {};
-  virtual ~State() {};
-
- protected:
-  model* fsm_{nullptr};
-};
-
-struct Start_state;
-struct Spawn_state;
-struct Rotation_state;
-struct Moving_state;
-struct Exit_state;
-struct GameOver_state;
-struct Win_state;
 
 class model {
   // using GI_unique_ptr = std::unique_ptr<GameInfo_t, std::function<void()>>;
@@ -110,6 +84,8 @@ class model {
   void StartTimer();
   void CheckTimer();
   void SplashField();
+  void LoadScore();
+  void SaveScore();
 
  private:
   void MoveTail();
@@ -122,6 +98,7 @@ struct Start_state : public State {
   explicit Start_state(model* fsm) {
     fsm_ = fsm;
     fsm_->InitGI();
+    fsm_->LoadScore();
   }
   void Update() override { fsm_->TransitionTo<Spawn_state>(); }
   ~Start_state() { fsm_->SpawnSnake(); }
@@ -164,7 +141,10 @@ struct Exit_state : public State {
 };
 
 struct GameOver_state : public State {
-  explicit GameOver_state(model* fsm) { fsm_ = fsm; }
+  explicit GameOver_state(model* fsm) {
+    fsm_ = fsm;
+    fsm_->SaveScore();
+  }
   void Update() override { fsm_->SplashField(); }
   void Start() override {
     fsm_->DeleteGI();
@@ -173,7 +153,10 @@ struct GameOver_state : public State {
 };
 
 struct Win_state : public State {
-  explicit Win_state(model* fsm) { fsm_ = fsm; }
+  explicit Win_state(model* fsm) {
+    fsm_ = fsm;
+    fsm_->SaveScore();
+  }
   void Update() override { fsm_->SplashField(); }
   void Start() override {
     fsm_->DeleteGI();
