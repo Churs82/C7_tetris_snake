@@ -2,7 +2,25 @@
 
 namespace s21::snake {
 
-model::model() { TransitionTo<Start_state>(); }
+model::model() { TransitionTo<Start_state>(); };
+model::~model() { delete state_; }
+void model::UserAction(UserAction_t action) {
+  const std::vector<std::function<void()>> actionMap{
+      [this] { state_->Start(); },     [this] { state_->Pause(); },
+      [this] { state_->Terminate(); }, [this] { state_->Left(); },
+      [this] { state_->Right(); },     [this] { state_->Up(); },
+      [this] { state_->Down(); },      [this] { state_->Action(); },
+  };
+  if (actionMap.size() > action) {
+    if (action != Pause) game_info_->pause = 0;
+    actionMap[action]();
+  }
+};
+
+GameInfo_t model::UpdateState() {
+  if (!game_info_->pause) state_->Update();
+  return *game_info_;
+};
 
 void model::TogglePause() { game_info_->pause = !game_info_->pause; }
 void model::DeleteGI() {
@@ -43,9 +61,6 @@ void model::InitGI() {
   }
   std::srand(std::time(nullptr));
 }
-/* Common State functions */
-void State::Terminate() { fsm_->TransitionTo<Exit_state>(); }
-void State::Pause() { fsm_->TogglePause(); };
 
 /* Gamelogic functions */
 void model::SpawnSnake() {
