@@ -15,8 +15,15 @@ class model;
 
 class State {
  public:
+  const std::vector<std::function<void()>> actionMap{
+      [this] { Start(); }, [this] { Pause(); },  [this] { Terminate(); },
+      [this] { Left(); },  [this] { Right(); },  [this] { Up(); },
+      [this] { Down(); },  [this] { Action(); },
+  };
+
   State();
   explicit State(model* fsm);
+
   virtual void Update();
   virtual void Start();
   virtual void Pause();

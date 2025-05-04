@@ -5,15 +5,9 @@ namespace s21::snake {
 model::model() { TransitionTo<Start_state>(); };
 model::~model() { delete state_; }
 void model::UserAction(UserAction_t action) {
-  const std::vector<std::function<void()>> actionMap{
-      [this] { state_->Start(); },     [this] { state_->Pause(); },
-      [this] { state_->Terminate(); }, [this] { state_->Left(); },
-      [this] { state_->Right(); },     [this] { state_->Up(); },
-      [this] { state_->Down(); },      [this] { state_->Action(); },
-  };
-  if (actionMap.size() > action) {
+  if (state_->actionMap.size() > action) {
     if (action != Pause) game_info_->pause = 0;
-    actionMap[action]();
+    state_->actionMap[action]();
   }
 };
 
