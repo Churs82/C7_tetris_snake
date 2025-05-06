@@ -99,8 +99,8 @@ class GameViewQt : public QMainWindow, public s21::GameView {
    * @param dynamicElement Pointer to a 2D array representing dynamic game
    * elements.
    */
-  void renderGame(QPainter &painter, GameState_t state,
-                  const GameInfo_t *gameInfo, int **dynamicElement);
+  void renderGame(QPainter &painter, ::GameState_t state,
+                  const ::GameInfo_t *gameInfo, int **dynamicElement);
 
   /**
    * @brief Draws an individual game element (snake, current and next tetromino,

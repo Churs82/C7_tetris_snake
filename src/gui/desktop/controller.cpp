@@ -1,4 +1,4 @@
-#include "game.h"
+#include "controller.h"
 
 int main(void) {
   WIN_INIT(30);
