@@ -9,6 +9,8 @@
 #include <QQueue>
 #include <QTimer>
 
+#include "lib.h"
+
 namespace s21 {
 
 /**
@@ -30,11 +32,6 @@ class GameViewQt : public QMainWindow, public s21::GameView {
    * @param parent Pointer to the parent QWidget (optional).
    */
   explicit GameViewQt(LogicGuiBridge *logicBridge, QWidget *parent = nullptr);
-
-  /**
-   * @brief Destructor that cleans up the game view.
-   */
-  ~GameViewQt() noexcept;
 
   /**
    * @brief Retrieves user input from keyboard events.

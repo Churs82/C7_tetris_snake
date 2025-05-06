@@ -4,42 +4,11 @@ namespace s21 {
 
 GameViewQt::GameViewQt(LogicGuiBridge *logic_bridge, QWidget *parent)
     : QMainWindow(parent), _logic_bridge(logic_bridge) {
-  _updateTimer = new QTimer(this);
-  connect(_updateTimer, &QTimer::timeout, this, &GameViewQt::render);
-  _updateTimer->start(_logic_bridge->getGameInfo()->speed);
   setFixedSize(_app_width, _app_height);
-#ifdef GAME_TETRIS
-  ::stateStart();
-#endif
   show();
 }
 
-GameViewQt::~GameViewQt() noexcept {
-#ifdef GAME_TETRIS
-  ::stateGameOver();
-#endif
-}
-
-void GameViewQt::render() {
-  int speed = _logic_bridge->getGameInfo()->speed;
-  if (_updateTimer->interval() != speed) _updateTimer->setInterval(speed);
-
-  _logic_bridge->updateCurrentState();
-  update();
-
-  if (_logic_bridge->getCurrentState() == STATE_GAME_OVER) {
-    _updateTimer->stop();
-
-    // callback to show GAME OVER modal for 0,5sec by delaying exit
-    QTimer::singleShot(500, this, [this]() {
-      delete _updateTimer;
-      _updateTimer = nullptr;
-      close();
-      QCoreApplication::quit();
-    });
-    return;
-  }
-}
+void GameViewQt::render() { update(); }
 
 bool GameViewQt::getUserInput(UserAction_t &action) {
   bool input_received = false;
@@ -84,8 +53,7 @@ void GameViewQt::keyPressEvent(QKeyEvent *event) {
       break;
   }
   if (actionProcessed) {
-    _logic_bridge->userInput(action, true);
-    _logic_bridge->updateCurrentState();
+    userInput(action, true);
     update();
   }
 }
