@@ -45,6 +45,9 @@
         "game.h": "c",
         "chrono": "cpp",
         "ctime": "cpp",
-        "ratio": "cpp"
+        "ratio": "cpp",
+        "qkeyevent": "cpp",
+        "qmainwindow": "cpp",
+        "qmessagebox": "cpp"
     }
 }

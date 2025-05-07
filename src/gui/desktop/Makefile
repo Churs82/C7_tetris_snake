@@ -2,12 +2,11 @@
 OS?:=$(shell uname -s)
 SHELL?:=/bin/sh
 CC := g++
-CPP :=g++
 PWD?:=$(shell pwd)
 DIR_INC=../../inc
-FLAGS := -I $(DIR_INC) -std=c++17 -Wall -Wpedantic -fstack-protector-strong -g -fPIC  #-Werror
-FLAGS += -I/usr/include/x86_64-linux-gnu/qt6/QtCore -I/usr/include/x86_64-linux-gnu/qt6/ -I/usr/include/x86_64-linux-gnu/qt6/QtGui -I/usr/include/x86_64-linux-gnu/qt6/QtWidgets
-FLAGS += -I${DIR_INC} 
+FLAGS := -std=c++17 -Wall -Wpedantic -fstack-protector-strong -g -fPIC  #-Werror
+FLAGS += -I${DIR_INC}
+FLAGS += -I/usr/include/x86_64-linux-gnu/qt6/
 LFLAGS := -lQt6Core -lQt6Gui -lQt6Widgets
 DIR_BUILD:=../../out/
 DIR_GAMES:=../../brick_game/
@@ -36,8 +35,11 @@ games: $(GAMES)
 $(IF_OBJS):
 	$(CC) $(FLAGS) $(patsubst %.o,%.cpp,$(notdir $@)) -o $@
 
-$(GAMES): $(IF_OBJS) 
-	$(CPP) $(FLAGS) -o $(DIR_BUILD)$@_$(IF_NAME) $(IF_OBJS) $(LFLAGS) -l$@ $(OS_MAC_UX) -L. -L$(DIR_BUILD)
+%: $(DIR_BUILD)%_$(IF_NAME)
+	$(MAKE) $(DIR_BUILD)$@_$(IF_NAME)
+
+$(addsuffix _$(IF_NAME), $(addprefix $(DIR_BUILD),$(GAMES))): $(IF_OBJS) 
+	$(CС) $(FLAGS) -o $@ $(IF_OBJS) $(LFLAGS) -l$@ $(OS_MAC_UX) -L. -L$(DIR_BUILD)
 	
 
 

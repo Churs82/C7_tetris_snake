@@ -1,11 +1,11 @@
 #include "controller.h"
 
 int main(void) {
-  WIN_INIT(30);
-  setlocale(LC_ALL, "");
-  print_overlay();
-  game_loop();
-  endwin();
+  //WIN_INIT(30);
+  //setlocale(LC_ALL, "");
+ // print_overlay();
+ // game_loop();
+ // endwin();
   return SUCCESS;
 }
 

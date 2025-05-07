@@ -12,6 +12,7 @@ DIR_BUILD:=../../out/
 DIR_GAMES:=../../brick_game/
 IF_NAME = $(notdir $(CURDIR))
 GAMES?=$(notdir $(wildcard $(DIR_GAMES)*))
+BINARIES:=$(addsuffix _$(IF_NAME), $(GAMES))
 IF_SRC:=$(wildcard *.c) 
 IF_OBJS:=$(IF_SRC:.c=.o)
 
@@ -35,8 +36,11 @@ games: $(GAMES)
 $(IF_OBJS):
 	$(CC) $(CFLAGS) $(patsubst %.o,%.c,$(notdir $@)) -o $@
 
-$(GAMES): $(IF_OBJS) 
-	$(CPP) $(FLAGS) -o $(DIR_BUILD)$@_$(IF_NAME) $(IF_OBJS) $(LFLAGS) -l$@ $(OS_MAC_UX) -L. -L$(DIR_BUILD)
+%: $(DIR_BUILD)%_$(IF_NAME)
+	$(MAKE) $(DIR_BUILD)$@_$(IF_NAME)
+
+$(addsuffix _$(IF_NAME), $(addprefix $(DIR_BUILD),$(GAMES))): $(IF_OBJS) 
+	$(CPP) $(FLAGS) -o $@ $(IF_OBJS) $(LFLAGS) -l$@ $(OS_MAC_UX) -L. -L$(DIR_BUILD)
 	
 
 

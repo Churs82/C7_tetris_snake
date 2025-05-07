@@ -1,13 +1,12 @@
 #ifndef GAME_VIEW_QT_H
 #define GAME_VIEW_QT_H
 
-#include <QApplication>
-#include <QKeyEvent>
-#include <QMainWindow>
-#include <QMessageBox>
-#include <QPainter>
-#include <QQueue>
-#include <QTimer>
+#include <QtWidgets/QApplication>
+#include <QtGui/QKeyEvent>
+#include <QtWidgets/QMainWindow>
+#include <QtWidgets/QMessageBox>
+#include <QtGui/QPainter>
+#include <QtCore/QQueue>
 
 #include "lib.h"
 
@@ -20,7 +19,7 @@ namespace s21 {
  * Manages game rendering using `QPainter` and processes user input via
  * `QKeyEvent`.
  */
-class GameViewQt : public QMainWindow, public s21::GameView {
+class GameView : public QMainWindow {
   Q_OBJECT
 
  public:
@@ -31,16 +30,8 @@ class GameViewQt : public QMainWindow, public s21::GameView {
    * game logic.
    * @param parent Pointer to the parent QWidget (optional).
    */
-  explicit GameViewQt(LogicGuiBridge *logicBridge, QWidget *parent = nullptr);
+  explicit GameView(QWidget *parent = nullptr);
 
-  /**
-   * @brief Retrieves user input from keyboard events.
-   * Implements the abstract `GameView::getUserInput()`.
-   *
-   * @param action Reference to `UserAction_t` to store the retrieved action.
-   * @return `true` if input was received, `false` otherwise.
-   */
-  bool getUserInput(::UserAction_t &action) override;
 
  protected:
   /**
@@ -58,10 +49,6 @@ class GameViewQt : public QMainWindow, public s21::GameView {
   void keyPressEvent(QKeyEvent *event) override;
 
  private:
-  LogicGuiBridge *_logic_bridge;  ///< Pointer to the logic-UI bridge.
-  QTimer *_updateTimer;           ///< Timer for periodic screen updates.
-  QQueue<::UserAction_t>
-      _pendingInputQueue;  ///< Queue for pending user actions.
 
   static constexpr int _game_field_width =
       200;  ///< Width of the game field in pixels.
@@ -94,25 +81,11 @@ class GameViewQt : public QMainWindow, public s21::GameView {
    * Start".
    *
    * @param painter Reference to `QPainter` used for rendering.
-   * @param state The current state of the game (`GameState_t`).
    * @param gameInfo Pointer to `GameInfo_t` containing game statistics.
    * @param dynamicElement Pointer to a 2D array representing dynamic game
    * elements.
    */
-  void renderGame(QPainter &painter, ::GameState_t state,
-                  const ::GameInfo_t *gameInfo, int **dynamicElement);
-
-  /**
-   * @brief Draws an individual game element (snake, current and next tetromino,
-   * game field) on the game field.
-   *
-   * Iterates through the given element's matrix and draws individual blocks.
-   *
-   * @param painter Reference to `QPainter` used for rendering.
-   * @param element Pointer to `GameElement_t` representing the game element to
-   * be drawn.
-   */
-  void drawElement(QPainter &painter, GameElement_t *element);
+  void renderGame(QPainter &painter, const ::GameInfo_t *gameInfo, int **dynamicElement);
 
   /**
    * @brief Draws the game field and dynamic elements.
@@ -123,14 +96,11 @@ class GameViewQt : public QMainWindow, public s21::GameView {
    * @param painter Reference to `QPainter` used for rendering.
    * @param gameInfo Pointer to `GameInfo_t` containing the current game field
    * data.
-   * @param dynamicElement Pointer to a 2D array representing the dynamic game
-   * elements.
    */
-  void drawField(QPainter &painter, const GameInfo_t *gameInfo,
-                 int **dynamicElement);
+  void drawField(QPainter &painter, const GameInfo_t *gameInfo);
 
   /**
-   * @brief Draws the next Tetris piece preview box.
+   * @brief Draws the "next" preview box.
    *
    * If a next piece is available, this function outlines a box and renders the
    * piece.
@@ -143,7 +113,7 @@ class GameViewQt : public QMainWindow, public s21::GameView {
   /**
    * @brief Displays a modal message over the game screen.
    *
-   * Used to show messages like "Game Over" or "Press ENTER to Start".
+   * Used to show messages like "Press ENTER to Start".
    *
    * @param painter Reference to `QPainter` used for rendering.
    * @param msg The message text to display in the modal.
