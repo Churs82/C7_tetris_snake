@@ -1,6 +1,6 @@
 #include "controller.h"
 
-// bool GameView::getUserInput(UserAction_t &action) {
+// bool GameController::getUserInput(UserAction_t &action) {
 //   bool input_received = false;
 //   if (!_pendingInputQueue.isEmpty()) {
 //     action = _pendingInputQueue.dequeue();
@@ -9,7 +9,7 @@
 //   return input_received;
 // }
 
-// void GameView::keyPressEvent(QKeyEvent *event) {
+// void GameController::keyPressEvent(QKeyEvent *event) {
 //   UserAction_t action;
 //   bool actionProcessed = true;
 //   switch (event->key()) {
@@ -47,22 +47,3 @@
 //     update();
 //   }
 // }
-
-/**
- * @brief The main game loop.
- *
- * Prints the game field and handles user input.
- *
- * The loop will break if the game field is null, indicating the game has ended.
- *
- * @return void
- */
-void game_loop() {
-}
-
-void intro() {
-}
-
-void end_game() {
-
-}

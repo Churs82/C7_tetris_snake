@@ -1,7 +1,7 @@
 # Linux, Darwin or Windows_NT
 OS?:=$(shell uname -s)
 SHELL?:=/bin/sh
-CC := g++
+CC = g++
 PWD?:=$(shell pwd)
 DIR_INC=../../inc
 FLAGS := -std=c++17 -Wall -Wpedantic -fstack-protector-strong -g -fPIC  #-Werror
@@ -15,7 +15,7 @@ GAMES?=$(notdir $(wildcard $(DIR_GAMES)*))
 IF_SRC:=$(wildcard *.cpp) 
 IF_OBJS:=$(IF_SRC:.cpp=.o)
 
-OS_MAC_UX:=-lsubunit -lm
+OS_MAC_UX:=
 RM:=rm -rf
 
 .phony: all, clean, games
@@ -35,11 +35,11 @@ games: $(GAMES)
 $(IF_OBJS):
 	$(CC) $(FLAGS) -c $(patsubst %.o,%.cpp,$(notdir $@)) -o $@
 
-%: $(DIR_BUILD)%_$(IF_NAME)
+$(GAMES): 
 	$(MAKE) $(DIR_BUILD)$@_$(IF_NAME)
 
 $(addsuffix _$(IF_NAME), $(addprefix $(DIR_BUILD),$(GAMES))): $(IF_OBJS) 
-	$(CС) $(FLAGS) -o $@ $(IF_OBJS) $(LFLAGS) -l$@ $(OS_MAC_UX) -L. -L$(DIR_BUILD)
+	$(CC) $(FLAGS) $(IF_OBJS) $(LFLAGS) -l$(notdir $(patsubst %_$(IF_NAME),%,$@)) $(OS_MAC_UX) -L. -L$(DIR_BUILD)  -o $@
 	
 
 

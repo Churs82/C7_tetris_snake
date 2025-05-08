@@ -2,11 +2,18 @@
 #define CONTROLLER_H
 
 #include <QtGui/QKeyEvent>
-#include "lib.h"
+
+#include "../../inc/lib.h"
 #include "view.h"
 
-void game_loop();
-void end_game();
-void intro();
-
+namespace s21 {
+class GameController {
+  /**
+   * @brief Handles keyboard input events.
+   *
+   * @param event The key event triggered by the user.
+   */
+  void keyPressEvent(QKeyEvent *event);
+};
+}  // namespace s21
 #endif

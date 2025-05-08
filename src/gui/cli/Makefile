@@ -36,11 +36,12 @@ games: $(GAMES)
 $(IF_OBJS):
 	$(CC) $(CFLAGS) $(patsubst %.o,%.c,$(notdir $@)) -o $@
 
-%: $(DIR_BUILD)%_$(IF_NAME)
+$(GAMES): 
 	$(MAKE) $(DIR_BUILD)$@_$(IF_NAME)
 
 $(addsuffix _$(IF_NAME), $(addprefix $(DIR_BUILD),$(GAMES))): $(IF_OBJS) 
-	$(CPP) $(FLAGS) -o $@ $(IF_OBJS) $(LFLAGS) -l$@ $(OS_MAC_UX) -L. -L$(DIR_BUILD)
+	$(CPP) $(FLAGS) $(IF_OBJS) $(LFLAGS) -l$(notdir $(patsubst %_$(IF_NAME),%,$@)) $(OS_MAC_UX) -L. -L$(DIR_BUILD)  -o $@
+	
 	
 
 

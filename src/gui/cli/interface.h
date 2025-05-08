@@ -5,8 +5,8 @@
 #include <ncurses.h>
 #include <string.h>
 
+#include "../../inc/lib.h"
 #include "game.h"
-#include "lib.h"
 
 #define BOARDS_BEGIN 1
 #define BOARD_SCALE 2

@@ -2,15 +2,12 @@
 
 namespace s21 {
 
-GameView::GameView(QWidget *parent)
-    : QMainWindow(parent) {
+GameView::GameView(QWidget *parent) : QMainWindow(parent) {
   setFixedSize(_app_width, _app_height);
   show();
 }
 
 void GameView::render() { update(); }
-
-
 
 void GameView::paintEvent(QPaintEvent * /*event*/) {
   QPainter painter(this);
@@ -18,45 +15,34 @@ void GameView::paintEvent(QPaintEvent * /*event*/) {
   renderGame(painter, ::updateCurrentState());
 }
 
-void GameView::renderGame(QPainter &painter, const GameInfo_t *gameInfo) {
-    drawField(painter, gameInfo, dynamicElement);
-    drawBorder(painter, QRect(_screen_unit, _screen_unit, WIDTH * _screen_unit,
-                              HEIGHT * _screen_unit));
-    drawNextPiece(painter, gameInfo);
-    renderLabel(
-        painter, "Score: ", gameInfo->score,
-        QPoint(_game_field_width + 2 * _screen_unit, _screen_unit + 10));
-    renderLabel(
-        painter, "High Score: ", gameInfo->high_score,
-        QPoint(_game_field_width + 2 * _screen_unit, _screen_unit * 2 + 10));
-    renderLabel(
-        painter, "Level: ", gameInfo->level,
-        QPoint(_game_field_width + 2 * _screen_unit, _screen_unit * 3 + 10));
+void GameView::renderGame(QPainter &painter, GameInfo_t gameInfo) {
+  drawField(painter, &gameInfo);
+  drawBorder(painter, QRect(_screen_unit, _screen_unit, COLS_MAP * _screen_unit,
+                            ROWS_MAP * _screen_unit));
+  drawNextPiece(painter, &gameInfo);
+  renderLabel(painter, "Score: ", gameInfo.score,
+              QPoint(_game_field_width + 2 * _screen_unit, _screen_unit + 10));
+  renderLabel(
+      painter, "High Score: ", gameInfo.high_score,
+      QPoint(_game_field_width + 2 * _screen_unit, _screen_unit * 2 + 10));
+  renderLabel(
+      painter, "Level: ", gameInfo.level,
+      QPoint(_game_field_width + 2 * _screen_unit, _screen_unit * 3 + 10));
 
-    if (gameInfo->pause) showModal(painter, "Press any key to Resume");
-  }
+  if (gameInfo.pause) showModal(painter, "Press any key to Resume");
 }
 
-void GameView::drawElement(QPainter &painter, GameElement_t *element) {
-  for (int i = 0; i < element->rows; i++) {
-    for (int j = 0; j < element->cols; j++) {
-      int color = element->matrix[i][j];
+void GameView::drawField(QPainter &painter, GameInfo_t *gameInfo) {
+  for (int i = 0; i < ROWS_MAP; i++) {
+    for (int j = 0; j < COLS_MAP; j++) {
+      int color = gameInfo->field[i][j];
       if (color) {
         painter.setBrush(colorToRGB(color));
-        painter.drawRect((element->x_offset + j) * _screen_unit,
-                         (element->y_offset + i) * _screen_unit, _screen_unit,
+        painter.drawRect(j * _screen_unit, i * _screen_unit, _screen_unit,
                          _screen_unit);
       }
     }
   }
-}
-
-void GameView::drawField(QPainter &painter, const GameInfo_t *gameInfo,
-                           int **dynamicElement) {
-  GameElement_t game_field = {gameInfo->field, HEIGHT, WIDTH, 1, 1};
-  drawElement(painter, &game_field);
-  GameElement_t snake = {dynamicElement, HEIGHT, WIDTH, 1, 1};
-  drawElement(painter, &snake);
 }
 
 void GameView::drawBorder(QPainter &painter, const QRect &rect) {
@@ -74,9 +60,17 @@ void GameView::drawNextPiece(QPainter &painter, const GameInfo_t *gameInfo) {
 
     drawBorder(painter, QRect(box_x, box_y, box_width, box_height));
     renderLabel(painter, "Next:", -1, QPoint(box_x, box_y - 10));
-    GameElement_t next_piece = {gameInfo->next, 4, 4, box_x / _screen_unit + 1,
-                                box_y / _screen_unit + 2};
-    drawElement(painter, &next_piece);
+
+    for (int i = 0; i < FIGURE_H; i++) {
+      for (int j = 0; j < FIGURE_W; j++) {
+        int color = gameInfo->next[i][j];
+        if (color) {
+          painter.setBrush(colorToRGB(color));
+          painter.drawRect(j * _screen_unit, i * _screen_unit, _screen_unit,
+                           _screen_unit);
+        }
+      }
+    }
   }
 }
 
@@ -114,8 +108,8 @@ void GameView::showModal(QPainter &painter, const QString &msg) {
   painter.drawText(modalRect, Qt::AlignCenter, msg);
 }
 
-void GameView::renderLabel(QPainter &painter, const QString &label,
-                             int number, QPoint position) {
+void GameView::renderLabel(QPainter &painter, const QString &label, int number,
+                           QPoint position) {
   painter.setPen(Qt::black);
   QFont font("Noto Mono", 12, QFont::Bold);
   painter.setFont(font);

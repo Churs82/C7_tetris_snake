@@ -7,13 +7,12 @@
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMessageBox>
 
-
-#include "lib.h"
+#include "../../inc/lib.h"
 
 namespace s21 {
 
 /**
- * @class GameViewQt
+ * @class GameView
  * @brief Qt-based graphical interface.
  *
  * Manages game rendering using `QPainter` and processes user input via
@@ -39,13 +38,6 @@ class GameView : public QMainWindow {
    * @param event The paint event triggered for rendering.
    */
   void paintEvent(QPaintEvent *event) override;
-
-  /**
-   * @brief Handles keyboard input events.
-   *
-   * @param event The key event triggered by the user.
-   */
-  void keyPressEvent(QKeyEvent *event) override;
 
  private:
   static constexpr int _game_field_width =
@@ -83,8 +75,7 @@ class GameView : public QMainWindow {
    * @param dynamicElement Pointer to a 2D array representing dynamic game
    * elements.
    */
-  void renderGame(QPainter &painter, const ::GameInfo_t *gameInfo,
-                  int **dynamicElement);
+  void renderGame(QPainter &painter, ::GameInfo_t gameInfo);
 
   /**
    * @brief Draws the game field and dynamic elements.
@@ -96,7 +87,7 @@ class GameView : public QMainWindow {
    * @param gameInfo Pointer to `GameInfo_t` containing the current game field
    * data.
    */
-  void drawField(QPainter &painter, const GameInfo_t *gameInfo);
+  void drawField(QPainter &painter, ::GameInfo_t *gameInfo);
 
   /**
    * @brief Draws the "next" preview box.
@@ -107,7 +98,7 @@ class GameView : public QMainWindow {
    * @param painter Reference to `QPainter` used for rendering.
    * @param gameInfo Pointer to `GameInfo_t` containing the next piece data.
    */
-  void drawNextPiece(QPainter &painter, const GameInfo_t *gameInfo);
+  void drawNextPiece(QPainter &painter, const ::GameInfo_t *gameInfo);
 
   /**
    * @brief Displays a modal message over the game screen.
