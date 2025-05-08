@@ -33,7 +33,7 @@ endif
 games: $(GAMES)
 
 $(IF_OBJS):
-	$(CC) $(FLAGS) $(patsubst %.o,%.cpp,$(notdir $@)) -o $@
+	$(CC) $(FLAGS) -c $(patsubst %.o,%.cpp,$(notdir $@)) -o $@
 
 %: $(DIR_BUILD)%_$(IF_NAME)
 	$(MAKE) $(DIR_BUILD)$@_$(IF_NAME)

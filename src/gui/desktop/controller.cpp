@@ -1,13 +1,52 @@
 #include "controller.h"
 
-int main(void) {
-  //WIN_INIT(30);
-  //setlocale(LC_ALL, "");
- // print_overlay();
- // game_loop();
- // endwin();
-  return SUCCESS;
-}
+// bool GameView::getUserInput(UserAction_t &action) {
+//   bool input_received = false;
+//   if (!_pendingInputQueue.isEmpty()) {
+//     action = _pendingInputQueue.dequeue();
+//     input_received = true;
+//   }
+//   return input_received;
+// }
+
+// void GameView::keyPressEvent(QKeyEvent *event) {
+//   UserAction_t action;
+//   bool actionProcessed = true;
+//   switch (event->key()) {
+//     case Qt::Key_Left:
+//       action = Left;
+//       break;
+//     case Qt::Key_Right:
+//       action = Right;
+//       break;
+//     case Qt::Key_Down:
+//       action = Down;
+//       break;
+//     case Qt::Key_Space:
+//       action = Pause;
+//       break;
+//     case Qt::Key_Return:
+//     case Qt::Key_Enter:
+//       action = Start;
+//       break;
+//     case Qt::Key_Escape:
+//       action = Terminate;
+//       break;
+//     case Qt::Key_Up:
+//       action = Up;
+//       break;
+//     case Qt::Key_Slash:
+//       action = Action;
+//       break;
+//     default:
+//       actionProcessed = false;
+//       break;
+//   }
+//   if (actionProcessed) {
+//     userInput(action, true);
+//     update();
+//   }
+// }
 
 /**
  * @brief The main game loop.
@@ -19,41 +58,11 @@ int main(void) {
  * @return void
  */
 void game_loop() {
-  intro();
-
-  GameInfo_t game_info = updateCurrentState();
-
-  while (game_info.field) {
-    print_board(game_info);
-
-    /* User input */
-    int signal = GET_USER_INPUT;
-    if (signal > -1) {
-      if (get_signal(signal) == Terminate) {
-        end_game();
-      } else {
-        userInput(get_signal(signal), false);
-      }
-    }
-
-    game_info = updateCurrentState();
-  }
 }
 
 void intro() {
-  print_intro();
-  int signal = -1;
-  while (get_signal(signal) != Start && get_signal(signal) != Terminate) {
-    signal = GET_USER_INPUT;
-  }
-  userInput(get_signal(signal), false);
 }
 
 void end_game() {
-  print_exit();
-  int signal = -1;
-  while (get_signal(signal) != Start && get_signal(signal) != Terminate) {
-    signal = GET_USER_INPUT;
-  }
-  userInput(get_signal(signal), false);
+
 }

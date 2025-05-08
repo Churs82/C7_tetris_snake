@@ -1,12 +1,12 @@
 #ifndef GAME_VIEW_QT_H
 #define GAME_VIEW_QT_H
 
+#include <QtCore/QQueue>
+#include <QtGui/QPainter>
 #include <QtWidgets/QApplication>
-#include <QtGui/QKeyEvent>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMessageBox>
-#include <QtGui/QPainter>
-#include <QtCore/QQueue>
+
 
 #include "lib.h"
 
@@ -32,7 +32,6 @@ class GameView : public QMainWindow {
    */
   explicit GameView(QWidget *parent = nullptr);
 
-
  protected:
   /**
    * @brief Handles game rendering events.
@@ -49,7 +48,6 @@ class GameView : public QMainWindow {
   void keyPressEvent(QKeyEvent *event) override;
 
  private:
-
   static constexpr int _game_field_width =
       200;  ///< Width of the game field in pixels.
   static constexpr int _game_field_height =
@@ -85,7 +83,8 @@ class GameView : public QMainWindow {
    * @param dynamicElement Pointer to a 2D array representing dynamic game
    * elements.
    */
-  void renderGame(QPainter &painter, const ::GameInfo_t *gameInfo, int **dynamicElement);
+  void renderGame(QPainter &painter, const ::GameInfo_t *gameInfo,
+                  int **dynamicElement);
 
   /**
    * @brief Draws the game field and dynamic elements.
