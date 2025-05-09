@@ -32,7 +32,7 @@ endif
 
 games: $(GAMES)
 
-%.o: %.cpp
+%.o: %.cpp %.h
 	$(CC) $(FLAGS) -c $(patsubst %.o,%.cpp,$(notdir $@)) -o $@
 
 

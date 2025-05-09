@@ -2,6 +2,14 @@
 #define GAME_VIEW_QT_H
 
 #define QT_FEATURE_MENU -1
+#define COLOR_MASK 7
+#define COLOR_MAP                                                          \
+  std::array<QColor, 8> {                                                  \
+    QColor(0, 0, 0), QColor(92, 84, 164, 255), QColor(252, 164, 124, 255), \
+        QColor(204, 100, 148, 255), QColor(228, 124, 140, 255),            \
+        QColor(164, 92, 164, 255), QColor(252, 196, 132, 255),             \
+        QColor(140, 108, 172, 255)                                         \
+  }
 
 #include <QtCore/QQueue>
 #include <QtGui/QPainter>
@@ -31,7 +39,7 @@ class GameView : public QMainWindow {
    * game logic.
    * @param parent Pointer to the parent QWidget (optional).
    */
-  explicit GameView();
+  explicit GameView(QMainWindow *parent = nullptr);
   virtual ~GameView() noexcept;
 
  protected:
@@ -41,8 +49,6 @@ class GameView : public QMainWindow {
    * @param event The paint event triggered for rendering.
    */
   void paintEvent(QPaintEvent * /*event*/) override;
-
-  void keyPressEvent(QKeyEvent *event) override;
 
  private:
   static constexpr int _game_field_width =
@@ -65,7 +71,7 @@ class GameView : public QMainWindow {
    * @param color The numerical index of the game color (1-7).
    * @return `QColor` representing the corresponding RGB color.
    */
-  QColor colorToRGB(int color);
+  QColor colorToRGB(long unsigned int);
 
   /**
    * @brief Renders the game state on the Qt window.

@@ -33,7 +33,7 @@ endif
 
 games: $(GAMES)
 
-$(IF_OBJS):
+%.o: %.c %.h
 	$(CC) $(CFLAGS) $(patsubst %.o,%.c,$(notdir $@)) -o $@
 
 $(GAMES): 

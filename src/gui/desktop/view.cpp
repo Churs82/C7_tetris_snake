@@ -2,9 +2,8 @@
 
 namespace s21 {
 
-GameView::GameView() : QMainWindow(nullptr) {
+GameView::GameView(QMainWindow *parent) : QMainWindow(parent) {
   setFixedSize(_app_width, _app_height);
-  show();
 }
 
 GameView::~GameView() noexcept {};
@@ -14,13 +13,6 @@ void GameView::render() { update(); }
 void GameView::paintEvent(QPaintEvent * /*event*/) {
   QPainter painter(this);
   renderGame(painter, ::updateCurrentState());
-}
-
-void GameView::keyPressEvent(QKeyEvent * /*event*/) {
-  // Handle key press events here
-  // For example, you can call the logic bridge to handle user input
-
-  update();  // Request a repaint after handling the key event
 }
 
 void GameView::renderGame(QPainter &painter, const ::GameInfo_t &gameInfo) {
@@ -41,13 +33,13 @@ void GameView::renderGame(QPainter &painter, const ::GameInfo_t &gameInfo) {
 }
 
 void GameView::drawField(QPainter &painter, int **const field) {
-  for (int i = 0; i < ROWS_MAP; i++) {
-    for (int j = 0; j < COLS_MAP; j++) {
-      int color = field[i][j];
+  for (int i = 0; i < ROWS_MAP; ++i) {
+    for (int j = 0; j < COLS_MAP; ++j) {
+      int color = field[i][j] & COLOR_MASK;
       if (color) {
         painter.setBrush(colorToRGB(color));
-        painter.drawRect(j * _screen_unit, i * _screen_unit, _screen_unit,
-                         _screen_unit);
+        painter.drawRect((j + 1) * _screen_unit, (ROWS_MAP - i) * _screen_unit,
+                         _screen_unit, _screen_unit);
       }
     }
   }
@@ -71,7 +63,7 @@ void GameView::drawNext(QPainter &painter, int **const next) {
 
     for (int i = 0; i < FIGURE_H; i++) {
       for (int j = 0; j < FIGURE_W; j++) {
-        int color = next[i][j];
+        int color = next[i][j] & COLOR_MASK;
         if (color) {
           painter.setBrush(colorToRGB(color));
           painter.drawRect(j * _screen_unit, i * _screen_unit, _screen_unit,
@@ -82,25 +74,9 @@ void GameView::drawNext(QPainter &painter, int **const next) {
   }
 }
 
-QColor GameView::colorToRGB(int color) {
-  switch (color) {
-    case 1:
-      return QColor(92, 84, 164, 255);  // I
-    case 2:
-      return QColor(252, 164, 124, 255);  // J
-    case 3:
-      return QColor(204, 100, 148, 255);  // L
-    case 4:
-      return QColor(228, 124, 140, 255);  // O
-    case 5:
-      return QColor(164, 92, 164, 255);  // S
-    case 6:
-      return QColor(252, 196, 132, 255);  // T
-    case 7:
-      return QColor(140, 108, 172, 255);  // Z
-    default:
-      return QColor(Qt::black);
-  }
+QColor GameView::colorToRGB(long unsigned int color) {
+  if (color < 1 || color >= COLOR_MAP.size()) color = 0;
+  return COLOR_MAP[color];
 }
 
 void GameView::showModal(QPainter &painter, const QString &msg) {
@@ -116,6 +92,14 @@ void GameView::showModal(QPainter &painter, const QString &msg) {
   painter.drawText(modalRect, Qt::AlignCenter, msg);
 }
 
+/**
+ * @brief Draws a label with the given text and number (if any) at the given
+ * position.
+ * @param painter The QPainter to draw on.
+ * @param label The label text.
+ * @param number The number to append to the label (if >= 0).
+ * @param position The position to draw the label at.
+ */
 void GameView::renderLabel(QPainter &painter, const QString &label, int number,
                            QPoint position) {
   painter.setPen(Qt::black);

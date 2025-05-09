@@ -48,7 +48,8 @@
         "ratio": "cpp",
         "qkeyevent": "cpp",
         "qmainwindow": "cpp",
-        "qmessagebox": "cpp"
+        "qmessagebox": "cpp",
+        "qqueue": "cpp"
     },
     "C_Cpp.default.cppStandard": "c++17",
     "C_Cpp.default.cStandard": "c11",

@@ -1,6 +1,4 @@
-#include "../../inc/lib.h"
-#include "controller.h"
-#include "view.h"
+#include "game.h"
 
 /**
  * @brief The main function of the game.
@@ -12,11 +10,12 @@
 
 int main(int argc, char** argv) {
   using namespace s21;
+
   QApplication app(argc, argv);
 
   // Initialize the game logic and GUI
-  std::unique_ptr<GameView> gameView = std::make_unique<GameView>();
-  gameView->show();
+  std::unique_ptr<GameController> gameController =
+      std::make_unique<GameController>();
 
   // WIN_INIT(30);
   // setlocale(LC_ALL, "");
