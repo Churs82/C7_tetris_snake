@@ -35,8 +35,10 @@ games: $(GAMES)
 %.o: %.cpp %.h
 	$(CC) $(FLAGS) -c $(patsubst %.o,%.cpp,$(notdir $@)) -o $@
 
+&.h:
 
-$(GAMES): $(IF_OBJS) 
+
+$(GAMES):  
 	$(MAKE) $(DIR_BUILD)$@_$(IF_NAME)
 
 $(addsuffix _$(IF_NAME), $(addprefix $(DIR_BUILD),$(GAMES))): $(IF_OBJS) 

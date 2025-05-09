@@ -46,17 +46,13 @@ void Rotation_state::Up() { fsm_->RotateUp(); }
 void Rotation_state::Action() { fsm_->TransitionTo<Moving_state>(); }
 
 // Moving_state definitions
-Moving_state::Moving_state(model* fsm) {
-  fsm_ = fsm;
-  fsm_->MoveSnake();
-}
-void Moving_state::Update() { fsm_->TransitionTo<Rotation_state>(); }
+Moving_state::Moving_state(model* fsm) { fsm_ = fsm; }
+void Moving_state::Update() { fsm_->MoveSnake(); }
 
 // Exit_state definitions
-Exit_state::Exit_state(model* fsm) {
-  fsm_ = fsm;
-  fsm_->DeleteGI();
-}
+Exit_state::Exit_state(model* fsm) { fsm_ = fsm; }
+
+void Exit_state::Update() { fsm_->DeleteGI(); }
 
 // GameOver_state definitions
 GameOver_state::GameOver_state(model* fsm) {

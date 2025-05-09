@@ -114,6 +114,7 @@ void model::MoveSnake() {
       MoveTail();
       game_info_->field[s_head[0]][s_head[1]] =
           SNAKE_MASK | HEAD_MASK | direction;
+      TransitionTo<Rotation_state>();
     }
   }
 }

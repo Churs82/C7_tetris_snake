@@ -201,6 +201,8 @@ struct Exit_state : public State {
    * @param fsm Pointer to the model instance.
    */
   explicit Exit_state(model* fsm);
+
+  void Update() override;
 };
 
 /**

@@ -16,10 +16,10 @@ void GameView::paintEvent(QPaintEvent * /*event*/) {
 }
 
 void GameView::renderGame(QPainter &painter, const ::GameInfo_t &gameInfo) {
-  drawField(painter, gameInfo.field);
+  if (gameInfo.field != nullptr) drawField(painter, gameInfo.field);
   drawBorder(painter, QRect(_screen_unit, _screen_unit, COLS_MAP * _screen_unit,
                             ROWS_MAP * _screen_unit));
-  drawNext(painter, gameInfo.next);
+  if (gameInfo.next != nullptr) drawNext(painter, gameInfo.next);
   renderLabel(painter, "Score: ", gameInfo.score,
               QPoint(_game_field_width + 2 * _screen_unit, _screen_unit + 10));
   renderLabel(

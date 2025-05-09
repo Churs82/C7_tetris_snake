@@ -4,6 +4,7 @@ namespace s21 {
 GameController::GameController(QMainWindow *parent) : QMainWindow(parent) {
   _gameView = std::make_unique<GameView>(parent);
   _gameView->show();
+  show();
 }
 
 GameController::~GameController() noexcept {}
