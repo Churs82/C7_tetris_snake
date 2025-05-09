@@ -1,6 +1,8 @@
 #ifndef GAME_VIEW_QT_H
 #define GAME_VIEW_QT_H
 
+#define QT_FEATURE_MENU -1
+
 #include <QtCore/QQueue>
 #include <QtGui/QPainter>
 #include <QtWidgets/QApplication>
@@ -29,7 +31,8 @@ class GameView : public QMainWindow {
    * game logic.
    * @param parent Pointer to the parent QWidget (optional).
    */
-  explicit GameView(QWidget *parent = nullptr);
+  explicit GameView();
+  virtual ~GameView() noexcept;
 
  protected:
   /**
@@ -37,14 +40,15 @@ class GameView : public QMainWindow {
    *
    * @param event The paint event triggered for rendering.
    */
-  void paintEvent(QPaintEvent *event) override;
+  void paintEvent(QPaintEvent * /*event*/) override;
+
+  void keyPressEvent(QKeyEvent *event) override;
 
  private:
   static constexpr int _game_field_width =
       200;  ///< Width of the game field in pixels.
   static constexpr int _game_field_height =
       400;  ///< Height of the game field in pixels.
-
   static constexpr int _screen_unit =
       20;  ///< Padding size, one game element block.
   static constexpr int _box_dimension =
@@ -75,7 +79,7 @@ class GameView : public QMainWindow {
    * @param dynamicElement Pointer to a 2D array representing dynamic game
    * elements.
    */
-  void renderGame(QPainter &painter, ::GameInfo_t gameInfo);
+  void renderGame(QPainter &painter, const ::GameInfo_t &gameInfo);
 
   /**
    * @brief Draws the game field and dynamic elements.
@@ -87,7 +91,7 @@ class GameView : public QMainWindow {
    * @param gameInfo Pointer to `GameInfo_t` containing the current game field
    * data.
    */
-  void drawField(QPainter &painter, ::GameInfo_t *gameInfo);
+  void drawField(QPainter &painter, int **const field);
 
   /**
    * @brief Draws the "next" preview box.
@@ -98,7 +102,7 @@ class GameView : public QMainWindow {
    * @param painter Reference to `QPainter` used for rendering.
    * @param gameInfo Pointer to `GameInfo_t` containing the next piece data.
    */
-  void drawNextPiece(QPainter &painter, const ::GameInfo_t *gameInfo);
+  void drawNext(QPainter &painter, int **const next);
 
   /**
    * @brief Displays a modal message over the game screen.

@@ -2,24 +2,32 @@
 
 namespace s21 {
 
-GameView::GameView(QWidget *parent) : QMainWindow(parent) {
+GameView::GameView() : QMainWindow(nullptr) {
   setFixedSize(_app_width, _app_height);
   show();
 }
+
+GameView::~GameView() noexcept {};
 
 void GameView::render() { update(); }
 
 void GameView::paintEvent(QPaintEvent * /*event*/) {
   QPainter painter(this);
-
   renderGame(painter, ::updateCurrentState());
 }
 
-void GameView::renderGame(QPainter &painter, GameInfo_t gameInfo) {
-  drawField(painter, &gameInfo);
+void GameView::keyPressEvent(QKeyEvent * /*event*/) {
+  // Handle key press events here
+  // For example, you can call the logic bridge to handle user input
+
+  update();  // Request a repaint after handling the key event
+}
+
+void GameView::renderGame(QPainter &painter, const ::GameInfo_t &gameInfo) {
+  drawField(painter, gameInfo.field);
   drawBorder(painter, QRect(_screen_unit, _screen_unit, COLS_MAP * _screen_unit,
                             ROWS_MAP * _screen_unit));
-  drawNextPiece(painter, &gameInfo);
+  drawNext(painter, gameInfo.next);
   renderLabel(painter, "Score: ", gameInfo.score,
               QPoint(_game_field_width + 2 * _screen_unit, _screen_unit + 10));
   renderLabel(
@@ -32,10 +40,10 @@ void GameView::renderGame(QPainter &painter, GameInfo_t gameInfo) {
   if (gameInfo.pause) showModal(painter, "Press any key to Resume");
 }
 
-void GameView::drawField(QPainter &painter, GameInfo_t *gameInfo) {
+void GameView::drawField(QPainter &painter, int **const field) {
   for (int i = 0; i < ROWS_MAP; i++) {
     for (int j = 0; j < COLS_MAP; j++) {
-      int color = gameInfo->field[i][j];
+      int color = field[i][j];
       if (color) {
         painter.setBrush(colorToRGB(color));
         painter.drawRect(j * _screen_unit, i * _screen_unit, _screen_unit,
@@ -51,8 +59,8 @@ void GameView::drawBorder(QPainter &painter, const QRect &rect) {
   painter.drawRect(rect);
 }
 
-void GameView::drawNextPiece(QPainter &painter, const GameInfo_t *gameInfo) {
-  if (gameInfo->next) {
+void GameView::drawNext(QPainter &painter, int **const next) {
+  if (next) {
     constexpr int box_x = _game_field_width + 2 * _screen_unit;
     constexpr int box_y = _game_field_height - _box_dimension + _screen_unit;
     constexpr int box_width = _box_dimension;
@@ -63,7 +71,7 @@ void GameView::drawNextPiece(QPainter &painter, const GameInfo_t *gameInfo) {
 
     for (int i = 0; i < FIGURE_H; i++) {
       for (int j = 0; j < FIGURE_W; j++) {
-        int color = gameInfo->next[i][j];
+        int color = next[i][j];
         if (color) {
           painter.setBrush(colorToRGB(color));
           painter.drawRect(j * _screen_unit, i * _screen_unit, _screen_unit,
@@ -121,3 +129,4 @@ void GameView::renderLabel(QPainter &painter, const QString &label, int number,
 }
 
 }  // namespace s21
+#include "view.moc"

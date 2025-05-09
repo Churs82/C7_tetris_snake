@@ -10,8 +10,8 @@
 #include <utility>
 #include <vector>
 
+#include "../../inc/lib.h"
 #include "defines.h"
-#include "lib.h"
 #include "states.h"
 
 namespace s21::snake {

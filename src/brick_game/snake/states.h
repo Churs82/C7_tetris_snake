@@ -5,8 +5,8 @@
 
 #include <memory>
 
+#include "../../inc/lib.h"
 #include "defines.h"
-#include "lib.h"
 #include "model.h"
 
 namespace s21::snake {
