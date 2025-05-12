@@ -4,6 +4,7 @@ namespace s21 {
 
 GameView::GameView(QMainWindow *parent) : QMainWindow(parent) {
   setFixedSize(_app_width, _app_height);
+  _controller = parent;
 }
 
 GameView::~GameView() noexcept {};
@@ -111,6 +112,11 @@ void GameView::renderLabel(QPainter &painter, const QString &label, int number,
 
   painter.drawText(position, text);
 }
+
+void GameView::keyPressEvent(QKeyEvent *event) {
+  _controller->keyPressEvent(event);
+}
+
 
 }  // namespace s21
 #include "view.moc"
