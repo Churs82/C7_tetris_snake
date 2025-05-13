@@ -16,7 +16,7 @@ int main(int argc, char** argv) {
   // Initialize the game logic and GUI
   std::unique_ptr<GameController> gameController =
       std::make_unique<GameController>();
-
+  app.installEventFilter(gameController.get());
   // WIN_INIT(30);
   // setlocale(LC_ALL, "");
   // print_overlay();

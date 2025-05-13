@@ -12,6 +12,7 @@
   }
 
 #include <QtCore/QQueue>
+#include <QtCore/QTimer>
 #include <QtGui/QPainter>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QMainWindow>
@@ -63,7 +64,8 @@ class GameView : public QMainWindow {
       _game_field_width + _box_dimension + 6 * _screen_unit;
   static constexpr int _app_height = _game_field_height + 2 * _screen_unit;
 
-  QMainWindow _controller;
+  std::unique_ptr<QTimer> _updateTimer;
+
   /**
    * @brief Converts a game color index to an RGB color.
    *
@@ -145,9 +147,6 @@ class GameView : public QMainWindow {
    * @param rect The `QRect` defining the area to be outlined.
    */
   void drawBorder(QPainter &painter, const QRect &rect);
-
-  void keyPressEvent(QKeyEvent *event);
-
 
  private slots:
   /**

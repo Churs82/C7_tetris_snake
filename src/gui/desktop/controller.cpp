@@ -1,13 +1,23 @@
 #include "controller.h"
 namespace s21 {
 
-GameController::GameController(QMainWindow *parent) : QMainWindow(parent) {
-  _gameView = std::make_unique<GameView>(this);
-  _gameView->show();
-  show();
+GameController::GameController(QMainWindow *parent) : QWidget(parent) {
+  _gameView = std::make_unique<GameView>(parent);
 }
 
 GameController::~GameController() noexcept {}
+
+bool GameController::eventFilter(QObject *object, QEvent *event) {
+  if (object == _gameView.get()) {
+    if (event->type() == QEvent::KeyPress) {
+      QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+      keyPressEvent(keyEvent);
+      return true;
+    }
+  }
+  return QWidget::eventFilter(object, event);
+}
+
 void GameController::keyPressEvent(QKeyEvent *event) {
   UserAction_t action;
   bool actionProcessed = true;

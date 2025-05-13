@@ -27,6 +27,12 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+#ifdef GAME
+#define G_TITLE GAME
+#else
+#define G_TITLE "Brick Game"
+#endif
+
 typedef enum {
   Start,
   Pause,

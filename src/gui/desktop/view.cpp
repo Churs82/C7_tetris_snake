@@ -4,7 +4,14 @@ namespace s21 {
 
 GameView::GameView(QMainWindow *parent) : QMainWindow(parent) {
   setFixedSize(_app_width, _app_height);
-  _controller = parent;
+#ifdef G_TITLE
+  setWindowTitle(G_TITLE);
+#endif
+  _updateTimer = std::make_unique<QTimer>(this);
+  connect(_updateTimer.get(), &QTimer::timeout, this, &GameView::render);
+  _updateTimer->start(30);
+
+  show();
 }
 
 GameView::~GameView() noexcept {};
@@ -103,7 +110,8 @@ void GameView::showModal(QPainter &painter, const QString &msg) {
  */
 void GameView::renderLabel(QPainter &painter, const QString &label, int number,
                            QPoint position) {
-  painter.setPen(Qt::black);
+  painter.setPen(Qt::color0);
+  painter.setBrush(Qt::NoBrush);
   QFont font("Noto Mono", 12, QFont::Bold);
   painter.setFont(font);
 
@@ -112,11 +120,6 @@ void GameView::renderLabel(QPainter &painter, const QString &label, int number,
 
   painter.drawText(position, text);
 }
-
-void GameView::keyPressEvent(QKeyEvent *event) {
-  _controller->keyPressEvent(event);
-}
-
 
 }  // namespace s21
 #include "view.moc"

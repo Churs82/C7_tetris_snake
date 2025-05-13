@@ -9,7 +9,7 @@
 #include "view.h"
 
 namespace s21 {
-class GameController : public QMainWindow {
+class GameController : public QWidget {
   Q_OBJECT
 
  public:
@@ -17,6 +17,7 @@ class GameController : public QMainWindow {
   ~GameController() noexcept override;
 
  protected:
+  bool eventFilter(QObject *object, QEvent *event) override;
   void keyPressEvent(QKeyEvent *event) override;
   bool getUserInput(UserAction_t &action);
 
