@@ -38,7 +38,7 @@ games: $(GAMES)
 %.h:
 
 $(GAMES):  
-	$(MAKE) $(DIR_BUILD)$@_$(IF_NAME)
+	$(MAKE) $(DIR_BUILD)$@_$(IF_NAME) --trace
 
 $(DIR_BUILD)%_$(IF_NAME): $(IF_OBJS) $(DIR_BUILD)lib%.a 
 	$(CC) $(FLAGS) $(IF_OBJS) $(LFLAGS) -l$(notdir $(patsubst %_$(IF_NAME),%,$@)) $(OS_MAC_UX) -L. -L$(DIR_BUILD)  -o $@

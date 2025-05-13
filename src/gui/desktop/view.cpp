@@ -7,11 +7,9 @@ GameView::GameView(QMainWindow *parent) : QMainWindow(parent) {
 #ifdef G_TITLE
   setWindowTitle(G_TITLE);
 #endif
-  _updateTimer = std::make_unique<QTimer>(this);
-  connect(_updateTimer.get(), &QTimer::timeout, this, &GameView::render);
-  _updateTimer->start(30);
-
-  show();
+  setPalette(QApplication::style()->standardPalette());
+  setAutoFillBackground(true);
+  setStyleSheet("");
 }
 
 GameView::~GameView() noexcept {};
@@ -60,22 +58,22 @@ void GameView::drawBorder(QPainter &painter, const QRect &rect) {
 }
 
 void GameView::drawNext(QPainter &painter, int **const next) {
+  constexpr int box_x = _game_field_width + 2 * _screen_unit;
+  constexpr int box_y = _game_field_height - _box_dimension + _screen_unit;
+  constexpr int box_width = _box_dimension;
+  constexpr int box_height = _box_dimension;
+
+  drawBorder(painter, QRect(box_x, box_y, box_width, box_height));
+  renderLabel(painter, "Next:", -1, QPoint(box_x, box_y - 10));
+
   if (next) {
-    constexpr int box_x = _game_field_width + 2 * _screen_unit;
-    constexpr int box_y = _game_field_height - _box_dimension + _screen_unit;
-    constexpr int box_width = _box_dimension;
-    constexpr int box_height = _box_dimension;
-
-    drawBorder(painter, QRect(box_x, box_y, box_width, box_height));
-    renderLabel(painter, "Next:", -1, QPoint(box_x, box_y - 10));
-
     for (int i = 0; i < FIGURE_H; i++) {
       for (int j = 0; j < FIGURE_W; j++) {
         int color = next[i][j] & COLOR_MASK;
         if (color) {
           painter.setBrush(colorToRGB(color));
-          painter.drawRect(j * _screen_unit, i * _screen_unit, _screen_unit,
-                           _screen_unit);
+          painter.drawRect(j * _screen_unit + box_x, box_y + i * _screen_unit,
+                           _screen_unit, _screen_unit);
         }
       }
     }
@@ -110,8 +108,8 @@ void GameView::showModal(QPainter &painter, const QString &msg) {
  */
 void GameView::renderLabel(QPainter &painter, const QString &label, int number,
                            QPoint position) {
-  painter.setPen(Qt::color0);
-  painter.setBrush(Qt::NoBrush);
+  // painter.setPen(Qt::color0);
+  // painter.setBrush(Qt::NoBrush);
   QFont font("Noto Mono", 12, QFont::Bold);
   painter.setFont(font);
 

@@ -23,7 +23,7 @@ OPEN_CMD := xdg-open
 ADD_LDFLAGS = $(OS_MAC_UX)
 endif
 
-.phony: all, install, uninstall, clean, dvi, dist, test, gcov_report, clang 
+.phony: all, install, uninstall, clean, dvi, dist, test, gcov_report, clang, $$(INTERFACES), $$(GAMES), cppcheck, check_format 
 
 all: clang clean libs test games
 
@@ -103,7 +103,7 @@ games: $(GAMES)
 $(GAMES): 
 	$(MAKE) -C $(DIR_GAMES)$@ lib
 	for interface in $(INTERFACES); do \
-		$(MAKE) -C $(DIR_IF)$$interface $@; \
+		$(MAKE) -C $(DIR_IF)$$interface $@ ; \
 	done 
 
 test: libs

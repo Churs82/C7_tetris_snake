@@ -3,10 +3,17 @@ namespace s21 {
 
 GameController::GameController(QMainWindow *parent) : QWidget(parent) {
   _gameView = std::make_unique<GameView>(parent);
+  _updateTimer = std::make_unique<QTimer>(_gameView.get());
+  connect(_updateTimer.get(), &QTimer::timeout, _gameView.get(),
+          &GameView::render);
+  _gameView->installEventFilter(this);
+  _gameView->show();
+  _gameView->setFocus();
+  _updateTimer->start(30);
 }
-
 GameController::~GameController() noexcept {}
 
+GameInfo_t GameController::getGameInfo() { return ::updateCurrentState(); }
 bool GameController::eventFilter(QObject *object, QEvent *event) {
   if (object == _gameView.get()) {
     if (event->type() == QEvent::KeyPress) {
@@ -56,8 +63,8 @@ void GameController::keyPressEvent(QKeyEvent *event) {
   }
   if (actionProcessed) {
     ::userInput(action, true);
-    _gameView->update();
   }
+  _gameView->update();
 }
 
 bool GameController::getUserInput(UserAction_t &action) {

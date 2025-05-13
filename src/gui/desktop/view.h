@@ -2,21 +2,19 @@
 #define GAME_VIEW_QT_H
 
 #define QT_FEATURE_MENU -1
-#define COLOR_MASK 7
-#define COLOR_MAP                                                          \
-  std::array<QColor, 8> {                                                  \
-    QColor(0, 0, 0), QColor(92, 84, 164, 255), QColor(252, 164, 124, 255), \
-        QColor(204, 100, 148, 255), QColor(228, 124, 140, 255),            \
-        QColor(164, 92, 164, 255), QColor(252, 196, 132, 255),             \
-        QColor(140, 108, 172, 255)                                         \
+#define COLOR_MASK 15
+#define COLOR_MAP                                                        \
+  std::array<QColor, 9> {                                                \
+    Qt::color0, Qt::color1, Qt::darkBlue, Qt::darkGreen, Qt::darkYellow, \
+        Qt::darkCyan, Qt::darkMagenta, Qt::darkRed, Qt::red              \
   }
 
 #include <QtCore/QQueue>
-#include <QtCore/QTimer>
 #include <QtGui/QPainter>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMessageBox>
+#include <QtWidgets/QStyle>
 
 #include "../../inc/lib.h"
 
@@ -52,19 +50,20 @@ class GameView : public QMainWindow {
   void paintEvent(QPaintEvent * /*event*/) override;
 
  private:
-  static constexpr int _game_field_width =
-      200;  ///< Width of the game field in pixels.
-  static constexpr int _game_field_height =
-      400;  ///< Height of the game field in pixels.
   static constexpr int _screen_unit =
       20;  ///< Padding size, one game element block.
+  static constexpr int _game_field_width =
+      COLS_MAP * _screen_unit;  ///< Width of the game field in pixels.
+  static constexpr int _game_field_height =
+      ROWS_MAP * _screen_unit;  ///< Height of the game field in pixels.
+
   static constexpr int _box_dimension =
-      100;  ///< Modal & next piece preview box in tetris.
+      FIGURE_H * _screen_unit;  ///< Modal & next piece preview box in tetris.
   static constexpr int _app_width =
       _game_field_width + _box_dimension + 6 * _screen_unit;
   static constexpr int _app_height = _game_field_height + 2 * _screen_unit;
 
-  std::unique_ptr<QTimer> _updateTimer;
+  QMainWindow *_controller;  ///< Pointer to the controller.
 
   /**
    * @brief Converts a game color index to an RGB color.
@@ -113,6 +112,7 @@ class GameView : public QMainWindow {
    */
   void drawNext(QPainter &painter, int **const next);
 
+ private:
   /**
    * @brief Displays a modal message over the game screen.
    *
@@ -148,7 +148,7 @@ class GameView : public QMainWindow {
    */
   void drawBorder(QPainter &painter, const QRect &rect);
 
- private slots:
+ public slots:
   /**
    * @brief Renders the game screen when the timer triggers a refresh.
    */
