@@ -5,6 +5,7 @@
 #include <QtCore/QTimer>
 #include <QtGui/QKeyEvent>
 #include <QtWidgets/QMainWindow>
+#include <map>
 
 #include "../../inc/lib.h"
 #include "view.h"
@@ -31,6 +32,15 @@ class GameController : public QWidget {
   std::unique_ptr<GameView> _gameView;
   std::unique_ptr<QMainWindow> _mainWindow;
   std::unique_ptr<QTimer> _updateTimer;
+
+  /* Constants */
+ private:
+  const std::map<Qt::Key, UserAction_t> _key_map{
+      {Qt::Key_Left, Left},    {Qt::Key_Right, Right},
+      {Qt::Key_Up, Up},        {Qt::Key_Down, Down},
+      {Qt::Key_Space, Action}, {Qt::Key_Return, Start},
+      {Qt::Key_Enter, Start},  {Qt::Key_Escape, Terminate},
+      {Qt::Key_P, Pause},      {Qt::Key_Space, Action}};
 };
 }  // namespace s21
 #endif

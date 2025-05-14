@@ -17,13 +17,9 @@
 #define SNAKE_MASK 1
 #define APPLE_MASK 2
 
-#define INTRO_MESSAGE \
-  " Press ENTER to start or Esc to exit! ***********************"
-#define EXIT_MESSAGE " Press ENTER to resume or ESC to exit!"
-#define GAMEOVER_MESSAGE "Press ENTER to restart or ESC to exit!"
-#define WIN_MESSAGE \
-  "You won!!!"      \
-  "Press ENTER to restart or ESC to exit!"
+#define INTRO_MESSAGE "Press ENTER to start or Esc to exit!"
+#define EXIT_MESSAGE "Press ENTER to resume or ESC to exit!"
+#define PAUSE_MESSAGE "Press any key to resume!"
 #ifdef __cplusplus
 extern "C" {
 #endif

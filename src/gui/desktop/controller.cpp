@@ -13,18 +13,22 @@ void GameController::start() {
   _gameView->setMessageModal(INTRO_MESSAGE);
   _gameView->show();
   _gameView->setFocus();
-  _updateTimer->start(30);
+  _updateTimer->start(20);
 }
 
 GameController::~GameController() noexcept {}
 
 GameInfo_t GameController::getGameInfo() {
   GameInfo_t gameInfo = ::updateCurrentState();
-  if (gameInfo.field == nullptr) QApplication::exit();
-  if (gameInfo.pause && _gameView->getMessageModal()->isEmpty())
-    _gameView->setMessageModal("Press any key to Resume");
+  if (gameInfo.field == nullptr) QApplication::quit();
+  if ((!_gameView->getMessageModal()->isEmpty() && !gameInfo.pause) ||
+      (_gameView->getMessageModal()->isEmpty() && gameInfo.pause)) {
+    ::userInput(Pause, false);
+    gameInfo = ::updateCurrentState();
+  }
   return gameInfo;
 }
+
 bool GameController::eventFilter(QObject *object, QEvent *event) {
   if (object == _gameView.get()) {
     if (event->type() == QEvent::KeyPress) {
@@ -37,52 +41,32 @@ bool GameController::eventFilter(QObject *object, QEvent *event) {
 }
 
 void GameController::keyPressEvent(QKeyEvent *event) {
-  UserAction_t action;
+  UserAction_t action = Start;
   bool actionProcessed = true;
-  switch (event->key()) {
-    case Qt::Key_Left:
-      action = Left;
-      break;
-    case Qt::Key_Right:
-      action = Right;
-      break;
-    case Qt::Key_Down:
-      action = Down;
-      break;
-    case Qt::Key_Space:
-      action = Action;
-      break;
-    case Qt::Key_Return:
-    case Qt::Key_Enter:
-      action = Start;
-      break;
-    case Qt::Key_Escape:
-      action = Terminate;
-      break;
-    case Qt::Key_Up:
-      action = Up;
-      break;
-    case Qt::Key_Slash:
-      action = Action;
-      break;
-    case Qt::Key_P:
-      action = Pause;
-      break;
-    default:
-      actionProcessed = false;
-      break;
+  try {
+    action = _key_map.at(static_cast<Qt::Key>(event->key()));
+  } catch (const std::out_of_range &) {
+    actionProcessed = false;
   }
-  if (actionProcessed) {
-    if (action != Pause) _pendingInputQueue.enqueue(action);
 
-    if (action == Terminate &&
-        _gameView->getMessageModal()->compare(EXIT_MESSAGE) != 0) {
-      _gameView->setMessageModal(EXIT_MESSAGE);
-    } else {
+  if (actionProcessed) {
+    if (action != Pause) {
+      _pendingInputQueue.enqueue(action);
+    } else if (_gameView->getMessageModal()->isEmpty()) {
+      _gameView->setMessageModal(PAUSE_MESSAGE);
+    }
+    if (_gameView->getMessageModal()->compare(EXIT_MESSAGE) != 0) {
+      if (action == Terminate) {
+        _gameView->setMessageModal(EXIT_MESSAGE);
+      } else {
+        ::userInput(action, false);
+      }
+    } else if (action == Start || action == Terminate) {
       _gameView->setMessageModal("");
-      ::userInput(action, true);
+      ::userInput(action, false);
     }
   }
+
   _gameView->update();
 }
 
