@@ -10,6 +10,8 @@
 #include "view.h"
 
 namespace s21 {
+
+class GameView;
 class GameController : public QWidget {
   Q_OBJECT
 
@@ -17,6 +19,7 @@ class GameController : public QWidget {
   explicit GameController(QMainWindow *parent = nullptr);
   ~GameController() noexcept override;
   GameInfo_t getGameInfo();
+  void start();
 
  protected:
   bool eventFilter(QObject *object, QEvent *event) override;

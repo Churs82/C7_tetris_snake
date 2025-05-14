@@ -2,7 +2,7 @@
 
 namespace s21 {
 
-GameView::GameView(QMainWindow *parent) : QMainWindow(parent) {
+GameView::GameView(GameController *parent) : QMainWindow(parent) {
   setFixedSize(_app_width, _app_height);
 #ifdef G_TITLE
   setWindowTitle(G_TITLE);
@@ -10,6 +10,7 @@ GameView::GameView(QMainWindow *parent) : QMainWindow(parent) {
   setPalette(QApplication::style()->standardPalette());
   setAutoFillBackground(true);
   setStyleSheet("");
+  _controller = parent;
 }
 
 GameView::~GameView() noexcept {};
@@ -18,7 +19,7 @@ void GameView::render() { update(); }
 
 void GameView::paintEvent(QPaintEvent * /*event*/) {
   QPainter painter(this);
-  renderGame(painter, ::updateCurrentState());
+  renderGame(painter, _controller->getGameInfo());
 }
 
 void GameView::renderGame(QPainter &painter, const ::GameInfo_t &gameInfo) {
@@ -35,7 +36,7 @@ void GameView::renderGame(QPainter &painter, const ::GameInfo_t &gameInfo) {
       painter, "Level: ", gameInfo.level,
       QPoint(_game_field_width + 2 * _screen_unit, _screen_unit * 3 + 10));
 
-  if (gameInfo.pause) showModal(painter, "Press any key to Resume");
+  if (!getMessageModal()->isEmpty()) showModal(painter, *getMessageModal());
 }
 
 void GameView::drawField(QPainter &painter, int **const field) {
@@ -118,6 +119,11 @@ void GameView::renderLabel(QPainter &painter, const QString &label, int number,
 
   painter.drawText(position, text);
 }
+void GameView::setMessageModal(const char *message) {
+  _message_modal.reset(new QString(QString::fromUtf8(message)));
+}
+
+QString *GameView::getMessageModal() { return _message_modal.get(); }
 
 }  // namespace s21
 #include "view.moc"

@@ -2,18 +2,29 @@
 namespace s21 {
 
 GameController::GameController(QMainWindow *parent) : QWidget(parent) {
-  _gameView = std::make_unique<GameView>(parent);
+  _gameView = std::make_unique<GameView>(this);
+}
+
+void GameController::start() {
   _updateTimer = std::make_unique<QTimer>(_gameView.get());
   connect(_updateTimer.get(), &QTimer::timeout, _gameView.get(),
           &GameView::render);
   _gameView->installEventFilter(this);
+  _gameView->setMessageModal(INTRO_MESSAGE);
   _gameView->show();
   _gameView->setFocus();
   _updateTimer->start(30);
 }
+
 GameController::~GameController() noexcept {}
 
-GameInfo_t GameController::getGameInfo() { return ::updateCurrentState(); }
+GameInfo_t GameController::getGameInfo() {
+  GameInfo_t gameInfo = ::updateCurrentState();
+  if (gameInfo.field == nullptr) QApplication::exit();
+  if (gameInfo.pause && _gameView->getMessageModal()->isEmpty())
+    _gameView->setMessageModal("Press any key to Resume");
+  return gameInfo;
+}
 bool GameController::eventFilter(QObject *object, QEvent *event) {
   if (object == _gameView.get()) {
     if (event->type() == QEvent::KeyPress) {
@@ -62,7 +73,15 @@ void GameController::keyPressEvent(QKeyEvent *event) {
       break;
   }
   if (actionProcessed) {
-    ::userInput(action, true);
+    if (action != Pause) _pendingInputQueue.enqueue(action);
+
+    if (action == Terminate &&
+        _gameView->getMessageModal()->compare(EXIT_MESSAGE) != 0) {
+      _gameView->setMessageModal(EXIT_MESSAGE);
+    } else {
+      _gameView->setMessageModal("");
+      ::userInput(action, true);
+    }
   }
   _gameView->update();
 }

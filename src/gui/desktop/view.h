@@ -17,9 +17,11 @@
 #include <QtWidgets/QStyle>
 
 #include "../../inc/lib.h"
+#include "controller.h"
 
 namespace s21 {
 
+class GameController;
 /**
  * @class GameView
  * @brief Qt-based graphical interface.
@@ -38,8 +40,12 @@ class GameView : public QMainWindow {
    * game logic.
    * @param parent Pointer to the parent QWidget (optional).
    */
-  explicit GameView(QMainWindow *parent = nullptr);
+  explicit GameView(GameController *parent = nullptr);
   virtual ~GameView() noexcept;
+
+  void setMessageModal(const char *message = nullptr);
+
+  QString *getMessageModal();
 
  protected:
   /**
@@ -63,7 +69,8 @@ class GameView : public QMainWindow {
       _game_field_width + _box_dimension + 6 * _screen_unit;
   static constexpr int _app_height = _game_field_height + 2 * _screen_unit;
 
-  QMainWindow *_controller;  ///< Pointer to the controller.
+  GameController *_controller;              ///< Pointer to the controller.
+  std::unique_ptr<QString> _message_modal;  ///< Pointer to the message modal.
 
   /**
    * @brief Converts a game color index to an RGB color.

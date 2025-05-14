@@ -23,7 +23,8 @@ Start_state::Start_state(model* fsm) {
   fsm_->InitGI();
   fsm_->LoadScore();
 }
-void Start_state::Update() { fsm_->TransitionTo<Spawn_state>(); }
+void Start_state::Start() { fsm_->TransitionTo<Spawn_state>(); }
+
 Start_state::~Start_state() { fsm_->SpawnSnake(); }
 
 // Spawn_state definitions

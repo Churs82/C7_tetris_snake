@@ -109,10 +109,9 @@ struct Start_state : public State {
   explicit Start_state(model* fsm);
 
   /**
-   * @brief Update function for the Start_state.
+   * @brief Handle the start signal action in the Start_state.
    */
-  void Update() override;
-
+  void Start() override;
   /**
    * @brief Destructor for the Start_state class.
    */
