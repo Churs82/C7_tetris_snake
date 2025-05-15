@@ -35,7 +35,15 @@ void GameView::renderGame(QPainter &painter, const ::GameInfo_t &gameInfo) {
   renderLabel(
       painter, "Level: ", gameInfo.level,
       QPoint(_game_field_width + 2 * _screen_unit, _screen_unit * 3 + 10));
-
+  if (gameInfo.pause) {
+    renderLabel(
+        painter, "Paused", -1,
+        QPoint(_game_field_width + 2 * _screen_unit, _game_field_height));
+  } else {
+    renderLabel(
+        painter, "P for pause", -1,
+        QPoint(_game_field_width + 2 * _screen_unit, _game_field_height));
+  }
   if (!getMessageModal()->isEmpty()) showModal(painter, *getMessageModal());
 }
 
@@ -60,7 +68,7 @@ void GameView::drawBorder(QPainter &painter, const QRect &rect) {
 
 void GameView::drawNext(QPainter &painter, int **const next) {
   constexpr int box_x = _game_field_width + 2 * _screen_unit;
-  constexpr int box_y = _game_field_height - _box_dimension + _screen_unit;
+  constexpr int box_y = _game_field_height - _box_dimension - 2 * _screen_unit;
   constexpr int box_width = _box_dimension;
   constexpr int box_height = _box_dimension;
 
@@ -87,8 +95,8 @@ QColor GameView::colorToRGB(long unsigned int color) {
 }
 
 void GameView::showModal(QPainter &painter, const QString &msg) {
-  QRect modalRect(_screen_unit * 3, _app_height / 2 - _box_dimension / 4,
-                  _app_width - 6 * _screen_unit, _box_dimension / 2);
+  QRect modalRect(_screen_unit * 3, _app_height / 2 - _box_dimension,
+                  _app_width - 6 * _screen_unit, _box_dimension);
   painter.setBrush(Qt::white);
   painter.drawRect(modalRect);
   drawBorder(painter, modalRect);
@@ -96,7 +104,7 @@ void GameView::showModal(QPainter &painter, const QString &msg) {
   painter.setPen(Qt::black);
   QFont font("Noto Mono", 13, QFont::Bold);
   painter.setFont(font);
-  painter.drawText(modalRect, Qt::AlignCenter, msg);
+  painter.drawText(modalRect, Qt::AlignCenter | Qt::TextWordWrap, msg);
 }
 
 /**
@@ -124,6 +132,8 @@ void GameView::setMessageModal(const char *message) {
 }
 
 QString *GameView::getMessageModal() { return _message_modal.get(); }
+
+void GameView::clearMessageModal() { _message_modal.reset(new QString); }
 
 }  // namespace s21
 #include "view.moc"

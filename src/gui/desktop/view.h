@@ -47,6 +47,8 @@ class GameView : public QMainWindow {
 
   QString *getMessageModal();
 
+  void clearMessageModal();
+
  protected:
   /**
    * @brief Handles game rendering events.

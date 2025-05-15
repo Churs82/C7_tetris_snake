@@ -36,6 +36,9 @@ bool GameController::eventFilter(QObject *object, QEvent *event) {
       keyPressEvent(keyEvent);
       return true;
     }
+    if (event->type() == QEvent::Close){
+      QApplication::quit();
+    }
   }
   return QWidget::eventFilter(object, event);
 }
