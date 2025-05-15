@@ -36,7 +36,7 @@ bool GameController::eventFilter(QObject *object, QEvent *event) {
       keyPressEvent(keyEvent);
       return true;
     }
-    if (event->type() == QEvent::Close){
+    if (event->type() == QEvent::Close) {
       QApplication::quit();
     }
   }
@@ -71,6 +71,13 @@ void GameController::keyPressEvent(QKeyEvent *event) {
   }
 
   _gameView->update();
+}
+
+void GameController::processKeysQueue() {
+  UserAction_t action;
+  while (getUserInput(action)) {
+    ::userInput(action, true);
+  }
 }
 
 bool GameController::getUserInput(UserAction_t &action) {

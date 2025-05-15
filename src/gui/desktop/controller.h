@@ -20,6 +20,7 @@ class GameController : public QWidget {
   explicit GameController(QMainWindow *parent = nullptr);
   ~GameController() noexcept override;
   GameInfo_t getGameInfo();
+  void processKeysQueue();
   void start();
 
  protected:
