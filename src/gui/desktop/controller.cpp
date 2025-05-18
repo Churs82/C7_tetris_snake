@@ -19,6 +19,7 @@ void GameController::start() {
 GameController::~GameController() noexcept {}
 
 GameInfo_t GameController::getGameInfo() {
+  processKeysQueue();
   GameInfo_t gameInfo = ::updateCurrentState();
   if (gameInfo.field == nullptr) QApplication::quit();
   if ((!_gameView->getMessageModal()->isEmpty() && !gameInfo.pause) ||
@@ -53,21 +54,7 @@ void GameController::keyPressEvent(QKeyEvent *event) {
   }
 
   if (actionProcessed) {
-    if (action != Pause) {
-      _pendingInputQueue.enqueue(action);
-    } else if (_gameView->getMessageModal()->isEmpty()) {
-      _gameView->setMessageModal(PAUSE_MESSAGE);
-    }
-    if (_gameView->getMessageModal()->compare(EXIT_MESSAGE) != 0) {
-      if (action == Terminate) {
-        _gameView->setMessageModal(EXIT_MESSAGE);
-      } else {
-        ::userInput(action, false);
-      }
-    } else if (action == Start || action == Terminate) {
-      _gameView->setMessageModal("");
-      ::userInput(action, false);
-    }
+    _pendingInputQueue.enqueue(action);
   }
 
   _gameView->update();
@@ -76,7 +63,28 @@ void GameController::keyPressEvent(QKeyEvent *event) {
 void GameController::processKeysQueue() {
   UserAction_t action;
   while (getUserInput(action)) {
-    ::userInput(action, true);
+    sendUserInput(action);
+  }
+}
+
+void GameController::closeEvent(QCloseEvent *event) {
+  userInput(Terminate, false);
+  QWidget::closeEvent(event);
+}
+
+void GameController::sendUserInput(UserAction_t action) {
+  if (action == Pause && _gameView->getMessageModal()->isEmpty()) {
+    _gameView->setMessageModal(PAUSE_MESSAGE);
+  }
+  if (_gameView->getMessageModal()->compare(EXIT_MESSAGE) != 0) {
+    if (action == Terminate) {
+      _gameView->setMessageModal(EXIT_MESSAGE);
+    } else {
+      ::userInput(action, false);
+    }
+  } else if (action == Start || action == Terminate) {
+    _gameView->clearMessageModal();
+    ::userInput(action, false);
   }
 }
 

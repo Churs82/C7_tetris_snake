@@ -27,6 +27,8 @@ class GameController : public QWidget {
   bool eventFilter(QObject *object, QEvent *event) override;
   void keyPressEvent(QKeyEvent *event) override;
   bool getUserInput(UserAction_t &action);
+  void sendUserInput(UserAction_t action);
+  void closeEvent(QCloseEvent *event) override;
 
  private:
   QQueue<UserAction_t> _pendingInputQueue;
