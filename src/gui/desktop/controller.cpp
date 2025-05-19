@@ -22,10 +22,12 @@ GameInfo_t GameController::getGameInfo() {
   processKeysQueue();
   GameInfo_t gameInfo = ::updateCurrentState();
   if (gameInfo.field == nullptr) QApplication::quit();
-  if ((!_gameView->getMessageModal()->isEmpty() && !gameInfo.pause) ||
-      (_gameView->getMessageModal()->isEmpty() && gameInfo.pause)) {
-    ::userInput(Pause, false);
-    gameInfo = ::updateCurrentState();
+  if (_gameView->getMessageModal()->isEmpty() && gameInfo.pause) {
+    _gameView->setMessageModal(PAUSE_MESSAGE);
+  }
+  if (!gameInfo.pause &&
+      !_gameView->getMessageModal()->compare(PAUSE_MESSAGE)) {
+    _gameView->clearMessageModal();
   }
   return gameInfo;
 }
@@ -73,11 +75,11 @@ void GameController::closeEvent(QCloseEvent *event) {
 }
 
 void GameController::sendUserInput(UserAction_t action) {
-  if (action == Pause && _gameView->getMessageModal()->isEmpty()) {
-    _gameView->setMessageModal(PAUSE_MESSAGE);
-  }
-  if (_gameView->getMessageModal()->compare(EXIT_MESSAGE) != 0) {
+  if (_gameView->getMessageModal()->compare(EXIT_MESSAGE) &&
+      _gameView->getMessageModal()->compare(INTRO_MESSAGE)) {
     if (action == Terminate) {
+      if (_gameView->getMessageModal()->compare(PAUSE_MESSAGE))
+        ::userInput(Pause, false);
       _gameView->setMessageModal(EXIT_MESSAGE);
     } else {
       ::userInput(action, false);

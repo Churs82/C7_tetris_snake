@@ -1,2 +1,6 @@
-.vscode/launch.json
-src/snake_hs.conf
+.vscode/*
+src/*_hs.conf
+src/out/*
+src/gui/*/*.o
+src/brick_game/*/*.o
+src/tests/*.o

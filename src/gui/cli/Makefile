@@ -20,6 +20,7 @@ OS_MAC_UX:=-lsubunit -lm
 RM:=rm -rf
 
 .phony: all, clean, games
+.PRECIOUS: $(IF_OBJS)
 
 all: games
 

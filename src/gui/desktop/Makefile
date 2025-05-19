@@ -18,7 +18,8 @@ IF_OBJS:=$(IF_SRC:.cpp=.o)
 OS_MAC_UX:=
 RM:=rm -rf
 
-.phony: all, clean, games
+.phony: all, clean, games, $(GAMES)
+.PRECIOUS: $(IF_OBJS)
 
 all: games
 
