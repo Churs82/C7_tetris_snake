@@ -23,7 +23,7 @@
                                                     */                \
         {restart, NULL, doexit, NULL, NULL, NULL, NULL, NULL},        \
     /* EXIT_STATE */ {                                                \
-      NULL, NULL, doexit, NULL, NULL, NULL, NULL, NULL                \
+      restart, NULL, doexit, NULL, NULL, NULL, NULL, NULL             \
     }                                                                 \
   }
 /* START SPAWN MOVING DOWNSHIFTING ATTACHING GAME_OVER EXIT_STATE */

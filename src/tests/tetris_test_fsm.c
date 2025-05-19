@@ -1,5 +1,6 @@
 #include "tetris_test.h"
 START_TEST(tetris_test_init_1) {
+  userInput(Start, false);
   updateCurrentState();
   userInput(Terminate, false);
   GameInfo_t gs = updateCurrentState();
@@ -8,17 +9,15 @@ START_TEST(tetris_test_init_1) {
 END_TEST
 
 START_TEST(tetris_test_gameover) {
-  userInput(Start, false);
   updateCurrentState();
   userInput(Start, false);
+  updateCurrentState();
+  ck_assert_ptr_ne(updateCurrentState().field, NULL);
+
   for (int i = 0; i < 1000; i++) {
     userInput(Down, false);
     updateCurrentState();
   }
-
-  userInput(Start, false);
-  ck_assert_ptr_ne(updateCurrentState().field, NULL);
-  userInput(Terminate, false);
   userInput(Terminate, false);
   ck_assert_ptr_eq(updateCurrentState().field, NULL);
 }
@@ -27,8 +26,7 @@ END_TEST
 START_TEST(tetris_test_move) {
   userInput(Start, false);
   updateCurrentState();
-  userInput(Start, false);
-  updateCurrentState();
+
   for (int i = 0; i < 5; i++) userInput(Left, false);
   userInput(Down, false);
   for (int i = 0; i < 10; i++) userInput(Right, false);

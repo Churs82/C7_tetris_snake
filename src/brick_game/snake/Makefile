@@ -6,14 +6,14 @@ PWD?:=$(shell pwd)
 DIR_INC=../../inc
 FLAGS := -I $(DIR_INC) -std=c++17 -Wall -Wpedantic -fstack-protector-strong -g #-Werror
 CFLAGS:=$(FLAGS) -c
-TSTFLAGS := -lcheck
+TSTFLAGS :=-lgtest -lgtest_main -pthread
 LIB_NAME = $(notdir $(CURDIR))
 LIB = lib$(LIB_NAME).a
 DIR_BUILD:=../../out/
 DIR_TESTS:=../../tests/
-TEST_SRC:=$(wildcard $(DIR_TESTS)$(LIB_NAME)_*.c)
+TEST_SRC:=$(wildcard $(DIR_TESTS)$(LIB_NAME)_*.cpp)
 LIB_SRC:=$(wildcard *.cpp) # https://runebook.dev/ru/docs/gnu_make/wildcard-function
-TEST_OBJS=$(TEST_SRC:.c=.o)
+TEST_OBJS=$(TEST_SRC:.cpp=.o)
 LIB_OBJS:=$(LIB_SRC:.cpp=.o)
 
 OS_MAC_UX:=-lsubunit -lm
@@ -36,7 +36,7 @@ $(LIB_OBJS): $(LIB_SRC)
 	$(CC) $(CFLAGS) $(DIR_LIB)$(patsubst %.o,%.cpp,$(notdir $@)) $(COV_FLAGS) -o $@
 
 $(TEST_OBJS): $(TEST_SRC)
-	$(CC) $(CFLAGS) $(DIR_TESTS)$(patsubst %.o,%.c,$(notdir $@)) -o $@
+	$(CC) $(CFLAGS) $(DIR_TESTS)$(patsubst %.o,%.cpp,$(notdir $@)) -o $@
 
 lib: $(LIB)
 
