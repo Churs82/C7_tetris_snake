@@ -3,11 +3,6 @@
 
 #define QT_FEATURE_MENU -1
 #define COLOR_MASK 15
-#define COLOR_MAP                                                        \
-  std::array<QColor, 9> {                                                \
-    Qt::color0, Qt::color1, Qt::darkBlue, Qt::darkGreen, Qt::darkYellow, \
-        Qt::darkCyan, Qt::darkMagenta, Qt::darkRed, Qt::red              \
-  }
 
 #include <QtCore/QQueue>
 #include <QtGui/QPainter>
@@ -16,152 +11,127 @@
 #include <QtWidgets/QMessageBox>
 #include <QtWidgets/QStyle>
 
-#include "../../inc/lib.h"
 #include "controller.h"
+#include "lib.h"
 
 namespace s21 {
 
 class GameController;
-/**
- * @class GameView
- * @brief Qt-based graphical interface.
- *
- * Manages game rendering using `QPainter` and processes user input via
- * `QKeyEvent`.
- */
+
 class GameView : public QMainWindow {
   Q_OBJECT
-
  public:
   /**
-   * @brief Constructs the Qt-based game view.
-   *
-   * @param logicBridge Pointer to `LogicGuiBridge` for interaction with the
-   * game logic.
-   * @param parent Pointer to the parent QWidget (optional).
+   * @brief Constructs a GameView with an optional parent controller.
+   * @param parent Pointer to the GameController parent.
    */
-  explicit GameView(GameController *parent = nullptr);
-  virtual ~GameView() noexcept;
-
-  void setMessageModal(const char *message = nullptr);
-
-  QString *getMessageModal();
-
-  void clearMessageModal();
-
- protected:
-  /**
-   * @brief Handles game rendering events.
-   *
-   * @param event The paint event triggered for rendering.
-   */
-  void paintEvent(QPaintEvent * /*event*/) override;
-
- private:
-  static constexpr int _screen_unit =
-      20;  ///< Padding size, one game element block.
-  static constexpr int _game_field_width =
-      COLS_MAP * _screen_unit;  ///< Width of the game field in pixels.
-  static constexpr int _game_field_height =
-      ROWS_MAP * _screen_unit;  ///< Height of the game field in pixels.
-
-  static constexpr int _box_dimension =
-      FIGURE_H * _screen_unit;  ///< Modal & next piece preview box in tetris.
-  static constexpr int _app_width =
-      _game_field_width + _box_dimension + 6 * _screen_unit;
-  static constexpr int _app_height = _game_field_height + 2 * _screen_unit;
-
-  GameController *_controller;              ///< Pointer to the controller.
-  std::unique_ptr<QString> _message_modal;  ///< Pointer to the message modal.
+  explicit GameView(GameController* parent = nullptr);
 
   /**
-   * @brief Converts a game color index to an RGB color.
-   *
-   * Used to determine the visual representation of game elements.
-   *
-   * @param color The numerical index of the game color (1-7).
-   * @return `QColor` representing the corresponding RGB color.
+   * @brief Destructor for GameView.
    */
-  QColor colorToRGB(long unsigned int);
+  ~GameView() noexcept override;
 
   /**
-   * @brief Renders the game state on the Qt window.
-   *
-   * Handles the drawing of the field, the current piece, the next piece
-   * preview, and game status messages like "Game Over" or "Press ENTER to
-   * Start".
-   *
-   * @param painter Reference to `QPainter` used for rendering.
-   * @param gameInfo Pointer to `GameInfo_t` containing game statistics.
-   * @param dynamicElement Pointer to a 2D array representing dynamic game
-   * elements.
+   * @brief Renders the game view.
    */
-  void renderGame(QPainter &painter, const ::GameInfo_t &gameInfo);
+  void Render();
 
   /**
-   * @brief Draws the game field and dynamic elements.
-   *
-   * The function first draws the background grid, then overlays any moving
-   * elements.
-   *
-   * @param painter Reference to `QPainter` used for rendering.
-   * @param gameInfo Pointer to `GameInfo_t` containing the current game field
-   * data.
+   * @brief Handles paint events for the game view.
+   * @param event The paint event.
    */
-  void drawField(QPainter &painter, int **const field);
+  void paintEvent(QPaintEvent*) override;
 
   /**
-   * @brief Draws the "next" preview box.
-   *
-   * If a next piece is available, this function outlines a box and renders the
-   * piece.
-   *
-   * @param painter Reference to `QPainter` used for rendering.
-   * @param gameInfo Pointer to `GameInfo_t` containing the next piece data.
+   * @brief Renders the game field and elements.
+   * @param painter The QPainter to draw on.
+   * @param game_info The current game state information.
    */
-  void drawNext(QPainter &painter, int **const next);
-
- private:
-  /**
-   * @brief Displays a modal message over the game screen.
-   *
-   * Used to show messages like "Press ENTER to Start".
-   *
-   * @param painter Reference to `QPainter` used for rendering.
-   * @param msg The message text to display in the modal.
-   */
-  void showModal(QPainter &painter, const QString &msg);
+  void RenderGame(QPainter& painter, const ::GameInfo_t& game_info);
 
   /**
-   * @brief Renders a text label on the game screen.
-   *
-   * Used for displaying labels such as "Score: 100" or "Level: 3".
-   *
-   * @param painter Reference to `QPainter` used for rendering.
-   * @param label The text label to display.
-   * @param value The numerical value to display next to the label (-1 if no
-   * value).
-   * @param position The screen position where the label should be drawn.
+   * @brief Draws the game field.
+   * @param painter The QPainter to draw on.
+   * @param field The field array.
    */
-  void renderLabel(QPainter &painter, const QString &label, int value,
+  void DrawField(QPainter& painter, int** const field);
+
+  /**
+   * @brief Draws the border around the game field.
+   * @param painter The QPainter to draw on.
+   * @param rect The rectangle area for the border.
+   */
+  void DrawBorder(QPainter& painter, const QRect& rect);
+
+  /**
+   * @brief Draws the next figure preview.
+   * @param painter The QPainter to draw on.
+   * @param next The next figure array.
+   */
+  void DrawNext(QPainter& painter, int** const next);
+
+  /**
+   * @brief Converts a color value to QColor.
+   * @param color The color value.
+   * @return QColor representation.
+   */
+  QColor ColorToRgb(unsigned long color);
+
+  /**
+   * @brief Shows a modal message on the game view.
+   * @param painter The QPainter to draw on.
+   * @param msg The message to display.
+   */
+  void ShowModal(QPainter& painter, const QString& msg);
+
+  /**
+   * @brief Draws a label with the given text and number at the given position.
+   * @param painter The QPainter to draw on.
+   * @param label The label text.
+   * @param number The number to append to the label (if >= 0).
+   * @param position The position to draw the label at.
+   */
+  void RenderLabel(QPainter& painter, const QString& label, int number,
                    QPoint position);
 
   /**
-   * @brief Draws a border around a given rectangular area.
-   *
-   * Used for outlining game areas, such as the game field or next tetromino
-   * preview box.
-   *
-   * @param painter Reference to `QPainter` used for rendering.
-   * @param rect The `QRect` defining the area to be outlined.
+   * @brief Sets the modal message to display.
+   * @param message The message string.
    */
-  void drawBorder(QPainter &painter, const QRect &rect);
+  void SetMessageModal(const char* message);
 
- public slots:
   /**
-   * @brief Renders the game screen when the timer triggers a refresh.
+   * @brief Gets the current modal message.
+   * @return Pointer to the message string.
    */
-  void render();
+  QString* GetMessageModal();
+
+  /**
+   * @brief Clears the current modal message.
+   */
+  void ClearMessageModal();
+
+ private:
+  static constexpr int color_mask_ = COLOR_MASK;
+  const std::array<QColor, 9> color_map_{
+      Qt::color0,      Qt::color1,     Qt::darkBlue,
+      Qt::darkGreen,   Qt::darkYellow, Qt::darkCyan,
+      Qt::darkMagenta, Qt::darkRed,    Qt::red};
+  static constexpr int rows_map_ = ROWS_MAP;
+  static constexpr int cols_map_ = COLS_MAP;
+  static constexpr int figure_h_ = FIGURE_H;
+  static constexpr int figure_w_ = FIGURE_W;
+  static constexpr int screen_unit_ = 20;
+  static constexpr int game_field_width_ = cols_map_ * screen_unit_;
+  static constexpr int game_field_height_ = rows_map_ * screen_unit_;
+  static constexpr int box_dimension_ = figure_h_ * screen_unit_;
+  static constexpr int app_width_ =
+      game_field_width_ + box_dimension_ + 6 * screen_unit_;
+  static constexpr int app_height_ = game_field_height_ + 2 * screen_unit_;
+
+  GameController* controller_;
+  std::unique_ptr<QString> message_modal_;
 };
 
 }  // namespace s21

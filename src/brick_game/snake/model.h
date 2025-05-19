@@ -23,38 +23,49 @@ using std::chrono::milliseconds;
 using std::chrono::steady_clock;
 using std::chrono::time_point;
 
-class model {
-  // using GI_unique_ptr = std::unique_ptr<GameInfo_t, std::function<void()>>;
-  using GI_unique_ptr = std::unique_ptr<GameInfo_t>;
+/**
+ * @brief The Model class manages the game state and logic for the Snake game.
+ */
+class Model {
+  using GiUniquePtr = std::unique_ptr<GameInfo_t>;
 
  public:
-  /** Singleton */
-  struct instance {
+  /**
+   * @brief Singleton instance accessor for Model.
+   */
+  struct Instance {
     /**
-     * @brief Get the singleton instance of the model.
-     * @return Pointer to the singleton instance.
+     * @brief Returns the singleton instance of Model.
+     * @return Pointer to the Model instance.
      */
-    static model* get() {
-      static std::unique_ptr<model> fsm_ptr(new model());
+    static Model* Get() {
+      static std::unique_ptr<Model> fsm_ptr(new Model());
       return fsm_ptr.get();
     }
   };
-  friend class instance;
+  friend class Instance;
 
  private:
-  model();
-  std::array<int, 2> s_head{0};
-  std::array<int, 2> s_tail{0};
-  State* state_{nullptr};
-  GI_unique_ptr game_info_{nullptr};
-  time_point<steady_clock> timer_;
+  /**
+   * @brief Constructs a Model object (private for singleton pattern).
+   */
+  Model();
+  std::array<int, 2> snake_head_{}; /**< Coordinates of the snake's head. */
+  std::array<int, 2> snake_tail_{}; /**< Coordinates of the snake's tail. */
+  State* state_ = nullptr;          /**< Pointer to the current state object. */
+  GiUniquePtr game_info_ =
+      nullptr; /**< Unique pointer to the game info struct. */
+  time_point<steady_clock> timer_; /**< Timer for game events. */
 
  public:
-  ~model();
+  /**
+   * @brief Destructor for Model.
+   */
+  ~Model();
 
   /**
-   * @brief Transition to a new state.
-   * @tparam T The type of the new state.
+   * @brief Transitions to a new state of type T.
+   * @tparam T The state class to transition to.
    */
   template <typename T>
   void TransitionTo() {
@@ -63,118 +74,121 @@ class model {
   }
 
   /**
-   * @brief Update the current state of the game.
-   * @return The updated game information.
+   * @brief Updates the current game state.
+   * @return The updated GameInfo_t struct.
    */
   GameInfo_t UpdateState();
 
   /**
-   * @brief Handle user actions.
+   * @brief Handles a user action.
    * @param action The user action to process.
    */
   void UserAction(UserAction_t action);
 
-  /* Game logical functions */
- public:
   /**
-   * @brief Toggle the pause state of the game.
+   * @brief Toggles the pause state of the game.
    */
   void TogglePause();
 
   /**
-   * @brief Initialize the game information.
+   * @brief Initializes the game info structure.
    */
-  void InitGI();
+  void InitGameInfo();
 
   /**
-   * @brief Delete the game information.
+   * @brief Deletes the game info structure and frees resources.
    */
-  void DeleteGI();
+  void DeleteGameInfo();
 
   /**
-   * @brief Rotate the snake to the left.
+   * @brief Rotates the snake left.
    */
   void RotateLeft();
 
   /**
-   * @brief Rotate the snake to the right.
+   * @brief Rotates the snake right.
    */
   void RotateRight();
 
   /**
-   * @brief Rotate the snake upwards.
+   * @brief Rotates the snake up.
    */
   void RotateUp();
 
   /**
-   * @brief Rotate the snake downwards.
+   * @brief Rotates the snake down.
    */
   void RotateDown();
 
   /**
-   * @brief Spawn the snake at the starting position.
+   * @brief Spawns the snake on the field.
    */
   void SpawnSnake();
 
   /**
-   * @brief Spawn an apple on the game field.
+   * @brief Spawns an apple on the field.
    */
   void SpawnApple();
 
   /**
-   * @brief Move the snake in the current direction.
+   * @brief Moves the snake according to the current direction.
    */
   void MoveSnake();
 
   /**
-   * @brief Start the game timer.
+   * @brief Starts the game timer.
    */
   void StartTimer();
 
   /**
-   * @brief Check the game timer for updates.
+   * @brief Checks the timer and triggers actions if needed.
    */
   void CheckTimer();
 
   /**
-   * @brief Display a splash effect on the game field.
+   * @brief Performs a splash animation on the field.
    */
   void SplashField();
 
   /**
-   * @brief Load the player's score from storage.
+   * @brief Loads the high score from persistent storage.
    */
   void LoadScore();
 
   /**
-   * @brief Save the player's score to storage.
+   * @brief Saves the high score to persistent storage.
    */
   void SaveScore();
 
+  /**
+   * @brief Restarts the game.
+   */
+  void RestartGame();
+
  private:
   /**
-   * @brief Move the snake's tail to the next position.
+   * @brief Moves the snake's tail.
    */
   void MoveTail();
 
   /**
-   * @brief Set the direction of the snake's movement.
-   * @param direction The new direction to set.
+   * @brief Sets the snake's direction.
+   * @param direction The direction to set.
    */
   void SetDirection(int direction);
 
   /**
-   * @brief Check if the next position is within bounds.
+   * @brief Checks if the next position is within bounds.
    * @param next The next position to check.
-   * @return True if the position is within bounds, false otherwise.
+   * @return True if within bounds, false otherwise.
    */
   bool CheckBounds(std::array<int, 2> next);
 
   /**
-   * @brief Add score to the player's total.
-   * @param s_num The amount of score to add (default is 1).
+   * @brief Adds score to the current game.
+   * @param score_num The amount to add (default 1).
    */
-  void AddScore(int s_num = 1);
+  void AddScore(int score_num = 1);
 };
 
 };  // namespace s21::snake

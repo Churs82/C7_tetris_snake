@@ -14,14 +14,10 @@ int main(int argc, char** argv) {
   QApplication app(argc, argv);
 
   // Initialize the game logic and GUI
-  std::unique_ptr<GameController> gameController =
+  std::unique_ptr<GameController> game_controller =
       std::make_unique<GameController>();
-  // app.installEventFilter(gameController.get());
-  gameController->start();
-  // WIN_INIT(30);
-  // setlocale(LC_ALL, "");
-  // print_overlay();
-  // game_loop();
-  // endwin();
+
+  game_controller->StartGame();
+
   return app.exec();
 }

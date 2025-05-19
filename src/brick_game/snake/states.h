@@ -14,7 +14,7 @@ namespace s21::snake {
 /**
  * @brief Forward declaration of the model class.
  */
-class model;
+class Model;
 
 /**
  * @brief Base class for all game states.
@@ -24,7 +24,7 @@ class State {
   /**
    * @brief List of actions mapped to corresponding state functions.
    */
-  const std::vector<std::function<void()>> actionMap{
+  const std::vector<std::function<void()>> action_map{
       [this] { Start(); }, [this] { Pause(); },  [this] { Terminate(); },
       [this] { Left(); },  [this] { Right(); },  [this] { Up(); },
       [this] { Down(); },  [this] { Action(); },
@@ -37,9 +37,9 @@ class State {
 
   /**
    * @brief Constructor for the State class with a model pointer.
-   * @param fsm Pointer to the model instance.
+   * @param model Pointer to the model instance.
    */
-  explicit State(model* fsm);
+  explicit State(Model* model);
 
   /**
    * @brief Virtual function to update the state.
@@ -95,41 +95,41 @@ class State {
   /**
    * @brief Pointer to the model instance.
    */
-  model* fsm_{nullptr};
+  Model* model_ = nullptr;
 };
 
 /**
  * @brief State representing the start of the game.
  */
-struct Start_state : public State {
+struct StartState : public State {
   /**
-   * @brief Constructor for the Start_state class.
-   * @param fsm Pointer to the model instance.
+   * @brief Constructor for the StartState class.
+   * @param model Pointer to the model instance.
    */
-  explicit Start_state(model* fsm);
+  explicit StartState(Model* model);
 
   /**
-   * @brief Handle the start signal action in the Start_state.
+   * @brief Handle the start signal action in the StartState.
    */
   void Start() override;
   /**
-   * @brief Destructor for the Start_state class.
+   * @brief Destructor for the StartState class.
    */
-  ~Start_state();
+  ~StartState();
 };
 
 /**
  * @brief State representing the spawning of game elements.
  */
-struct Spawn_state : public State {
+struct SpawnState : public State {
   /**
-   * @brief Constructor for the Spawn_state class.
-   * @param fsm Pointer to the model instance.
+   * @brief Constructor for the SpawnState class.
+   * @param model Pointer to the model instance.
    */
-  explicit Spawn_state(model* fsm);
+  explicit SpawnState(Model* model);
 
   /**
-   * @brief Update function for the Spawn_state.
+   * @brief Update function for the SpawnState.
    */
   void Update() override;
 };
@@ -137,15 +137,15 @@ struct Spawn_state : public State {
 /**
  * @brief State representing the rotation of the snake.
  */
-struct Rotation_state : public State {
+struct RotationState : public State {
   /**
-   * @brief Constructor for the Rotation_state class.
-   * @param fsm Pointer to the model instance.
+   * @brief Constructor for the RotationState class.
+   * @param model Pointer to the model instance.
    */
-  explicit Rotation_state(model* fsm);
+  explicit RotationState(Model* model);
 
   /**
-   * @brief Update function for the Rotation_state.
+   * @brief Update function for the RotationState.
    */
   void Update() override;
 
@@ -178,28 +178,33 @@ struct Rotation_state : public State {
 /**
  * @brief State representing the movement of the snake.
  */
-struct Moving_state : public State {
+struct MovingState : public State {
   /**
-   * @brief Constructor for the Moving_state class.
-   * @param fsm Pointer to the model instance.
+   * @brief Constructor for the MovingState class.
+   * @param model Pointer to the model instance.
    */
-  explicit Moving_state(model* fsm);
+  explicit MovingState(Model* model);
 
   /**
-   * @brief Update function for the Moving_state.
+   * @brief Update function for the MovingState.
    */
   void Update() override;
+
+  /**
+   * @brief Destructor to reset the timer after moving
+   */
+  ~MovingState() override;
 };
 
 /**
  * @brief State representing the exit of the game.
  */
-struct Exit_state : public State {
+struct ExitState : public State {
   /**
-   * @brief Constructor for the Exit_state class.
-   * @param fsm Pointer to the model instance.
+   * @brief Constructor for the ExitState class.
+   * @param model Pointer to the model instance.
    */
-  explicit Exit_state(model* fsm);
+  explicit ExitState(Model* model);
 
   void Update() override;
 };
@@ -207,20 +212,20 @@ struct Exit_state : public State {
 /**
  * @brief State representing the game over condition.
  */
-struct GameOver_state : public State {
+struct GameOverState : public State {
   /**
-   * @brief Constructor for the GameOver_state class.
-   * @param fsm Pointer to the model instance.
+   * @brief Constructor for the GameOverState class.
+   * @param model Pointer to the model instance.
    */
-  explicit GameOver_state(model* fsm);
+  explicit GameOverState(Model* model);
 
   /**
-   * @brief Update function for the GameOver_state.
+   * @brief Update function for the GameOverState.
    */
   void Update() override;
 
   /**
-   * @brief Handle the start action in the GameOver_state.
+   * @brief Handle the start action in the GameOverState.
    */
   void Start() override;
 };
@@ -228,20 +233,20 @@ struct GameOver_state : public State {
 /**
  * @brief State representing the win condition.
  */
-struct Win_state : public State {
+struct WinState : public State {
   /**
-   * @brief Constructor for the Win_state class.
-   * @param fsm Pointer to the model instance.
+   * @brief Constructor for the WinState class.
+   * @param model Pointer to the model instance.
    */
-  explicit Win_state(model* fsm);
+  explicit WinState(Model* model);
 
   /**
-   * @brief Update function for the Win_state.
+   * @brief Update function for the WinState.
    */
   void Update() override;
 
   /**
-   * @brief Handle the start action in the Win_state.
+   * @brief Handle the start action in the WinState.
    */
   void Start() override;
 };

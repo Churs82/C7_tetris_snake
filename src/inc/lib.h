@@ -29,29 +29,44 @@ extern "C" {
 #define G_TITLE "Brick Game"
 #endif
 
+/**
+ * @brief Enum representing possible user actions in the game.
+ */
 typedef enum {
-  Start,
-  Pause,
-  Terminate,
-  Left,
-  Right,
-  Up,
-  Down,
-  Action
+  Start,     /**< Start the game or resume. */
+  Pause,     /**< Pause the game. */
+  Terminate, /**< Terminate or exit the game. */
+  Left,      /**< Move or rotate left. */
+  Right,     /**< Move or rotate right. */
+  Up,        /**< Move or rotate up. */
+  Down,      /**< Move or rotate down. */
+  Action     /**< Perform an action (e.g., confirm, drop, etc.). */
 } UserAction_t;
 
+/**
+ * @brief Struct holding the current state of the game.
+ */
 typedef struct {
-  int **field;
-  int **next;
-  int score;
-  int high_score;
-  int level;
-  int speed;
-  int pause;
+  int **field;    /**< Pointer to the game field array. */
+  int **next;     /**< Pointer to the next figure/element array. */
+  int score;      /**< Current score. */
+  int high_score; /**< High score. */
+  int level;      /**< Current level. */
+  int speed;      /**< Current speed. */
+  int pause;      /**< Pause state (0 = running, 1 = paused). */
 } GameInfo_t;
 
+/**
+ * @brief Sends a user action to the game logic.
+ * @param action The user action to send.
+ * @param hold Whether the action is being held (true) or pressed once (false).
+ */
 void userInput(UserAction_t action, bool hold);
 
+/**
+ * @brief Gets the current state of the game.
+ * @return The current GameInfo_t struct.
+ */
 GameInfo_t updateCurrentState();
 #ifdef __cplusplus
 }

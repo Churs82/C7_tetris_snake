@@ -4,12 +4,12 @@ namespace s21::snake {
 
 // State class definitions
 State::State() {}
-State::State(model* fsm) : fsm_(fsm) {}
+State::State(Model* model) : model_(model) {}
 void State::Update() {}
 void State::Start() {}
 /* Common State functions */
-void State::Terminate() { fsm_->TransitionTo<Exit_state>(); }
-void State::Pause() { fsm_->TogglePause(); };
+void State::Terminate() { model_->TransitionTo<ExitState>(); }
+void State::Pause() { model_->TogglePause(); }
 void State::Left() {}
 void State::Right() {}
 void State::Down() {}
@@ -17,64 +17,59 @@ void State::Up() {}
 void State::Action() {}
 State::~State() {}
 
-// Start_state definitions
-Start_state::Start_state(model* fsm) {
-  fsm_ = fsm;
-  fsm_->InitGI();
-  fsm_->LoadScore();
+// StartState definitions
+StartState::StartState(Model* model) {
+  model_ = model;
+  model_->InitGameInfo();
+  model_->LoadScore();
 }
-void Start_state::Start() { fsm_->TransitionTo<Spawn_state>(); }
+void StartState::Start() { model_->TransitionTo<SpawnState>(); }
 
-Start_state::~Start_state() { fsm_->SpawnSnake(); }
+StartState::~StartState() { model_->SpawnSnake(); }
 
-// Spawn_state definitions
-Spawn_state::Spawn_state(model* fsm) {
-  fsm_ = fsm;
-  fsm_->SpawnApple();
+// SpawnState definitions
+SpawnState::SpawnState(Model* model) {
+  model_ = model;
+  model_->SpawnApple();
 }
-void Spawn_state::Update() { fsm_->TransitionTo<Rotation_state>(); }
+void SpawnState::Update() { model_->TransitionTo<RotationState>(); }
 
-// Rotation_state definitions
-Rotation_state::Rotation_state(model* fsm) {
-  fsm_ = fsm;
-  fsm_->StartTimer();
+// RotationState definitions
+RotationState::RotationState(Model* model) {
+  model_ = model;
+  model_->StartTimer();
 }
-void Rotation_state::Update() { fsm_->CheckTimer(); }
-void Rotation_state::Left() { fsm_->RotateLeft(); }
-void Rotation_state::Right() { fsm_->RotateRight(); }
-void Rotation_state::Down() { fsm_->RotateDown(); }
-void Rotation_state::Up() { fsm_->RotateUp(); }
-void Rotation_state::Action() { fsm_->TransitionTo<Moving_state>(); }
+void RotationState::Update() { model_->CheckTimer(); }
+void RotationState::Left() { model_->RotateLeft(); }
+void RotationState::Right() { model_->RotateRight(); }
+void RotationState::Down() { model_->RotateDown(); }
+void RotationState::Up() { model_->RotateUp(); }
+void RotationState::Action() { model_->TransitionTo<MovingState>(); }
 
-// Moving_state definitions
-Moving_state::Moving_state(model* fsm) { fsm_ = fsm; }
-void Moving_state::Update() { fsm_->MoveSnake(); }
+// MovingState definitions
+MovingState::MovingState(Model* model) { model_ = model; }
+void MovingState::Update() { model_->MoveSnake(); }
+MovingState::~MovingState() { model_->StartTimer(); }
 
-// Exit_state definitions
-Exit_state::Exit_state(model* fsm) { fsm_ = fsm; }
+// ExitState definitions
+ExitState::ExitState(Model* model) { model_ = model; }
 
-void Exit_state::Update() { fsm_->DeleteGI(); }
+void ExitState::Update() { model_->DeleteGameInfo(); }
 
-// GameOver_state definitions
-GameOver_state::GameOver_state(model* fsm) {
-  fsm_ = fsm;
-  fsm_->SaveScore();
+// GameOverState definitions
+GameOverState::GameOverState(Model* model) {
+  model_ = model;
+  model_->SaveScore();
 }
-void GameOver_state::Update() { fsm_->SplashField(); }
-void GameOver_state::Start() {
-  fsm_->DeleteGI();
-  fsm_->TransitionTo<Start_state>();
-}
+void GameOverState::Update() { model_->SplashField(); }
+void GameOverState::Start() { model_->RestartGame(); }
 
-// Win_state definitions
-Win_state::Win_state(model* fsm) {
-  fsm_ = fsm;
-  fsm_->SaveScore();
+// WinState definitions
+WinState::WinState(Model* model) {
+  model_ = model;
+  model_->SaveScore();
 }
-void Win_state::Update() { fsm_->SplashField(); }
-void Win_state::Start() {
-  fsm_->DeleteGI();
-  fsm_->TransitionTo<Start_state>();
-}
+void WinState::Update() { model_->SplashField(); }
+void WinState::Start() { model_->RestartGame(); }
 
 }  // namespace s21::snake

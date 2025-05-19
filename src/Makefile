@@ -57,7 +57,7 @@ clean:
 
 # open custom documentation
 dvi: doxygen_doc 
-	$(OPEN_CMD) documentation/Documentation.html
+	$(OPEN_CMD) documentation/html/index.html
 
 # generate doxygen documentation from source code comments
 doxygen_doc: documentation/Doxyfile
