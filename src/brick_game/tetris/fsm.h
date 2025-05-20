@@ -30,6 +30,12 @@
 #define FSM_TRANSFER \
   (act_t[EXIT_STATE + 1]) { NULL, spawn, checkTime, down, attach, NULL, doexit }
 
+#ifndef TESTING
+#define SCOPE extern
+#else
+#define SCOPE static
+#endif
+
 typedef void (*act_t)();
 
 typedef enum {
@@ -45,7 +51,5 @@ typedef enum {
 void _userAction(UserAction_t action);
 
 GameInfo_t _updateCurrentState();
-
-game_state _getState();
 
 #endif

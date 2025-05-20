@@ -5,17 +5,16 @@ namespace s21::snake {
 // State class definitions
 State::State() {}
 State::State(Model* model) : model_(model) {}
-void State::Update() {}
-void State::Start() {}
+
 /* Common State functions */
-void State::Terminate() { model_->TransitionTo<ExitState>(); }
-void State::Pause() { model_->TogglePause(); }
-void State::Left() {}
-void State::Right() {}
-void State::Down() {}
-void State::Up() {}
-void State::Action() {}
-State::~State() {}
+void State::Terminate() {
+  model_->TransitionTo<ExitState>();
+  return;
+}
+void State::Pause() {
+  model_->TogglePause();
+  return;
+}
 
 // StartState definitions
 StartState::StartState(Model* model) {

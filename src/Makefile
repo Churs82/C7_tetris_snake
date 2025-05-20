@@ -106,10 +106,17 @@ $(GAMES):
 		$(MAKE) -C $(DIR_IF)$$interface $@ ; \
 	done 
 
-test: libs
+test-%:
+	$(MAKE) -C $(DIR_GAMES)$(patsubst test-%,%,$@) test
+	@echo "===Running tests for $@==="
+
+
+test: 
 	for lib in $(GAMES); do \
 		$(MAKE) -C $(DIR_GAMES)$$lib test; \
 	done
+
+
 
 ext1_flag:
 	$(eval export COV_FLAGS:=-ftest-coverage -coverage)
@@ -119,7 +126,7 @@ clang:
 
 check_format: 
 	find . -type f \( -name "*.c" -o -name "*.cpp" -o -name "*.h" -o -name "*.hpp" \) -exec clang-format-18 -n {} \;
-	cppcheck --enable=all --suppress=missingIncludeSystem -I inc ./
+	cppcheck --enable=all --library=qt.cfg -Iinc/ -I/usr/include/x86_64-linux-gnu/qt6/ ./ -v
 
 cppcheck:
-	cppcheck --enable=all --suppress=missingIncludeSystem --error-exitcode=1 --check-config -I inc ./
+	cppcheck --enable=all --error-exitcode=1 --check-config --library=qt.cfg -Iinc/ -I/usr/include/x86_64-linux-gnu/qt6/ ./ -v

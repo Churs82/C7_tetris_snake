@@ -5,7 +5,6 @@
 
 #include "../brick_game/snake/model.h"
 #include "../brick_game/snake/states.h"
-#include "lib.h"
 
 namespace s21::snake {
 // Additional test fixtures or helpers can be declared here if needed

@@ -44,52 +44,52 @@ class State {
   /**
    * @brief Virtual function to update the state.
    */
-  virtual void Update();
+  virtual void Update() {};
 
   /**
    * @brief Virtual function to handle the start action.
    */
-  virtual void Start();
+  void virtual Start(){};
 
   /**
    * @brief Virtual function to handle the pause action.
    */
-  virtual void Pause();
+  void Pause();
 
   /**
    * @brief Virtual function to handle the terminate action.
    */
-  virtual void Terminate();
+  void Terminate();
 
   /**
    * @brief Virtual function to handle the left action.
    */
-  virtual void Left();
+  virtual void Left() {};
 
   /**
    * @brief Virtual function to handle the right action.
    */
-  virtual void Right();
+  virtual void Right() {};
 
   /**
    * @brief Virtual function to handle the down action.
    */
-  virtual void Down();
+  virtual void Down() {};
 
   /**
    * @brief Virtual function to handle the up action.
    */
-  virtual void Up();
+  virtual void Up() {};
 
   /**
    * @brief Virtual function to handle the action event.
    */
-  virtual void Action();
+  virtual void Action() {};
 
   /**
    * @brief Virtual destructor for the State class.
    */
-  virtual ~State();
+  virtual ~State() = default;
 
  protected:
   /**

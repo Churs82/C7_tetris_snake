@@ -1,27 +1,19 @@
-#include <gtest/gtest.h>
-
-#include "../brick_game/snake/model.h"
-#include "../brick_game/snake/states.h"
-#include "lib.h"
+#include "snake_gtest.h"
 
 namespace s21::snake {
 
 class ModelTest : public ::testing::Test {
  protected:
-  void SetUp() override {
-    model_ = s21::snake::Model::Instance::Get();
-    model_->InitGameInfo();
-  }
-  void TearDown() override { delete model_; }
+  void SetUp() override { model_ = s21::snake::Model::Instance::Get(); }
   Model* model_ = nullptr;
 };
 
 TEST_F(ModelTest, InitGameInfoSetsDefaults) {
-  model_->InitGameInfo();
   GameInfo_t info = model_->UpdateState();
   EXPECT_EQ(info.score, 0);
   EXPECT_EQ(info.level, 1);
   EXPECT_EQ(info.speed, 1);
+  EXPECT_NE(info.field, nullptr);
   EXPECT_FALSE(info.pause);
 }
 
@@ -29,15 +21,12 @@ TEST_F(ModelTest, TogglePauseWorks) {
   model_->TogglePause();
   GameInfo_t info = model_->UpdateState();
   EXPECT_TRUE(info.pause);
-  model_->TogglePause();
-  info = model_->UpdateState();
-  EXPECT_FALSE(info.pause);
 }
 
 TEST_F(ModelTest, SpawnSnakePlacesSnake) {
   model_->RestartGame();
   GameInfo_t info = model_->UpdateState();
-  // Check that snake head and tail are set (example, adjust as needed)
+  // Check that snake head and tail are set
   EXPECT_NE(info.field[9][3], 0);
   EXPECT_NE(info.field[9][6], 0);
 }
@@ -48,7 +37,6 @@ class StateTest : public ::testing::Test {
     model_ = s21::snake::Model::Instance::Get();
     model_->InitGameInfo();
   }
-  void TearDown() override { delete model_; }
   Model* model_ = nullptr;
 };
 

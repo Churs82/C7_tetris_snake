@@ -39,18 +39,23 @@ void Model::DeleteGameInfo() {
   }
 }
 void Model::InitGameInfo() {
-  game_info_ = GiUniquePtr(new GameInfo_t{0});
-  game_info_->pause = false;
-  game_info_->score = 0;
-  game_info_->level = 1;
-  game_info_->speed = 1;
-  game_info_->field = new int* [ROWS_MAP] { 0 };
+  if (game_info_.get() != nullptr) {
+    DeleteGameInfo();
+  } else {
+    game_info_ = std::unique_ptr<GameInfo_t>(new GameInfo_t{0});
+  };
+
+  game_info_.get()->pause = false;
+  game_info_.get()->score = 0;
+  game_info_.get()->level = 1;
+  game_info_.get()->speed = 1;
+  game_info_.get()->field = new int* [ROWS_MAP] { 0 };
   for (int i = 0; i < ROWS_MAP; i++) {
-    game_info_->field[i] = new int[COLS_MAP]{0};
+    game_info_.get()->field[i] = new int[COLS_MAP]{0};
   }
-  game_info_->next = new int* [FIGURE_H] { 0 };
+  game_info_.get()->next = new int* [FIGURE_H] { 0 };
   for (int i = 0; i < FIGURE_H; i++) {
-    game_info_->next[i] = new int[FIGURE_W]{0};
+    game_info_.get()->next[i] = new int[FIGURE_W]{0};
   }
   std::srand(std::time(nullptr));
 }
@@ -164,7 +169,7 @@ void Model::RotateDown() {
   }
 }
 
-bool Model::CheckBounds(std::array<int, 2> next) {
+bool Model::CheckBounds(const std::array<int, 2> next) const noexcept {
   return (next[0] >= 0 && next[0] < ROWS_MAP && next[1] >= 0 &&
           next[1] < COLS_MAP &&
           (game_info_->field[next[0]][next[1]] == 0 ||
@@ -213,9 +218,7 @@ void Model::LoadScore() {
 }
 
 void Model::RestartGame() {
-  DeleteGameInfo();
   TransitionTo<StartState>();
   state_->Start();
 }
-
 };  // namespace s21::snake

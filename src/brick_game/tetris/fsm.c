@@ -8,43 +8,43 @@
 static GameInfo_t game_info = {0};
 static game_state state;
 
-static void checkTime();
-static void start();
-static void spawn();
-static void moveright();
-static void moveleft();
-static void rotate();
-static void down();
-static void attach();
-static void anihilate();
-static void masshift(int start);
-static short checkBounds(short dir);
-static void down_sw();
-static void spawn_sw();
-static void attach_sw();
-static void gameover_sw();
-static void move_sw();
-static void exitstate_sw();
-static void pausetoggle();
-static void doexit();
-static void restart();
-static void scoreAdd(int scoreadd);
-static void updateHighScore();
-static void findBounds(int *left, int *top, int *right, int *bottom);
+SCOPE void checkTime();
+SCOPE void start();
+SCOPE void spawn();
+SCOPE void moveright();
+SCOPE void moveleft();
+SCOPE void rotate();
+SCOPE void down();
+SCOPE void attach();
+SCOPE void anihilate();
+SCOPE void masshift(int start);
+SCOPE short checkBounds(short dir);
+SCOPE void down_sw();
+SCOPE void spawn_sw();
+SCOPE void attach_sw();
+SCOPE void gameover_sw();
+SCOPE void move_sw();
+SCOPE void exitstate_sw();
+SCOPE void pausetoggle();
+SCOPE void doexit();
+SCOPE void restart();
+SCOPE void scoreAdd(int scoreadd);
+SCOPE void updateHighScore();
+SCOPE void findBounds(int *left, int *top, int *right, int *bottom);
 
-static void pausetoggle() { game_info.pause = !game_info.pause; }
+SCOPE void pausetoggle() { game_info.pause = !game_info.pause; }
 
-static void spawn_sw() { state = SPAWN; }
+SCOPE void spawn_sw() { state = SPAWN; }
 
-static void down_sw() { state = DOWN_SHIFTING; }
+SCOPE void down_sw() { state = DOWN_SHIFTING; }
 
-static void attach_sw() { state = ATTACHING; }
+SCOPE void attach_sw() { state = ATTACHING; }
 
-static void gameover_sw() { state = GAME_OVER; }
+SCOPE void gameover_sw() { state = GAME_OVER; }
 
-static void move_sw() { state = MOVING; }
+SCOPE void move_sw() { state = MOVING; }
 
-static void exitstate_sw() { state = EXIT_STATE; }
+SCOPE void exitstate_sw() { state = EXIT_STATE; }
 
 void _userAction(UserAction_t action) {
   if (action != Pause) game_info.pause = 0;
@@ -57,9 +57,7 @@ GameInfo_t _updateCurrentState() {
   return game_info;
 }
 
-// game_state _getState() { return state; }
-
-static void checkTime() {
+SCOPE void checkTime() {
   static struct timeval last_time;
   struct timeval current_time;
   gettimeofday(&current_time, NULL);
@@ -75,7 +73,7 @@ static void checkTime() {
   }
 }
 
-static void start() {
+SCOPE void start() {
   game_info.speed = 1;
   game_info.score = 0;
   game_info.pause = 0;
@@ -100,7 +98,7 @@ static void start() {
   }
 }
 
-static void spawn() {
+SCOPE void spawn() {
   int bibidibabidiboo = rand() % FIGURES_COUNT * FIGURE_H;
   /* start row of figure is max(highest) row of field */
   short start_h = ROWS_MAP + FIGURE_H - 1;
@@ -120,7 +118,7 @@ static void spawn() {
     (down_sw());
 }
 
-static void moveright() {
+SCOPE void moveright() {
   if (checkBounds(-1))
     for (short i = 0; i < ROWS_MAP + FIGURE_H; i++)
       for (short j = COLS_MAP - 1; j >= 0; j--)
@@ -130,7 +128,7 @@ static void moveright() {
         }
 }
 
-static void moveleft() {
+SCOPE void moveleft() {
   if (checkBounds(1))
     for (short i = 0; i < ROWS_MAP + FIGURE_H; i++)
       for (short j = 0; j < COLS_MAP; j++)
@@ -140,7 +138,7 @@ static void moveleft() {
         }
 }
 
-static void rotate() {
+SCOPE void rotate() {
   int right = 0, top = 0, bottom = ROWS_MAP + FIGURE_H, left = COLS_MAP;
   findBounds(&left, &top, &right, &bottom);
   short possibility = 1;
@@ -170,7 +168,7 @@ static void rotate() {
         game_info.field[i][j] = possibility ? 0 : color;
 }
 
-static void findBounds(int *left, int *top, int *right, int *bottom) {
+SCOPE void findBounds(int *left, int *top, int *right, int *bottom) {
   for (short j = 0; j < COLS_MAP; j++)
     for (short i = 0; i < ROWS_MAP + FIGURE_H; i++)
       if (game_info.field[i][j] > 1) {
@@ -182,7 +180,7 @@ static void findBounds(int *left, int *top, int *right, int *bottom) {
   while (*left + *top - *bottom >= COLS_MAP) *left = *left - 1;
 }
 
-static void down() {
+SCOPE void down() {
   if (!checkBounds(0))
     attach_sw();
   else {
@@ -199,7 +197,7 @@ static void down() {
   }
 }
 
-static void attach() {
+SCOPE void attach() {
   for (short i = 0; i < ROWS_MAP + FIGURE_H; i++)
     for (short j = 0; j < COLS_MAP; j++)
       if (game_info.field[i][j] > 1) game_info.field[i][j] = 1;
@@ -217,7 +215,7 @@ static void attach() {
  *
  * @return None
  */
-static void anihilate() {
+SCOPE void anihilate() {
   int scoreadd = 0;
   for (short i = 0; i < ROWS_MAP; i++) {
     short itsline = 1;
@@ -232,7 +230,7 @@ static void anihilate() {
   updateHighScore();
 }
 
-static void scoreAdd(int scoreadd) {
+SCOPE void scoreAdd(int scoreadd) {
   static int last_score;
   game_info.score += scoreadd;
   if (game_info.score - last_score > LEVEL_UP_SCORE && game_info.level < 10) {
@@ -242,7 +240,7 @@ static void scoreAdd(int scoreadd) {
   game_info.speed = game_info.level;
 }
 
-static void updateHighScore() {
+SCOPE void updateHighScore() {
   if (game_info.score > game_info.high_score) {
     game_info.high_score = game_info.score;
     FILE *hsfile = fopen(HS_FILE, "w");
@@ -253,7 +251,7 @@ static void updateHighScore() {
   }
 }
 
-static void masshift(int start) {
+SCOPE void masshift(int start) {
   for (short i = start; i < ROWS_MAP - 1; i++)
     for (short j = 0; j < COLS_MAP; j++)
       if (game_info.field[i][j] <= 1)
@@ -263,7 +261,7 @@ static void masshift(int start) {
 /// @brief Check if figure neigbors are free
 /// @param dir 1 - left, 0 down, -1 - right
 /// @return 1 if there is free space, 0 if not
-static short checkBounds(short dir) {
+SCOPE short checkBounds(short dir) {
   short ret = 1;
   for (short j = 0; j < COLS_MAP && ret; j++)
     for (short i = 0; i < ROWS_MAP + FIGURE_H && ret; i++)
@@ -274,7 +272,7 @@ static short checkBounds(short dir) {
   return ret;
 }
 
-static void doexit() {
+SCOPE void doexit() {
   if (game_info.field) {
     for (short i = 0; i < ROWS_MAP + FIGURE_H; i++)
       if (game_info.field[i]) free(game_info.field[i]);
@@ -292,7 +290,7 @@ static void doexit() {
   exitstate_sw();
 }
 
-static void restart() {
+SCOPE void restart() {
   if (game_info.field)
     for (short i = 0; i < ROWS_MAP + FIGURE_H; i++)
       for (short j = 0; j < COLS_MAP; j++) game_info.field[i][j] = 0;

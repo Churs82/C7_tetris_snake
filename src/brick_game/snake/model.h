@@ -39,8 +39,8 @@ class Model {
      * @return Pointer to the Model instance.
      */
     static Model* Get() {
-      static std::unique_ptr<Model> fsm_ptr(new Model());
-      return fsm_ptr.get();
+      static Model fsm_;
+      return &fsm_;
     }
   };
   friend class Instance;
@@ -182,7 +182,7 @@ class Model {
    * @param next The next position to check.
    * @return True if within bounds, false otherwise.
    */
-  bool CheckBounds(std::array<int, 2> next);
+  bool CheckBounds(std::array<int, 2> next) const noexcept;
 
   /**
    * @brief Adds score to the current game.
