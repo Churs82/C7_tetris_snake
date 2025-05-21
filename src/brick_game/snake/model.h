@@ -50,6 +50,11 @@ class Model {
    * @brief Constructs a Model object (private for singleton pattern).
    */
   Model();
+  /**
+   * @brief Destructor for Model.
+   */
+  ~Model();
+
   std::array<int, 2> snake_head_{}; /**< Coordinates of the snake's head. */
   std::array<int, 2> snake_tail_{}; /**< Coordinates of the snake's tail. */
   State* state_ = nullptr;          /**< Pointer to the current state object. */
@@ -59,18 +64,16 @@ class Model {
 
  public:
   /**
-   * @brief Destructor for Model.
-   */
-  ~Model();
-
-  /**
    * @brief Transitions to a new state of type T.
    * @tparam T The state class to transition to.
    */
   template <typename T>
   void TransitionTo() {
-    delete state_;
-    state_ = new T(this);
+    // If the current state is not of type T, delete it and create a new one.
+    if (!dynamic_cast<T*>(state_)) {
+      delete state_;
+      state_ = new T(this);
+    }
   }
 
   /**

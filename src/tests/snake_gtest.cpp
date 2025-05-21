@@ -6,6 +6,7 @@ class ModelTest : public ::testing::Test {
  protected:
   void SetUp() override { model_ = s21::snake::Model::Instance::Get(); }
   Model* model_ = nullptr;
+  void TearDown() override { model_->TransitionTo<ExitState>(); }
 };
 
 TEST_F(ModelTest, InitGameInfoSetsDefaults) {
@@ -37,6 +38,7 @@ class StateTest : public ::testing::Test {
     model_ = s21::snake::Model::Instance::Get();
     model_->InitGameInfo();
   }
+  void TearDown() override { model_->TransitionTo<ExitState>(); }
   Model* model_ = nullptr;
 };
 
@@ -50,9 +52,11 @@ TEST_F(StateTest, StartStateTransitionsToSpawn) {
 
 // libsnake interface tests
 TEST(LibSnakeTest, UserInputAndUpdateCurrentState) {
+  Model::Instance::Get()->TransitionTo<StartState>();
   userInput(Start, false);
   GameInfo_t info = updateCurrentState();
   EXPECT_GE(info.level, 1);
+  Model::Instance::Get()->TransitionTo<ExitState>();
 }
 
 }  // namespace s21::snake

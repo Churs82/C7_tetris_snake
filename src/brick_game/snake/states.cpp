@@ -22,9 +22,10 @@ StartState::StartState(Model* model) {
   model_->InitGameInfo();
   model_->LoadScore();
 }
-void StartState::Start() { model_->TransitionTo<SpawnState>(); }
-
-StartState::~StartState() { model_->SpawnSnake(); }
+void StartState::Start() {
+  model_->SpawnSnake();
+  model_->TransitionTo<SpawnState>();
+}
 
 // SpawnState definitions
 SpawnState::SpawnState(Model* model) {
@@ -51,9 +52,10 @@ void MovingState::Update() { model_->MoveSnake(); }
 MovingState::~MovingState() { model_->StartTimer(); }
 
 // ExitState definitions
-ExitState::ExitState(Model* model) { model_ = model; }
-
-void ExitState::Update() { model_->DeleteGameInfo(); }
+ExitState::ExitState(Model* model) {
+  model_ = model;
+  model_->DeleteGameInfo();
+}
 
 // GameOverState definitions
 GameOverState::GameOverState(Model* model) {

@@ -218,6 +218,7 @@ void Model::LoadScore() {
 }
 
 void Model::RestartGame() {
+  TransitionTo<ExitState>();
   TransitionTo<StartState>();
   state_->Start();
 }

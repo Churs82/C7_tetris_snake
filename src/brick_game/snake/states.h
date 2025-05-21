@@ -112,10 +112,6 @@ struct StartState : public State {
    * @brief Handle the start signal action in the StartState.
    */
   void Start() override;
-  /**
-   * @brief Destructor for the StartState class.
-   */
-  ~StartState();
 };
 
 /**
@@ -205,8 +201,6 @@ struct ExitState : public State {
    * @param model Pointer to the model instance.
    */
   explicit ExitState(Model* model);
-
-  void Update() override;
 };
 
 /**
