@@ -22,6 +22,9 @@ TEST_F(ModelTest, TogglePauseWorks) {
   model_->TogglePause();
   GameInfo_t info = model_->UpdateState();
   EXPECT_TRUE(info.pause);
+  model_->TogglePause();
+  GameInfo_t info = model_->UpdateState();
+  EXPECT_FALSE(info.pause); 
 }
 
 TEST_F(ModelTest, SpawnSnakePlacesSnake) {
@@ -31,6 +34,24 @@ TEST_F(ModelTest, SpawnSnakePlacesSnake) {
   EXPECT_NE(info.field[9][3], 0);
   EXPECT_NE(info.field[9][6], 0);
 }
+
+TEST_F(ModelTest, SpawnApplePlacesApple) {
+  model_->RestartGame();
+  model_->UserAction(Start);
+  GameInfo_t info = model_->UpdateState();
+  bool apple_found = false;
+  for (int i = 0; i < ROWS_MAP; ++i) {
+    for (int j = 0; j < COLS_MAP; ++j) {
+      if (info.field[i][j] & APPLE_MASK) {
+        apple_found = true;
+        break;
+      }
+    }
+    if (apple_found) break;
+  }
+  EXPECT_TRUE(apple_found);
+}
+
 
 class StateTest : public ::testing::Test {
  protected:

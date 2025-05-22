@@ -4,73 +4,73 @@ namespace s21::snake {
 
 // State class definitions
 State::State() {}
-State::State(Model* model) : model_(model) {}
+State::State(Model* model) noexcept : model_(model) {}
 
 /* Common State functions */
-void State::Terminate() {
+void State::Terminate() noexcept {
   model_->TransitionTo<ExitState>();
   return;
 }
-void State::Pause() {
+void State::Pause() noexcept {
   model_->TogglePause();
   return;
 }
 
 // StartState definitions
-StartState::StartState(Model* model) {
+StartState::StartState(Model* model) noexcept {
   model_ = model;
   model_->InitGameInfo();
   model_->LoadScore();
 }
-void StartState::Start() {
+void StartState::Start() noexcept {
   model_->SpawnSnake();
   model_->TransitionTo<SpawnState>();
 }
 
 // SpawnState definitions
-SpawnState::SpawnState(Model* model) {
+SpawnState::SpawnState(Model* model) noexcept {
   model_ = model;
   model_->SpawnApple();
 }
-void SpawnState::Update() { model_->TransitionTo<RotationState>(); }
+void SpawnState::Update() noexcept { model_->TransitionTo<RotationState>(); }
 
 // RotationState definitions
-RotationState::RotationState(Model* model) {
+RotationState::RotationState(Model* model) noexcept {
   model_ = model;
   model_->StartTimer();
 }
-void RotationState::Update() { model_->CheckTimer(); }
-void RotationState::Left() { model_->RotateLeft(); }
-void RotationState::Right() { model_->RotateRight(); }
-void RotationState::Down() { model_->RotateDown(); }
-void RotationState::Up() { model_->RotateUp(); }
-void RotationState::Action() { model_->TransitionTo<MovingState>(); }
+void RotationState::Update() noexcept { model_->CheckTimer(); }
+void RotationState::Left() noexcept { model_->RotateLeft(); }
+void RotationState::Right() noexcept { model_->RotateRight(); }
+void RotationState::Down() noexcept { model_->RotateDown(); }
+void RotationState::Up() noexcept { model_->RotateUp(); }
+void RotationState::Action() noexcept { model_->TransitionTo<MovingState>(); }
 
 // MovingState definitions
-MovingState::MovingState(Model* model) { model_ = model; }
-void MovingState::Update() { model_->MoveSnake(); }
-MovingState::~MovingState() { model_->StartTimer(); }
+MovingState::MovingState(Model* model) noexcept { model_ = model; }
+void MovingState::Update() noexcept { model_->MoveSnake(); }
+MovingState::~MovingState() noexcept { model_->StartTimer(); }
 
 // ExitState definitions
-ExitState::ExitState(Model* model) {
+ExitState::ExitState(Model* model) noexcept {
   model_ = model;
   model_->DeleteGameInfo();
 }
 
 // GameOverState definitions
-GameOverState::GameOverState(Model* model) {
+GameOverState::GameOverState(Model* model) noexcept {
   model_ = model;
   model_->SaveScore();
 }
-void GameOverState::Update() { model_->SplashField(); }
-void GameOverState::Start() { model_->RestartGame(); }
+void GameOverState::Update() noexcept { model_->SplashField(); }
+void GameOverState::Start() noexcept { model_->RestartGame(); }
 
 // WinState definitions
-WinState::WinState(Model* model) {
+WinState::WinState(Model* model) noexcept {
   model_ = model;
   model_->SaveScore();
 }
-void WinState::Update() { model_->SplashField(); }
-void WinState::Start() { model_->RestartGame(); }
+void WinState::Update() noexcept { model_->SplashField(); }
+void WinState::Start() noexcept { model_->RestartGame(); }
 
 }  // namespace s21::snake

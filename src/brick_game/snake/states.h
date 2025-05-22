@@ -16,10 +16,37 @@ namespace s21::snake {
  */
 class Model;
 
+// Template mechanism for declaring friends
+template <typename T>
+class ModelFriend {
+ protected:
+  Model* model_;
+};
+
 /**
  * @brief Base class for all game states.
  */
-class State {
+class State : public ModelFriend<State> {
+
+
+  /**
+   * @brief List of user actions.
+   */
+  enum UserAction_t {
+    Start,
+    Pause,
+    Terminate,
+    Left,
+    Right,
+    Up,
+    Down,
+    Action,
+  };
+
+  /**
+   * @brief List of actions mapped to corresponding state functions.
+   */
+  using ActionMap = std::vector<std::function<void()>>;
  public:
   /**
    * @brief List of actions mapped to corresponding state functions.
@@ -39,57 +66,57 @@ class State {
    * @brief Constructor for the State class with a model pointer.
    * @param model Pointer to the model instance.
    */
-  explicit State(Model* model);
+  explicit State(Model* model) noexcept;
 
   /**
    * @brief Virtual function to update the state.
    */
-  virtual void Update() {};
+  virtual void Update() noexcept {};
 
   /**
    * @brief Virtual function to handle the start action.
    */
-  void virtual Start(){};
+  virtual void Start() noexcept {};
 
   /**
    * @brief Virtual function to handle the pause action.
    */
-  void Pause();
+  void Pause() noexcept;
 
   /**
    * @brief Virtual function to handle the terminate action.
    */
-  void Terminate();
+  void Terminate() noexcept;
 
   /**
    * @brief Virtual function to handle the left action.
    */
-  virtual void Left() {};
+  virtual void Left() noexcept {};
 
   /**
    * @brief Virtual function to handle the right action.
    */
-  virtual void Right() {};
+  virtual void Right() noexcept {};
 
   /**
    * @brief Virtual function to handle the down action.
    */
-  virtual void Down() {};
+  virtual void Down() noexcept {};
 
   /**
    * @brief Virtual function to handle the up action.
    */
-  virtual void Up() {};
+  virtual void Up() noexcept {};
 
   /**
    * @brief Virtual function to handle the action event.
    */
-  virtual void Action() {};
+  virtual void Action() noexcept {};
 
   /**
    * @brief Virtual destructor for the State class.
    */
-  virtual ~State() = default;
+  virtual ~State() noexcept = default;
 
  protected:
   /**
@@ -106,12 +133,12 @@ struct StartState : public State {
    * @brief Constructor for the StartState class.
    * @param model Pointer to the model instance.
    */
-  explicit StartState(Model* model);
+  explicit StartState(Model* model) noexcept;
 
   /**
    * @brief Handle the start signal action in the StartState.
    */
-  void Start() override;
+  void Start() noexcept override;
 };
 
 /**
@@ -122,12 +149,12 @@ struct SpawnState : public State {
    * @brief Constructor for the SpawnState class.
    * @param model Pointer to the model instance.
    */
-  explicit SpawnState(Model* model);
+  explicit SpawnState(Model* model) noexcept;
 
   /**
    * @brief Update function for the SpawnState.
    */
-  void Update() override;
+  void Update() noexcept override;
 };
 
 /**
@@ -138,37 +165,37 @@ struct RotationState : public State {
    * @brief Constructor for the RotationState class.
    * @param model Pointer to the model instance.
    */
-  explicit RotationState(Model* model);
+  explicit RotationState(Model* model) noexcept;
 
   /**
    * @brief Update function for the RotationState.
    */
-  void Update() override;
+  void Update() noexcept override;
 
   /**
    * @brief Handle the left rotation action.
    */
-  void Left() override;
+  void Left() noexcept override;
 
   /**
    * @brief Handle the right rotation action.
    */
-  void Right() override;
+  void Right() noexcept override;
 
   /**
    * @brief Handle the down rotation action.
    */
-  void Down() override;
+  void Down() noexcept override;
 
   /**
    * @brief Handle the up rotation action.
    */
-  void Up() override;
+  void Up() noexcept override;
 
   /**
    * @brief Handle the action event.
    */
-  void Action() override;
+  void Action() noexcept override;
 };
 
 /**
@@ -179,17 +206,17 @@ struct MovingState : public State {
    * @brief Constructor for the MovingState class.
    * @param model Pointer to the model instance.
    */
-  explicit MovingState(Model* model);
+  explicit MovingState(Model* model) noexcept;
 
   /**
    * @brief Update function for the MovingState.
    */
-  void Update() override;
+  void Update() noexcept override;
 
   /**
    * @brief Destructor to reset the timer after moving
    */
-  ~MovingState() override;
+  ~MovingState() noexcept override;
 };
 
 /**
@@ -200,7 +227,7 @@ struct ExitState : public State {
    * @brief Constructor for the ExitState class.
    * @param model Pointer to the model instance.
    */
-  explicit ExitState(Model* model);
+  explicit ExitState(Model* model) noexcept;
 };
 
 /**
@@ -211,17 +238,17 @@ struct GameOverState : public State {
    * @brief Constructor for the GameOverState class.
    * @param model Pointer to the model instance.
    */
-  explicit GameOverState(Model* model);
+  explicit GameOverState(Model* model) noexcept;
 
   /**
    * @brief Update function for the GameOverState.
    */
-  void Update() override;
+  void Update() noexcept override;
 
   /**
    * @brief Handle the start action in the GameOverState.
    */
-  void Start() override;
+  void Start() noexcept override;
 };
 
 /**
@@ -232,17 +259,17 @@ struct WinState : public State {
    * @brief Constructor for the WinState class.
    * @param model Pointer to the model instance.
    */
-  explicit WinState(Model* model);
+  explicit WinState(Model* model) noexcept;
 
   /**
    * @brief Update function for the WinState.
    */
-  void Update() override;
+  void Update() noexcept override;
 
   /**
    * @brief Handle the start action in the WinState.
    */
-  void Start() override;
+  void Start() noexcept override;
 };
 
 }  // namespace s21::snake

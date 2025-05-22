@@ -2,22 +2,24 @@
 
 namespace s21::snake {
 
-Model::Model() { TransitionTo<StartState>(); }
-Model::~Model() { delete state_; }
-void Model::UserAction(UserAction_t action) {
+Model::Model() noexcept { TransitionTo<StartState>(); }
+Model::~Model() noexcept { delete state_; }
+
+void Model::UserAction(const UserAction_t action) noexcept {
   if (state_->action_map.size() > action) {
     if (action != Pause) game_info_->pause = 0;
     state_->action_map[action]();
   }
 }
 
-GameInfo_t Model::UpdateState() {
+GameInfo_t Model::UpdateState() noexcept {
   if (!game_info_->pause) state_->Update();
   return *game_info_;
 }
 
-void Model::TogglePause() { game_info_->pause = !game_info_->pause; }
-void Model::DeleteGameInfo() {
+void Model::TogglePause() noexcept { game_info_->pause = !game_info_->pause; }
+
+void Model::DeleteGameInfo() noexcept {
   if (game_info_.get() != nullptr) {
     game_info_->score = 0;
     game_info_->speed = 0;
@@ -38,7 +40,7 @@ void Model::DeleteGameInfo() {
     }
   }
 }
-void Model::InitGameInfo() {
+void Model::InitGameInfo() noexcept {
   if (game_info_.get() != nullptr) {
     DeleteGameInfo();
   } else {
@@ -61,7 +63,7 @@ void Model::InitGameInfo() {
 }
 
 /* Gamelogic functions */
-void Model::SpawnSnake() {
+void Model::SpawnSnake() noexcept {
   snake_head_ = {9, 3};
   snake_tail_ = {9, 6};
   game_info_->field[9][3] = SNAKE_MASK | DIRECTION_UP | HEAD_MASK;
@@ -70,7 +72,7 @@ void Model::SpawnSnake() {
   game_info_->field[9][6] = SNAKE_MASK | DIRECTION_LEFT | TAIL_MASK;
 }
 
-void Model::SpawnApple() {
+void Model::SpawnApple() noexcept {
   int x = std::rand() % COLS_MAP;
   int y = std::rand() % ROWS_MAP;
   if (game_info_->field[y][x] != 0)
@@ -79,16 +81,16 @@ void Model::SpawnApple() {
     game_info_->field[y][x] = APPLE_MASK;
 }
 
-void Model::StartTimer() { timer_ = steady_clock::now(); }
+void Model::StartTimer() noexcept { timer_ = steady_clock::now(); }
 
-void Model::CheckTimer() {
+void Model::CheckTimer() noexcept {
   if (duration_cast<milliseconds>(steady_clock::now() - timer_).count() >
       250 + 2000 / game_info_->speed) {
     TransitionTo<MovingState>();
   }
 }
 
-void Model::MoveSnake() {
+void Model::MoveSnake() noexcept {
   int direction =
       game_info_->field[snake_head_[0]][snake_head_[1]] & DIRECTION_MASK;
   game_info_->field[snake_head_[0]][snake_head_[1]] &= ~HEAD_MASK;
@@ -124,7 +126,7 @@ void Model::MoveSnake() {
   }
 }
 
-void Model::MoveTail() {
+void Model::MoveTail() noexcept {
   switch (game_info_->field[snake_tail_[0]][snake_tail_[1]] & DIRECTION_MASK) {
     case DIRECTION_UP:
       game_info_->field[snake_tail_[0]++][snake_tail_[1]] = 0;
@@ -141,35 +143,35 @@ void Model::MoveTail() {
   }
   game_info_->field[snake_tail_[0]][snake_tail_[1]] |= TAIL_MASK;
 }
-void Model::RotateLeft() {
+void Model::RotateLeft() noexcept {
   if (CheckBounds({snake_head_[0], snake_head_[1] - 1})) {
     SetDirection(DIRECTION_LEFT);
     TransitionTo<MovingState>();
   }
 }
 
-void Model::RotateRight() {
+void Model::RotateRight() noexcept {
   if (CheckBounds({snake_head_[0], snake_head_[1] + 1})) {
     SetDirection(DIRECTION_RIGHT);
     TransitionTo<MovingState>();
   }
 }
 
-void Model::RotateUp() {
+void Model::RotateUp() noexcept {
   if (CheckBounds({snake_head_[0] + 1, snake_head_[1]})) {
     SetDirection(DIRECTION_UP);
     TransitionTo<MovingState>();
   }
 }
 
-void Model::RotateDown() {
+void Model::RotateDown() noexcept {
   if (CheckBounds({snake_head_[0] - 1, snake_head_[1]})) {
     SetDirection(DIRECTION_DOWN);
     TransitionTo<MovingState>();
   }
 }
 
-bool Model::CheckBounds(const std::array<int, 2> next) const noexcept {
+bool Model::CheckBounds(const std::array<int, 2>& next) const noexcept {
   return (next[0] >= 0 && next[0] < ROWS_MAP && next[1] >= 0 &&
           next[1] < COLS_MAP &&
           (game_info_->field[next[0]][next[1]] == 0 ||
@@ -177,12 +179,12 @@ bool Model::CheckBounds(const std::array<int, 2> next) const noexcept {
            game_info_->field[next[0]][next[1]] & APPLE_MASK));
 }
 
-void Model::SetDirection(int direction) {
+void Model::SetDirection(const int direction) noexcept {
   game_info_->field[snake_head_[0]][snake_head_[1]] &= ~DIRECTION_MASK;
   game_info_->field[snake_head_[0]][snake_head_[1]] |= direction;
 }
 
-void Model::AddScore(int score_num) {
+void Model::AddScore(const int score_num) noexcept {
   game_info_->score += score_num;
   game_info_->speed = game_info_->level = game_info_->score / 5 + 1;
   if (game_info_->score >= ROWS_MAP * COLS_MAP - 4) TransitionTo<WinState>();
@@ -190,7 +192,7 @@ void Model::AddScore(int score_num) {
     game_info_->high_score = game_info_->score;
 }
 
-void Model::SplashField() {
+void Model::SplashField() noexcept {
   if (duration_cast<milliseconds>(steady_clock::now() - timer_).count() > 500) {
     StartTimer();
     for (auto i = 0; i < ROWS_MAP; i++) {
@@ -201,7 +203,7 @@ void Model::SplashField() {
   }
 }
 
-void Model::SaveScore() {
+void Model::SaveScore() noexcept {
   std::ofstream file(HS_FILE);
   if (file.is_open()) {
     file << game_info_->high_score;
@@ -209,7 +211,7 @@ void Model::SaveScore() {
   }
 }
 
-void Model::LoadScore() {
+void Model::LoadScore() noexcept {
   std::ifstream file(HS_FILE);
   if (file.is_open()) {
     file >> game_info_->high_score;
@@ -217,7 +219,7 @@ void Model::LoadScore() {
   }
 }
 
-void Model::RestartGame() {
+void Model::RestartGame() noexcept {
   TransitionTo<ExitState>();
   TransitionTo<StartState>();
   state_->Start();

@@ -24,7 +24,7 @@ RM:=-rm -rf
 all: lib test
 
 clean:
-	$(RM) $(LIB_OBJS) *.info *.gcov *.gcda *.gcno $(DIR_BUILD)$(LIB_NAME)_test $(TEST_OBJS) $(DIR_BUILD)$(LIB)
+	$(RM) $(LIB_OBJS) *.info *.gcov *.gcda *.gcno $(DIR_BUILD)$(LIB_NAME)_test $(TEST_OBJS) $(DIR_BUILD)$(LIB) $(DIR_TESTS)/*.gcov $(DIR_TESTS)/*.info $(DIR_TESTS)/*.gcda $(DIR_TESTS)/*.gcno
 
 $(LIB_NAME) $(LIB): $(DIR_BUILD)$(LIB)
 

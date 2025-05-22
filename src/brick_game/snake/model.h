@@ -43,17 +43,22 @@ class Model {
       return &fsm_;
     }
   };
+  
   friend class Instance;
+
+  // Declare the template friend mechanism
+  template <typename T>
+  friend class ModelFriend;
 
  private:
   /**
    * @brief Constructs a Model object (private for singleton pattern).
    */
-  Model();
+  Model() noexcept;
   /**
    * @brief Destructor for Model.
    */
-  ~Model();
+  ~Model() noexcept;
 
   std::array<int, 2> snake_head_{}; /**< Coordinates of the snake's head. */
   std::array<int, 2> snake_tail_{}; /**< Coordinates of the snake's tail. */
@@ -80,118 +85,119 @@ class Model {
    * @brief Updates the current game state.
    * @return The updated GameInfo_t struct.
    */
-  GameInfo_t UpdateState();
+  GameInfo_t UpdateState() noexcept;
 
   /**
    * @brief Handles a user action.
    * @param action The user action to process.
    */
-  void UserAction(UserAction_t action);
+  void UserAction(const UserAction_t action) noexcept;
 
+ private:
   /**
    * @brief Toggles the pause state of the game.
    */
-  void TogglePause();
+  void TogglePause() noexcept;
 
   /**
    * @brief Initializes the game info structure.
    */
-  void InitGameInfo();
+  void InitGameInfo() noexcept;
 
   /**
    * @brief Deletes the game info structure and frees resources.
    */
-  void DeleteGameInfo();
+  void DeleteGameInfo() noexcept;
 
   /**
    * @brief Rotates the snake left.
    */
-  void RotateLeft();
+  void RotateLeft() noexcept;
 
   /**
    * @brief Rotates the snake right.
    */
-  void RotateRight();
+  void RotateRight() noexcept;
 
   /**
    * @brief Rotates the snake up.
    */
-  void RotateUp();
+  void RotateUp() noexcept;
 
   /**
    * @brief Rotates the snake down.
    */
-  void RotateDown();
+  void RotateDown() noexcept;
 
   /**
    * @brief Spawns the snake on the field.
    */
-  void SpawnSnake();
+  void SpawnSnake() noexcept;
 
   /**
    * @brief Spawns an apple on the field.
    */
-  void SpawnApple();
+  void SpawnApple() noexcept;
 
   /**
    * @brief Moves the snake according to the current direction.
    */
-  void MoveSnake();
+  void MoveSnake() noexcept;
 
   /**
    * @brief Starts the game timer.
    */
-  void StartTimer();
+  void StartTimer() noexcept;
 
   /**
    * @brief Checks the timer and triggers actions if needed.
    */
-  void CheckTimer();
+  void CheckTimer() noexcept;
 
   /**
    * @brief Performs a splash animation on the field.
    */
-  void SplashField();
+  void SplashField() noexcept;
 
   /**
    * @brief Loads the high score from persistent storage.
    */
-  void LoadScore();
+  void LoadScore() noexcept;
 
   /**
    * @brief Saves the high score to persistent storage.
    */
-  void SaveScore();
+  void SaveScore() noexcept;
 
   /**
    * @brief Restarts the game.
    */
-  void RestartGame();
+  void RestartGame() noexcept;
 
  private:
   /**
    * @brief Moves the snake's tail.
    */
-  void MoveTail();
+  void MoveTail() noexcept;
 
   /**
    * @brief Sets the snake's direction.
    * @param direction The direction to set.
    */
-  void SetDirection(int direction);
+  void SetDirection(const int direction) noexcept;
 
   /**
    * @brief Checks if the next position is within bounds.
    * @param next The next position to check.
    * @return True if within bounds, false otherwise.
    */
-  bool CheckBounds(std::array<int, 2> next) const noexcept;
+  bool CheckBounds(const std::array<int, 2>& next) const noexcept;
 
   /**
    * @brief Adds score to the current game.
    * @param score_num The amount to add (default 1).
    */
-  void AddScore(int score_num = 1);
+  void AddScore(const int score_num = 1) noexcept;
 };
 
 };  // namespace s21::snake
