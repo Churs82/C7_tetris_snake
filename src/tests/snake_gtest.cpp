@@ -24,7 +24,7 @@ TEST_F(ModelTest, TogglePauseWorks) {
   EXPECT_TRUE(info.pause);
   model_->TogglePause();
   GameInfo_t info = model_->UpdateState();
-  EXPECT_FALSE(info.pause); 
+  EXPECT_FALSE(info.pause);
 }
 
 TEST_F(ModelTest, SpawnSnakePlacesSnake) {
@@ -51,7 +51,6 @@ TEST_F(ModelTest, SpawnApplePlacesApple) {
   }
   EXPECT_TRUE(apple_found);
 }
-
 
 class StateTest : public ::testing::Test {
  protected:

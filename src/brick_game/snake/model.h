@@ -30,6 +30,10 @@ class Model {
   using GiUniquePtr = std::unique_ptr<GameInfo_t>;
 
  public:
+  // Declare the template friend mechanism
+  template <typename T>
+  friend class ModelFriend;
+
   /**
    * @brief Singleton instance accessor for Model.
    */
@@ -43,12 +47,8 @@ class Model {
       return &fsm_;
     }
   };
-  
-  friend class Instance;
 
-  // Declare the template friend mechanism
-  template <typename T>
-  friend class ModelFriend;
+  friend class Instance;
 
  private:
   /**
