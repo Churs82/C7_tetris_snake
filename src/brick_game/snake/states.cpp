@@ -1,3 +1,5 @@
+#define IM_STATE
+
 #include "states.h"
 
 namespace s21::snake {

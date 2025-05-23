@@ -10,41 +10,20 @@
 #include "model.h"
 
 namespace s21::snake {
-#define STATE_CLASS(name)                                             \
-  class name##State : public State, public ModelFriend<name##State> { \
-   public:                                                            \
+#define STATE_CLASS(name)            \
+  class name##State : public State { \
+   public:                           \
     name##State(Model* model) noexcept;
 
-#define STATE_CLASS_CONSTRUCT(name)               \
-  name##State::name##State(Model* model) noexcept \
-      : ModelFriend<name##State>(model) {
-/**
- * @brief Forward declaration of the model class.
- */
-class Model;
-
-// Template mechanism for declaring friends
-template <typename T>
-class ModelFriend {
- public:
-  /**
-   * @brief Constructor for ModelFriend.
-   * @param model Pointer to the Model instance.
-   */
-  ModelFriend(Model* model) noexcept : model_(model) {}
-  /**
-   * @brief Default constructor for ModelFriend.
-   */
-  ModelFriend() = default;
-
- protected:
-  Model* model_;
-};
-
+#define STATE_CLASS_CONSTRUCT(name) \
+  name##State::name##State(Model* model) noexcept : State(model) {
 /**
  * @brief Base class for all game states.
  */
-class State : public ModelFriend<State> {
+class State {
+ protected:
+  Model* const model_; /**< Pointer to the Model instance. */
+
  public:
   /**
    * @brief List of actions mapped to corresponding state functions.
@@ -54,9 +33,7 @@ class State : public ModelFriend<State> {
       [this] { Left(); },  [this] { Right(); },  [this] { Up(); },
       [this] { Down(); },  [this] { Action(); },
   };
-  // Declare the template friend mechanism
-  template <typename T>
-  friend class ModelFriend;
+  State(Model* model) noexcept : model_(model) {}
 
   /**
    * @brief Default constructor for the State class.

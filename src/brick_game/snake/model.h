@@ -10,9 +10,8 @@
 #include <utility>
 #include <vector>
 
-#include "../../inc/lib.h"
 #include "defines.h"
-#include "states.h"
+#include "lib.h"
 
 namespace s21::snake {
 
@@ -92,8 +91,9 @@ class Model {
    * @param action The user action to process.
    */
   void UserAction(const UserAction_t action) noexcept;
-
+#ifndef IM_STATE
  private:
+#endif
   /**
    * @brief Toggles the pause state of the game.
    */

@@ -1,5 +1,7 @@
 #include "model.h"
 
+#include "states.h"
+
 namespace s21::snake {
 
 Model::Model() noexcept { TransitionTo<StartState>(); }

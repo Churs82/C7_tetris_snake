@@ -19,16 +19,17 @@ TEST_F(ModelTest, InitGameInfoSetsDefaults) {
 }
 
 TEST_F(ModelTest, TogglePauseWorks) {
-  model_->TogglePause();
+  model_->UserAction(Pause);
   GameInfo_t info = model_->UpdateState();
   EXPECT_TRUE(info.pause);
-  model_->TogglePause();
-  GameInfo_t info = model_->UpdateState();
+  model_->UserAction(Pause);
+  info = model_->UpdateState();
   EXPECT_FALSE(info.pause);
 }
 
 TEST_F(ModelTest, SpawnSnakePlacesSnake) {
-  model_->RestartGame();
+  model_->TransitionTo<StartState>();
+  model_->UserAction(Start);
   GameInfo_t info = model_->UpdateState();
   // Check that snake head and tail are set
   EXPECT_NE(info.field[9][3], 0);
@@ -36,7 +37,7 @@ TEST_F(ModelTest, SpawnSnakePlacesSnake) {
 }
 
 TEST_F(ModelTest, SpawnApplePlacesApple) {
-  model_->RestartGame();
+  model_->TransitionTo<StartState>();
   model_->UserAction(Start);
   GameInfo_t info = model_->UpdateState();
   bool apple_found = false;
@@ -56,7 +57,7 @@ class StateTest : public ::testing::Test {
  protected:
   void SetUp() override {
     model_ = s21::snake::Model::Instance::Get();
-    model_->InitGameInfo();
+    model_->TransitionTo<StartState>();
   }
   void TearDown() override { model_->TransitionTo<ExitState>(); }
   Model* model_ = nullptr;
