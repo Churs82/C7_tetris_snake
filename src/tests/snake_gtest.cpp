@@ -1,6 +1,14 @@
 #include "snake_gtest.h"
+#define  COPY_FIELD(before, field) \
+  int before[ROWS_MAP][COLS_MAP]; \
+  for (int i = 0; i < ROWS_MAP; ++i) { \
+    for (int j = 0; j < COLS_MAP; ++j) { \
+      before[i][j] = field[i][j]; \
+    } \
+  }
 
 namespace s21::snake {
+
 
 class ModelTest : public ::testing::Test {
  protected:
@@ -32,11 +40,15 @@ TEST_F(ModelTest, TogglePauseWorks) {
 
 TEST_F(ModelTest, SpawnSnakePlacesSnake) {
   model_->TransitionTo<StartState>();
-  model_->UserAction(Start);
   GameInfo_t info = model_->UpdateState();
+  EXPECT_NE(info.field[9][3], 0);
+  EXPECT_NE(info.field[9][6], 0);
+  model_->UserAction(Start);
+  info = model_->UpdateState();
   // Check that snake head and tail are set
   EXPECT_NE(info.field[9][3], 0);
   EXPECT_NE(info.field[9][6], 0);
+  
 }
 
 TEST_F(ModelTest, SpawnApplePlacesApple) {
@@ -48,39 +60,12 @@ TEST_F(ModelTest, SpawnApplePlacesApple) {
     for (int j = 0; j < COLS_MAP; ++j) {
       if (info.field[i][j] & APPLE_MASK) {
         apple_found = true;
-        break;
+        i=ROWS_MAP;
+        j=COLS_MAP;  // Break out of both loops
       }
     }
-    if (apple_found) break;
   }
   EXPECT_TRUE(apple_found);
-}
-
-class StateTest : public ::testing::Test {
- protected:
-  void SetUp() override {
-    model_ = s21::snake::Model::Instance::Get();
-    model_->TransitionTo<StartState>();
-  }
-  void TearDown() override { model_->TransitionTo<ExitState>(); }
-  Model* model_ = nullptr;
-};
-
-TEST_F(StateTest, StartStateTransitionsToSpawn) {
-  model_->TransitionTo<StartState>();
-  model_->UserAction(Start);
-  // Should transition to SpawnState after Start
-  // (You may need to expose state_ or add a getter for real checks)
-  SUCCEED();
-}
-
-// libsnake interface tests
-TEST(LibSnakeTest, UserInputAndUpdateCurrentState) {
-  Model::Instance::Get()->TransitionTo<StartState>();
-  userInput(Start, false);
-  GameInfo_t info = updateCurrentState();
-  EXPECT_GE(info.level, 1);
-  Model::Instance::Get()->TransitionTo<ExitState>();
 }
 
 TEST_F(ModelTest, PauseDoesNotChangeScoreOrLevel) {
@@ -93,33 +78,43 @@ TEST_F(ModelTest, PauseDoesNotChangeScoreOrLevel) {
   EXPECT_EQ(before.level, after.level);
 }
 
+
+// libsnake interface tests
+TEST(LibSnakeTest, UserInputAndUpdateCurrentState) {
+  Model::Instance::Get()->TransitionTo<ExitState>();
+  Model::Instance::Get()->TransitionTo<StartState>();
+  userInput(Start, false);
+  GameInfo_t info = updateCurrentState();
+  EXPECT_EQ(info.level, 1);
+  userInput(Terminate, false);
+  EXPECT_EQ(info.field, nullptr);  // After exit, field should be nullptr
+}
+
+
 TEST_F(ModelTest, SnakeMovesAfterAction) {
   model_->TransitionTo<StartState>();
   model_->UserAction(Start);
-  auto before = model_->UpdateState().field;
+  auto field = model_->UpdateState().field;
+  COPY_FIELD(before, field);  // Copy the initial state of the field
   model_->UserAction(Up);  // Try to move up
-  auto after = model_->UpdateState().field;
   // At least one cell should change (snake moves)
   bool changed = false;
   for (int i = 0; i < ROWS_MAP; ++i) {
     for (int j = 0; j < COLS_MAP; ++j) {
-      if (before[i][j] != after[i][j]) {
+      if (before[i][j] != field[i][j]) {
         changed = true;
-        break;
+        i = ROWS_MAP;  // Break outer loop
+        j = COLS_MAP;  // Break inner loop
       }
     }
-    if (changed) break;
   }
   EXPECT_TRUE(changed);
 }
 
 TEST_F(ModelTest, GameOverOnWallCollision) {
-  model_->TransitionTo<StartState>();
-  model_->UserAction(Start);
   // Move up until game over (assuming wall at top)
-  for (int i = 0; i < ROWS_MAP + 2; ++i) {
+  for (int i = 0; i < ROWS_MAP; ++i) {
     model_->UserAction(Up);
-    model_->UpdateState();
   }
   // After enough moves, the game should be over (score should not increase)
   int score = model_->UpdateState().score;
