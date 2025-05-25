@@ -48,6 +48,7 @@ void RotationState::Action() noexcept {
 
 // MovingState definitions
 STATE_CLASS_CONSTRUCT(Moving)
+this->model_->StartTimer();
 }
 
 void MovingState::Update() noexcept { this->model_->MoveSnake(); }

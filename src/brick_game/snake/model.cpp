@@ -10,6 +10,7 @@ Model::~Model() noexcept { delete state_; }
 void Model::UserAction(const UserAction_t action) noexcept {
   if (state_->action_map.size() > action) {
     if (action != Pause) game_info_->pause = 0;
+    StartTimer();
     state_->action_map[action]();
   }
 }
@@ -75,12 +76,24 @@ void Model::SpawnSnake() noexcept {
 }
 
 void Model::SpawnApple() noexcept {
-  int x = std::rand() % COLS_MAP;
-  int y = std::rand() % ROWS_MAP;
-  if (game_info_->field[y][x] != 0)
-    SpawnApple();
-  else
-    game_info_->field[y][x] = APPLE_MASK;
+  bool free_cell_found = false;
+  for (int i = 0; i < ROWS_MAP; ++i) {
+    for (int j = 0; j < COLS_MAP; ++j) {
+      if (game_info_->field[i][j] == 0) {
+        free_cell_found = true;
+      }
+    }
+  }
+  if (!free_cell_found) {
+    TransitionTo<WinState>();
+  } else {
+    int x = std::rand() % COLS_MAP;
+    int y = std::rand() % ROWS_MAP;
+    if (game_info_->field[y][x] != 0 && free_cell_found)
+      SpawnApple();
+    else
+      game_info_->field[y][x] = APPLE_MASK;
+  }
 }
 
 void Model::StartTimer() noexcept { timer_ = steady_clock::now(); }

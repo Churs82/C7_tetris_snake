@@ -29,10 +29,6 @@ class Model {
   using GiUniquePtr = std::unique_ptr<GameInfo_t>;
 
  public:
-  // Declare the template friend mechanism
-  template <typename T>
-  friend class ModelFriend;
-
   /**
    * @brief Singleton instance accessor for Model.
    */
@@ -59,9 +55,9 @@ class Model {
    */
   ~Model() noexcept;
 
-  std::array<int, 2> snake_head_{}; /**< Coordinates of the snake's head. */
-  std::array<int, 2> snake_tail_{}; /**< Coordinates of the snake's tail. */
-  State* state_ = nullptr;          /**< Pointer to the current state object. */
+  std::array<int, 2> snake_head_{0}; /**< Coordinates of the snake's head. */
+  std::array<int, 2> snake_tail_{0}; /**< Coordinates of the snake's tail. */
+  State* state_; /**< Pointer to the current state object. */
   GiUniquePtr game_info_ =
       nullptr; /**< Unique pointer to the game info struct. */
   time_point<steady_clock> timer_; /**< Timer for game events. */

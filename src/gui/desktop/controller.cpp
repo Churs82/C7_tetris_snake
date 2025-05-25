@@ -57,9 +57,12 @@ bool GameController::eventFilter(QObject* object, QEvent* event) {
       QKeyEvent* key_event = static_cast<QKeyEvent*>(event);
       keyPressEvent(key_event);
       return true;
-    }
-    if (event->type() == QEvent::Close) {
+    } else if (event->type() == QEvent::Close) {
       QApplication::quit();
+    } else if (event->type() == QEvent::FocusIn) {
+      if (!game_view_->GetMessageModal()->isEmpty()) ::userInput(Pause, false);
+    } else if (event->type() == QEvent::FocusOut) {
+      if (game_view_->GetMessageModal()->isEmpty()) ::userInput(Pause, false);
     }
   }
   return QWidget::eventFilter(object, event);

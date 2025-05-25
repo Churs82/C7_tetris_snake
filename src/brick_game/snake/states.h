@@ -156,7 +156,7 @@ STATE_CLASS(Moving)
 /**
  * @brief Update function for the MovingState.
  */
-void Update() noexcept override;
+virtual void Update() noexcept override;
 
 /**
  * @brief Destructor to reset the timer after moving
