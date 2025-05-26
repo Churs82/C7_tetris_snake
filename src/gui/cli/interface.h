@@ -2,7 +2,8 @@
  * @file interface.h
  * @brief CLI interface utilities for Brick Game Project.
  *
- * This header provides macros and function declarations for the ncurses-based CLI interface.
+ * This header provides macros and function declarations for the ncurses-based
+ * CLI interface.
  */
 
 #ifndef INTERFACE_H

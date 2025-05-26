@@ -8,7 +8,8 @@
  * @file game.h
  * @brief CLI game loop and interface for Brick Game Project.
  *
- * This header declares the main game loop and related functions for the CLI version of the Brick Game Project.
+ * This header declares the main game loop and related functions for the CLI
+ * version of the Brick Game Project.
  */
 
 /**

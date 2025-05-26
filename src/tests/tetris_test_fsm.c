@@ -1,3 +1,5 @@
+#include <unistd.h>
+
 #include "tetris_test.h"
 START_TEST(tetris_test_init_1) {
   userInput(Start, false);
@@ -53,6 +55,43 @@ START_TEST(tetris_test_pause) {
 }
 END_TEST
 
+START_TEST(tetris_test_rotate) {
+  userInput(Start, false);
+  updateCurrentState();
+  userInput(Start, false);
+  updateCurrentState();
+  userInput(Down, false);
+  updateCurrentState();
+  userInput(Down, false);
+  updateCurrentState();
+  userInput(Action, false);
+  updateCurrentState();
+  userInput(Action, false);
+  updateCurrentState();
+  userInput(Terminate, false);
+  ck_assert_ptr_eq(updateCurrentState().field, NULL);
+}
+END_TEST
+
+START_TEST(tetris_test_timer) {
+  userInput(Start, false);
+  updateCurrentState();
+  userInput(Start, false);
+  int **field = updateCurrentState().field;
+  int newfield[ROWS_MAP][COLS_MAP] = {0};
+  COPY_FIELD(field, newfield);
+  bool changed = false;
+  for (int i = 0; i < 5 && !changed; i++) {
+    sleep(1);
+    updateCurrentState();
+    COMPARE_FIELD(field, newfield, changed);
+  }
+  ck_assert_int_eq(changed, true);
+  userInput(Terminate, false);
+  ck_assert_ptr_eq(updateCurrentState().field, NULL);
+}
+END_TEST
+
 Suite *tetris_test_fsm() {
   Suite *s = suite_create("\033[33m-=Tetris FSM tests=-\033[0m");
   TCase *tc = tcase_create("fsm");
@@ -60,6 +99,8 @@ Suite *tetris_test_fsm() {
   tcase_add_test(tc, tetris_test_gameover);
   tcase_add_test(tc, tetris_test_move);
   tcase_add_test(tc, tetris_test_pause);
+  tcase_add_test(tc, tetris_test_rotate);
+  tcase_add_test(tc, tetris_test_timer);
   suite_add_tcase(s, tc);
   return s;
 }

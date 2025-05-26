@@ -2,7 +2,8 @@
  * @file fsm.c
  * @brief Implementation of the Tetris game finite state machine (FSM).
  *
- * This file contains the implementation of the FSM logic, state transitions, and game mechanics for Tetris.
+ * This file contains the implementation of the FSM logic, state transitions,
+ * and game mechanics for Tetris.
  */
 
 #include "fsm.h"

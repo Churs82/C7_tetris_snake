@@ -1,6 +1,5 @@
 #include "snake_gtest.h"
 #define COPY_FIELD(before, field)        \
-  int before[ROWS_MAP][COLS_MAP];        \
   for (int i = 0; i < ROWS_MAP; ++i) {   \
     for (int j = 0; j < COLS_MAP; ++j) { \
       before[i][j] = field[i][j];        \
@@ -79,20 +78,25 @@ TEST_F(ModelTest, SpawnApplePlacesApple) {
   EXPECT_TRUE(apple_found);
 }
 
-TEST_F(ModelTest, PauseDoesNotChangeScoreOrLevel) {
+TEST_F(ModelTest, PauseDoesNotChangeField) {
   model_->TransitionTo<StartState>();
   model_->UserAction(Start);
-  GameInfo_t before = model_->UpdateState();
+  int before[ROWS_MAP][COLS_MAP] = {0};
+  auto field = model_->UpdateState().field;
+  COPY_FIELD(before, field);  // Copy the initial state of the field
   model_->UserAction(Pause);
-  GameInfo_t after = model_->UpdateState();
-  EXPECT_EQ(before.score, after.score);
-  EXPECT_EQ(before.level, after.level);
+  sleep(3);
+  model_->UpdateState();  // Need to Update state to apply the pause
+  bool changed = false;
+  COMPARE_FIELD(before, field, changed);
+  EXPECT_FALSE(changed);  // Field should not change when paused
 }
 
 TEST_F(ModelTest, SnakeMovesAfterAction) {
   model_->TransitionTo<StartState>();
   model_->UserAction(Start);
   auto field = model_->UpdateState().field;
+  int before[ROWS_MAP][COLS_MAP] = {0};
   COPY_FIELD(before, field);  // Copy the initial state of the field
   model_->UserAction(Up);     // Try to move up
   model_->UpdateState();      // Need to Update state to apply the move
@@ -103,53 +107,97 @@ TEST_F(ModelTest, SnakeMovesAfterAction) {
 }
 
 TEST_F(ModelTest, GameOverOnWallCollisionLeft) {
+  model_->TransitionTo<StartState>();
+  model_->UserAction(Start);
   // Move left until game over (assuming wall at left)
   model_->UserAction(Up);  // Move up to avoid reverse
+  model_->UpdateState();
+  model_->UserAction(Left);
   for (int i = 0; i < COLS_MAP; ++i) {
-    model_->UserAction(Left);
+    model_->UserAction(Action);
+    model_->UpdateState();
   }
-  // After enough moves, the game should be over (score should not increase)
-  int score = model_->UpdateState().score;
+  // After enough moves, the game should be over (field shouldnt change)
+  auto field = model_->UpdateState().field;
+  int before[ROWS_MAP][COLS_MAP] = {0};
+  COPY_FIELD(before, field);
   model_->UserAction(Up);
-  GameInfo_t after = model_->UpdateState();
-  EXPECT_EQ(after.score, score);  // Score should not increase after game over
+  model_->UpdateState();
+  bool changed = false;
+  COMPARE_FIELD(before, field, changed);
+  model_->UpdateState();
+  EXPECT_FALSE(
+      changed);  // Field shouldnt change after action in gameover state
 }
 
 TEST_F(ModelTest, GameOverOnWallCollisionRight) {
+  model_->TransitionTo<StartState>();
+  model_->UserAction(Start);
   // Move up until game over (assuming wall at top)
   model_->UserAction(Down);  // Move down to avoid reverse
+  model_->UpdateState();
+  model_->UserAction(Right);
   for (int i = 0; i < COLS_MAP; ++i) {
-    model_->UserAction(Right);
+    model_->UserAction(Action);
+    model_->UpdateState();
   }
-  // After enough moves, the game should be over (score should not increase)
-  int score = model_->UpdateState().score;
+  // After enough moves, the game should be over (field shouldnt change)
+  auto field = model_->UpdateState().field;
+  int before[ROWS_MAP][COLS_MAP] = {0};
+  COPY_FIELD(before, field);
   model_->UserAction(Up);
-  GameInfo_t after = model_->UpdateState();
-  EXPECT_EQ(after.score, score);  // Score should not increase after game over
+  model_->UpdateState();
+  bool changed = false;
+  COMPARE_FIELD(before, field, changed);
+  model_->UpdateState();
+  EXPECT_FALSE(
+      changed);  // Field shouldnt change after action in gameover state
 }
 TEST_F(ModelTest, GameOverOnWallCollisionUP) {
+  model_->TransitionTo<StartState>();
+  model_->UserAction(Start);
   // Move up until game over (assuming wall at top)
   model_->UserAction(Right);  // Move Right to avoid reverse
-  for (int i = 0; i < ROWS_MAP; ++i) {
-    model_->UserAction(Up);
-  }
-  // After enough moves, the game should be over (score should not increase)
-  int score = model_->UpdateState().score;
+  model_->UpdateState();
   model_->UserAction(Up);
-  GameInfo_t after = model_->UpdateState();
-  EXPECT_EQ(after.score, score);  // Score should not increase after game over
+  for (int i = 0; i < ROWS_MAP; ++i) {
+    model_->UserAction(Action);
+    model_->UpdateState();
+  }
+  // After enough moves, the game should be over (field shouldnt change)
+  auto field = model_->UpdateState().field;
+  int before[ROWS_MAP][COLS_MAP] = {0};
+  COPY_FIELD(before, field);
+  model_->UserAction(Up);
+  model_->UpdateState();
+  bool changed = false;
+  COMPARE_FIELD(before, field, changed);
+  model_->UpdateState();
+  EXPECT_FALSE(
+      changed);  // Field shouldnt change after action in gameover state
 }
 TEST_F(ModelTest, GameOverOnWallCollisionDown) {
+  model_->TransitionTo<StartState>();
+  model_->UserAction(Start);
   // Move down until game over (assuming wall at bottom)
   model_->UserAction(Left);  // Move left to avoid reverse
+  model_->UpdateState();
+  model_->UserAction(Down);
   for (int i = 0; i < ROWS_MAP; ++i) {
-    model_->UserAction(Down);
+    model_->UserAction(Action);
+    model_->UpdateState();
   }
-  // After enough moves, the game should be over (score should not increase)
-  int score = model_->UpdateState().score;
+  // After enough moves, the game should be over (field shouldnt change)
+  auto field = model_->UpdateState().field;
+  int before[ROWS_MAP][COLS_MAP] = {0};
+  COPY_FIELD(before, field);
   model_->UserAction(Up);
-  GameInfo_t after = model_->UpdateState();
-  EXPECT_EQ(after.score, score);  // Score should not increase after game over
+  model_->UpdateState();
+  bool changed = false;
+  COMPARE_FIELD(before, field, changed);
+  model_->UpdateState();
+  EXPECT_FALSE(
+      changed);  // Field shouldnt change after action in gameover state
 }
 
 TEST_F(ModelTest, RestartGameResetsScore) {
@@ -197,11 +245,21 @@ TEST_F(ModelTest, WinState) {
       }
     }
   }
-  sleep(1);  // Wait for the game to process the win condition
-  info = model_->UpdateState();  // Update the state to check for win
-  s21::snake::Model::Instance::Get()
-      ->TransitionTo<s21::snake::StartState>();  // Terminate the game
-  SUCCEED();  // If we reached here, the test passed
+  // After enough moves, the game should be over (field shouldnt change)
+  auto field = model_->UpdateState().field;
+  int before[ROWS_MAP][COLS_MAP] = {0};
+  COPY_FIELD(before, field);
+  model_->UserAction(Up);
+  bool changed = false;
+  model_->UpdateState();
+  COMPARE_FIELD(before, field, changed);
+  EXPECT_FALSE(
+      changed);  // Field shouldnt change after action in gameover state
+  sleep(1);      // Wait for the game to process the win condition
+  model_->UpdateState();  // Update the state to check for win
+  COMPARE_FIELD(before, field, changed);
+  model_->UserAction(Start);
+  EXPECT_TRUE(changed);
 }
 
 TEST(LibSnakeTest, PauseAndUnpause) {
@@ -272,6 +330,7 @@ TEST(LibSnakeTest, TimeR) {
   Model::Instance::Get()->TransitionTo<StartState>();
   ::userInput(Start, false);
   GameInfo_t info = ::updateCurrentState();
+  int before_field[ROWS_MAP][COLS_MAP] = {0};
   COPY_FIELD(before_field, info.field);
   bool changed = false;
   // Simulate time passing

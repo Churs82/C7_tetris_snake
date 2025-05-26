@@ -8,7 +8,8 @@
  * @file libtetris.c
  * @brief Tetris game interface implementation for user input and state update.
  *
- * This file provides the userInput and updateCurrentState functions for the Tetris game.
+ * This file provides the userInput and updateCurrentState functions for the
+ * Tetris game.
  */
 
 /**

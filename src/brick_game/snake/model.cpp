@@ -16,7 +16,7 @@ void Model::UserAction(const UserAction_t action) noexcept {
 }
 
 GameInfo_t Model::UpdateState() noexcept {
-  if (!game_info_->pause) state_->Update();
+  if (!game_info_->pause) this->state_->Update();
   return *game_info_;
 }
 

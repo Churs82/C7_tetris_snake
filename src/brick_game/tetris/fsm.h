@@ -2,7 +2,8 @@
  * @file fsm.h
  * @brief Finite State Machine (FSM) interface for Tetris game logic.
  *
- * This header defines the FSM table, state transitions, and core functions for Tetris game logic.
+ * This header defines the FSM table, state transitions, and core functions for
+ * Tetris game logic.
  */
 #ifndef FSM_H
 #define FSM_H
@@ -16,7 +17,7 @@
 /**
  * @brief FSM table for state transitions and actions.
  *
- * STATE\SIGNAL: START PAUSE TERMINATE LEFT RIGHT UP DOWN ACTION 
+ * STATE\SIGNAL: START PAUSE TERMINATE LEFT RIGHT UP DOWN ACTION
  * */
 #define FSM_TABLE                                                     \
   (act_t[EXIT_STATE + 1][Action + 1]) { /* START */                   \
@@ -54,13 +55,13 @@ typedef void (*act_t)();
  * @brief Enum representing the possible game states in Tetris.
  */
 typedef enum {
-  START = 0,   /**< Start state. */
-  SPAWN,       /**< Spawn state. */
-  MOVING,      /**< Moving state. */
-  DOWN_SHIFTING,/**< Down shifting state. */
-  ATTACHING,   /**< Attaching state. */
-  GAME_OVER,   /**< Game over state. */
-  EXIT_STATE,  /**< Exit state. */
+  START = 0,     /**< Start state. */
+  SPAWN,         /**< Spawn state. */
+  MOVING,        /**< Moving state. */
+  DOWN_SHIFTING, /**< Down shifting state. */
+  ATTACHING,     /**< Attaching state. */
+  GAME_OVER,     /**< Game over state. */
+  EXIT_STATE,    /**< Exit state. */
 } game_state;
 
 /**
