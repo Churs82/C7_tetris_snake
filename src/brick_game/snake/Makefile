@@ -9,8 +9,8 @@ CFLAGS:=$(FLAGS) -c
 TSTFLAGS :=-lgtest -lgtest_main -pthread
 LIB_NAME = $(notdir $(CURDIR))
 LIB = lib$(LIB_NAME).a
-DIR_BUILD:=../../out/
-DIR_TESTS:=../../tests/
+DIR_BUILD:=$(PWD)/out/
+DIR_TESTS:=$(PWD)/tests/
 TEST_SRC:=$(wildcard $(DIR_TESTS)$(LIB_NAME)_*.cpp)
 LIB_SRC:=$(wildcard *.cpp) # https://runebook.dev/ru/docs/gnu_make/wildcard-function
 TEST_OBJS=$(TEST_SRC:.cpp=.o)
@@ -36,20 +36,20 @@ $(LIB_OBJS): $(LIB_SRC)
 	$(CC) $(CFLAGS) $(DIR_LIB)$(patsubst %.o,%.cpp,$(notdir $@)) $(COV_FLAGS) -o $@
 
 $(TEST_OBJS): $(TEST_SRC)
-	$(CC) $(CFLAGS) $(DIR_TESTS)$(patsubst %.o,%.cpp,$(notdir $@)) -o $@
+	$(CC) $(CFLAGS) $(DIR_TESTS)$(patsubst %.o,%.cpp,$(notdir $@)) $(COV_FLAGS) -o $@
 
 lib: $(LIB)
 
 test: test_nl
 	$(DIR_BUILD)$(LIB_NAME)_test
 
-test_nl: $(LIB) $(TEST_OBJS)
+test_nl: $(LIB_OBJS) $(TEST_OBJS)
 
 ifeq ($(OS),Darwin)
 	$(eval export OS_MAC_UX:=-L/opt/homebrew/lib)
 endif
 
-	$(CC) $(FLAGS) $(COV_FLAGS) $(TEST_OBJS) -o $(DIR_BUILD)$(LIB_NAME)_test $(LFLAGS) -l$(LIB_NAME) $(TSTFLAGS) $(OS_MAC_UX) -L. -L$(DIR_BUILD)
+	$(CC) $(FLAGS) $(COV_FLAGS) $(TEST_OBJS) $(LIB_OBJS) -o $(DIR_BUILD)$(LIB_NAME)_test $(LFLAGS)  $(TSTFLAGS) $(OS_MAC_UX) -L. -L$(DIR_BUILD)
 
 leak_check: clean test_nl
 

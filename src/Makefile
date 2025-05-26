@@ -2,9 +2,10 @@
 OS:=$(shell uname -s)
 SHELL:=/bin/sh
 PWD:=$(shell pwd)
-export DIR_BUILD:=out/
-export DIR_GAMES:=brick_game/
-export DIR_IF:=gui/
+export DIR_BUILD:=$(PWD)/out/
+export DIR_GAMES:=$(PWD)/brick_game/
+export DIR_TESTS:=$(PWD)/tests/
+export DIR_IF:=$(PWD)/gui/
 
 DIR_INSTALL:=~/games/
 GAMES:=$(notdir $(wildcard $(DIR_GAMES)*))
@@ -84,7 +85,7 @@ gcov_report: clean ext1_flag test
 	-mkdir $(DIR_BUILD)report
 	for lib in $(GAMES); do \
 		lcov -t "lib$${lib}_report" -o $(DIR_BUILD)lib$${lib}_report.info -c -d $(DIR_GAMES)$$lib; \
-		geninfo $(DIR_GAMES)$$lib -o $(DIR_BUILD)lib$${lib}_report.info --no-external --rc branch_coverage=1; \
+		geninfo $(DIR_GAMES)$$lib -o $(DIR_BUILD)lib$${lib}_report.info --no-external --rc branch_coverage=0; \
 	done
 
 	genhtml -o $(DIR_BUILD)report $(DIR_BUILD)lib*_report.info

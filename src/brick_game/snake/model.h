@@ -7,6 +7,7 @@
 #include <fstream>
 #include <functional>
 #include <memory>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -67,10 +68,10 @@ class Model {
    * @brief Transitions to a new state of type T.
    * @tparam T The state class to transition to.
    */
-  template <typename T>
+  template <class T>
   void TransitionTo() {
     // If the current state is not of type T, delete it and create a new one.
-    if (!dynamic_cast<T*>(state_)) {
+    if (std::is_base_of<State, T>::value && !dynamic_cast<T*>(state_)) {
       delete state_;
       state_ = new T(this);
     }

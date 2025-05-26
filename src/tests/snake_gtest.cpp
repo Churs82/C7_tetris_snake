@@ -102,10 +102,48 @@ TEST_F(ModelTest, SnakeMovesAfterAction) {
   EXPECT_TRUE(changed);
 }
 
-TEST_F(ModelTest, GameOverOnWallCollision) {
+TEST_F(ModelTest, GameOverOnWallCollisionLeft) {
+  // Move left until game over (assuming wall at left)
+  model_->UserAction(Up);  // Move up to avoid reverse
+  for (int i = 0; i < COLS_MAP; ++i) {
+    model_->UserAction(Left);
+  }
+  // After enough moves, the game should be over (score should not increase)
+  int score = model_->UpdateState().score;
+  model_->UserAction(Up);
+  GameInfo_t after = model_->UpdateState();
+  EXPECT_EQ(after.score, score);  // Score should not increase after game over
+}
+
+TEST_F(ModelTest, GameOverOnWallCollisionRight) {
   // Move up until game over (assuming wall at top)
+  model_->UserAction(Down);  // Move down to avoid reverse
+  for (int i = 0; i < COLS_MAP; ++i) {
+    model_->UserAction(Right);
+  }
+  // After enough moves, the game should be over (score should not increase)
+  int score = model_->UpdateState().score;
+  model_->UserAction(Up);
+  GameInfo_t after = model_->UpdateState();
+  EXPECT_EQ(after.score, score);  // Score should not increase after game over
+}
+TEST_F(ModelTest, GameOverOnWallCollisionUP) {
+  // Move up until game over (assuming wall at top)
+  model_->UserAction(Right);  // Move Right to avoid reverse
   for (int i = 0; i < ROWS_MAP; ++i) {
     model_->UserAction(Up);
+  }
+  // After enough moves, the game should be over (score should not increase)
+  int score = model_->UpdateState().score;
+  model_->UserAction(Up);
+  GameInfo_t after = model_->UpdateState();
+  EXPECT_EQ(after.score, score);  // Score should not increase after game over
+}
+TEST_F(ModelTest, GameOverOnWallCollisionDown) {
+  // Move down until game over (assuming wall at bottom)
+  model_->UserAction(Left);  // Move left to avoid reverse
+  for (int i = 0; i < ROWS_MAP; ++i) {
+    model_->UserAction(Down);
   }
   // After enough moves, the game should be over (score should not increase)
   int score = model_->UpdateState().score;
@@ -134,6 +172,36 @@ TEST_F(ModelTest, RestartGameResetsScore) {
   model_->UserAction(Start);
   info = model_->UpdateState();
   EXPECT_EQ(info.score, 0);
+}
+
+TEST_F(ModelTest, WinState) {
+  model_->TransitionTo<StartState>();
+  model_->UserAction(Start);
+  GameInfo_t info = model_->UpdateState();
+  EXPECT_EQ(info.score, 0);  // We have just started
+  // Simulate eating enough apples to win
+  for (auto i = 0; i < ROWS_MAP; i++) {
+    for (auto j = 0; j < COLS_MAP; j++) {
+      if (info.field[i][j] == 0) {
+        info.field[i][j] = APPLE_MASK;  // Place an apple in every free cell
+      }
+    }
+  }
+  model_->UserAction(Action);    // Eat an apple
+  info = model_->UpdateState();  // Initiate SpawnApple
+  EXPECT_EQ(info.score, 1);      // We have eaten one apple
+  for (int i = 0; i < ROWS_MAP; ++i) {
+    for (int j = 0; j < COLS_MAP; ++j) {
+      if (info.field[i][j] == 0) {
+        FAIL();
+      }
+    }
+  }
+  sleep(1);  // Wait for the game to process the win condition
+  info = model_->UpdateState();  // Update the state to check for win
+  s21::snake::Model::Instance::Get()
+      ->TransitionTo<s21::snake::StartState>();  // Terminate the game
+  SUCCEED();  // If we reached here, the test passed
 }
 
 TEST(LibSnakeTest, PauseAndUnpause) {
@@ -221,6 +289,10 @@ TEST(LibSnakeTest, TimeR) {
   std::cout << std::endl;
 
   EXPECT_TRUE(changed);  // Field should have changed after time simulation
+
+  ::userInput(Terminate, false);
+  info = ::updateCurrentState();
+  EXPECT_EQ(info.field, nullptr);  // After exit, field should be nullptr
 }
 }  // namespace s21::snake
 
