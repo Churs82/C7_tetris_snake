@@ -24,7 +24,7 @@ OPEN_CMD := xdg-open
 ADD_LDFLAGS = $(OS_MAC_UX)
 endif
 
-.phony: all, install, uninstall, clean, dvi, dist, test, gcov_report, clang, $$(INTERFACES), $$(GAMES), cppcheck, check_format 
+.phony: all, install, uninstall, clean, dvi, dist, test, gcov_report, clang, $$(INTERFACES), $$(GAMES), cppcheck, check_format
 
 all: clang clean libs test games
 
@@ -54,6 +54,10 @@ clean:
 	done 
 	@echo "===Cleaning out directory==="
 	$(RM) $(DIR_BUILD)*
+
+	@echo "===Cleaning documentation==="
+	$(RM) documentation/*/*
+
 	@echo "===Cleaned==="
 
 # open custom documentation

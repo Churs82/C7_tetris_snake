@@ -1,3 +1,10 @@
+/**
+ * @file interface.h
+ * @brief CLI interface utilities for Brick Game Project.
+ *
+ * This header provides macros and function declarations for the ncurses-based CLI interface.
+ */
+
 #ifndef INTERFACE_H
 #define INTERFACE_H
 
@@ -87,14 +94,63 @@
         SPACE_KEY                                                        \
   }
 
+/**
+ * @brief Prints the overlay (HUD and borders) for the game.
+ */
 void print_overlay(void);
+
+/**
+ * @brief Prints a level error message.
+ */
 void print_levelerror(void);
+
+/**
+ * @brief Prints a rectangle on the screen.
+ * @param top_y Top y coordinate.
+ * @param bottom_y Bottom y coordinate.
+ * @param left_x Left x coordinate.
+ * @param right_x Right x coordinate.
+ */
 void print_rectangle(int top_y, int bottom_y, int left_x, int right_x);
+
+/**
+ * @brief Prints a message on the screen.
+ * @param msg The message to print.
+ */
 void print_msg(char *msg);
+
+/**
+ * @brief Prints the game intro screen.
+ */
 void print_intro(void);
+
+/**
+ * @brief Prints the exit screen.
+ */
 void print_exit(void);
+
+/**
+ * @brief Prints the game over screen.
+ */
 void print_gameover(void);
+
+/**
+ * @brief Prints the game statistics (score, high score, level).
+ * @param game_info The current game state.
+ */
 void print_stats(GameInfo_t game_info);
+
+/**
+ * @brief Prints the game board.
+ * @param game_info The current game state.
+ */
 void print_board(GameInfo_t game_info);
+
+/**
+ * @brief Translates a user input key into a UserAction_t.
+ * @param user_input The input key.
+ * @return The corresponding UserAction_t.
+ */
 UserAction_t get_signal(int user_input);
+
 #endif  // INTERFACE_H

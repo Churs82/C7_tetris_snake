@@ -1,3 +1,9 @@
+/**
+ * @file fsm.h
+ * @brief Finite State Machine (FSM) interface for Tetris game logic.
+ *
+ * This header defines the FSM table, state transitions, and core functions for Tetris game logic.
+ */
 #ifndef FSM_H
 #define FSM_H
 
@@ -7,8 +13,11 @@
 
 #include "defines.h"
 #include "lib.h"
-
-/* STATE\SIGNAL: START PAUSE TERMINATE LEFT RIGHT UP DOWN ACTION */
+/**
+ * @brief FSM table for state transitions and actions.
+ *
+ * STATE\SIGNAL: START PAUSE TERMINATE LEFT RIGHT UP DOWN ACTION 
+ * */
 #define FSM_TABLE                                                     \
   (act_t[EXIT_STATE + 1][Action + 1]) { /* START */                   \
     {spawn_sw, NULL, doexit, NULL, NULL, NULL, NULL, NULL},           \
@@ -36,20 +45,34 @@
 #define SCOPE static
 #endif
 
+/**
+ * @brief Action function pointer type for FSM actions.
+ */
 typedef void (*act_t)();
 
+/**
+ * @brief Enum representing the possible game states in Tetris.
+ */
 typedef enum {
-  START = 0,
-  SPAWN,
-  MOVING,
-  DOWN_SHIFTING,
-  ATTACHING,
-  GAME_OVER,
-  EXIT_STATE,
+  START = 0,   /**< Start state. */
+  SPAWN,       /**< Spawn state. */
+  MOVING,      /**< Moving state. */
+  DOWN_SHIFTING,/**< Down shifting state. */
+  ATTACHING,   /**< Attaching state. */
+  GAME_OVER,   /**< Game over state. */
+  EXIT_STATE,  /**< Exit state. */
 } game_state;
 
+/**
+ * @brief Handles a user action in the FSM.
+ * @param action The user action to process.
+ */
 void _userAction(UserAction_t action);
 
+/**
+ * @brief Updates and returns the current game state info.
+ * @return The current GameInfo_t struct.
+ */
 GameInfo_t _updateCurrentState();
 
 #endif
