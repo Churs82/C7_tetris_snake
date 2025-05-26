@@ -2,15 +2,15 @@
 OS?:=$(shell uname -s)
 SHELL?:=/bin/sh
 CC := g++
-PWD?:=$(shell pwd)
+CD:=$(shell pwd)/../..
 DIR_INC=../../inc
 FLAGS := -I $(DIR_INC) -std=c++17 -Wall -Wpedantic -fstack-protector-strong -g #-Werror
 CFLAGS:=$(FLAGS) -c
 TSTFLAGS :=-lgtest -lgtest_main -pthread
 LIB_NAME = $(notdir $(CURDIR))
 LIB = lib$(LIB_NAME).a
-DIR_BUILD:=$(PWD)/out/
-DIR_TESTS:=$(PWD)/tests/
+DIR_BUILD:=$(CD)/out/
+DIR_TESTS:=$(CD)/tests/
 TEST_SRC:=$(wildcard $(DIR_TESTS)$(LIB_NAME)_*.cpp)
 LIB_SRC:=$(wildcard *.cpp) # https://runebook.dev/ru/docs/gnu_make/wildcard-function
 TEST_OBJS=$(TEST_SRC:.cpp=.o)
