@@ -16,9 +16,11 @@ void Model::UserAction(const UserAction_t action) noexcept {
 }
 
 GameInfo_t Model::UpdateState() noexcept {
-  if (!game_info_->pause) this->state_->Update();
+  if (!game_info_->pause) Update();
   return *game_info_;
 }
+
+void Model::Update() noexcept { this->state_->Update(); }
 
 void Model::TogglePause() noexcept { game_info_->pause = !game_info_->pause; }
 
@@ -89,10 +91,12 @@ void Model::SpawnApple() noexcept {
   } else {
     int x = std::rand() % COLS_MAP;
     int y = std::rand() % ROWS_MAP;
-    if (game_info_->field[y][x] != 0 && free_cell_found)
+    if (game_info_->field[y][x] != 0 && free_cell_found) {
       SpawnApple();
-    else
+    } else {
       game_info_->field[y][x] = APPLE_MASK;
+      TransitionTo<RotationState>();
+    }
   }
 }
 
@@ -201,7 +205,8 @@ void Model::SetDirection(const int direction) noexcept {
 
 void Model::AddScore(const int score_num) noexcept {
   game_info_->score += score_num;
-  game_info_->speed = game_info_->level = (game_info_->score / 5 + 1 > 10) ? 10 : game_info_->score / 5 + 1;
+  game_info_->speed = game_info_->level =
+      (game_info_->score / 5 + 1 > 10) ? 10 : game_info_->score / 5 + 1;
   if (game_info_->score >= ROWS_MAP * COLS_MAP - 4) TransitionTo<WinState>();
   if (game_info_->high_score < game_info_->score)
     game_info_->high_score = game_info_->score;

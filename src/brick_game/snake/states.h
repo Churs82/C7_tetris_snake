@@ -28,7 +28,7 @@ class State {
   /**
    * @brief List of actions mapped to corresponding state functions.
    */
-  const std::vector<std::function<void()>> action_map{
+  const std::array<std::function<void()>, 8> action_map{
       [this] { Start(); }, [this] { Pause(); },  [this] { Terminate(); },
       [this] { Left(); },  [this] { Right(); },  [this] { Up(); },
       [this] { Down(); },  [this] { Action(); },

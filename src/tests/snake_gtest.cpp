@@ -86,7 +86,6 @@ TEST_F(ModelTest, PauseDoesNotChangeField) {
   COPY_FIELD(before, field);  // Copy the initial state of the field
   model_->UserAction(Pause);
   sleep(3);
-  model_->UpdateState();  // Need to Update state to apply the pause
   bool changed = false;
   COMPARE_FIELD(before, field, changed);
   EXPECT_FALSE(changed);  // Field should not change when paused
@@ -99,7 +98,6 @@ TEST_F(ModelTest, SnakeMovesAfterAction) {
   int before[ROWS_MAP][COLS_MAP] = {0};
   COPY_FIELD(before, field);  // Copy the initial state of the field
   model_->UserAction(Up);     // Try to move up
-  model_->UpdateState();      // Need to Update state to apply the move
   // At least one cell should change (snake moves)
   bool changed = false;
   COMPARE_FIELD(before, field, changed);
@@ -111,21 +109,17 @@ TEST_F(ModelTest, GameOverOnWallCollisionLeft) {
   model_->UserAction(Start);
   // Move left until game over (assuming wall at left)
   model_->UserAction(Up);  // Move up to avoid reverse
-  model_->UpdateState();
   model_->UserAction(Left);
   for (int i = 0; i < COLS_MAP; ++i) {
     model_->UserAction(Action);
-    model_->UpdateState();
   }
   // After enough moves, the game should be over (field shouldnt change)
   auto field = model_->UpdateState().field;
   int before[ROWS_MAP][COLS_MAP] = {0};
   COPY_FIELD(before, field);
   model_->UserAction(Up);
-  model_->UpdateState();
   bool changed = false;
   COMPARE_FIELD(before, field, changed);
-  model_->UpdateState();
   EXPECT_FALSE(
       changed);  // Field shouldnt change after action in gameover state
 }
@@ -135,21 +129,17 @@ TEST_F(ModelTest, GameOverOnWallCollisionRight) {
   model_->UserAction(Start);
   // Move up until game over (assuming wall at top)
   model_->UserAction(Down);  // Move down to avoid reverse
-  model_->UpdateState();
   model_->UserAction(Right);
   for (int i = 0; i < COLS_MAP; ++i) {
     model_->UserAction(Action);
-    model_->UpdateState();
   }
   // After enough moves, the game should be over (field shouldnt change)
   auto field = model_->UpdateState().field;
   int before[ROWS_MAP][COLS_MAP] = {0};
   COPY_FIELD(before, field);
   model_->UserAction(Up);
-  model_->UpdateState();
   bool changed = false;
   COMPARE_FIELD(before, field, changed);
-  model_->UpdateState();
   EXPECT_FALSE(
       changed);  // Field shouldnt change after action in gameover state
 }
@@ -157,22 +147,18 @@ TEST_F(ModelTest, GameOverOnWallCollisionUP) {
   model_->TransitionTo<StartState>();
   model_->UserAction(Start);
   // Move up until game over (assuming wall at top)
-  model_->UserAction(Right);  // Move Right to avoid reverse
-  model_->UpdateState();
+  model_->UserAction(Right);  // Move Right to avoid revers
   model_->UserAction(Up);
   for (int i = 0; i < ROWS_MAP; ++i) {
     model_->UserAction(Action);
-    model_->UpdateState();
   }
   // After enough moves, the game should be over (field shouldnt change)
   auto field = model_->UpdateState().field;
   int before[ROWS_MAP][COLS_MAP] = {0};
   COPY_FIELD(before, field);
   model_->UserAction(Up);
-  model_->UpdateState();
   bool changed = false;
   COMPARE_FIELD(before, field, changed);
-  model_->UpdateState();
   EXPECT_FALSE(
       changed);  // Field shouldnt change after action in gameover state
 }
@@ -181,21 +167,17 @@ TEST_F(ModelTest, GameOverOnWallCollisionDown) {
   model_->UserAction(Start);
   // Move down until game over (assuming wall at bottom)
   model_->UserAction(Left);  // Move left to avoid reverse
-  model_->UpdateState();
   model_->UserAction(Down);
   for (int i = 0; i < ROWS_MAP; ++i) {
     model_->UserAction(Action);
-    model_->UpdateState();
   }
   // After enough moves, the game should be over (field shouldnt change)
   auto field = model_->UpdateState().field;
   int before[ROWS_MAP][COLS_MAP] = {0};
   COPY_FIELD(before, field);
   model_->UserAction(Up);
-  model_->UpdateState();
   bool changed = false;
   COMPARE_FIELD(before, field, changed);
-  model_->UpdateState();
   EXPECT_FALSE(
       changed);  // Field shouldnt change after action in gameover state
 }
@@ -246,20 +228,19 @@ TEST_F(ModelTest, WinState) {
     }
   }
   // After enough moves, the game should be over (field shouldnt change)
-  auto field = model_->UpdateState().field;
+  int** field = model_->UpdateState().field;
   int before[ROWS_MAP][COLS_MAP] = {0};
   COPY_FIELD(before, field);
-  model_->UserAction(Up);
   bool changed = false;
-  model_->UpdateState();
+  model_->UserAction(Action);
   COMPARE_FIELD(before, field, changed);
-  EXPECT_FALSE(
-      changed);  // Field shouldnt change after action in gameover state
-  sleep(1);      // Wait for the game to process the win condition
-  model_->UpdateState();  // Update the state to check for win
+  EXPECT_FALSE(changed);  // Field shouldnt change after action in Win state
+  sleep(1);               // Wait for the game to process the win condition
+  field = model_->UpdateState().field;
   COMPARE_FIELD(before, field, changed);
   model_->UserAction(Start);
   EXPECT_TRUE(changed);
+  Model::Instance::Get()->TransitionTo<ExitState>();
 }
 
 TEST(LibSnakeTest, PauseAndUnpause) {
@@ -306,18 +287,43 @@ TEST(LibSnakeTest, AllTheSignals) {
   Model::Instance::Get()->TransitionTo<StartState>();
   ::userInput(Start, false);
   GameInfo_t info = ::updateCurrentState();
+  int before[ROWS_MAP][COLS_MAP] = {0};
+  COPY_FIELD(before, info.field);
+  bool changed = false;
   ::userInput(Left, false);
-  info = ::updateCurrentState();
+  COMPARE_FIELD(before, info.field, changed);
+  EXPECT_TRUE(changed);  // Field should change after left input
+  COPY_FIELD(before, info.field);
   ::userInput(Up, false);
-  info = ::updateCurrentState();
+  COMPARE_FIELD(before, info.field, changed);
+  EXPECT_TRUE(changed);  // Field should change after up input
+  COPY_FIELD(before, info.field);
   ::userInput(Right, false);
-  info = ::updateCurrentState();
+  COMPARE_FIELD(before, info.field, changed);
+  EXPECT_TRUE(changed);  // Field should change after right input
+  COPY_FIELD(before, info.field);
   ::userInput(Down, false);
-  info = ::updateCurrentState();
+  COMPARE_FIELD(before, info.field, changed);
+  EXPECT_TRUE(changed);  // Field should change after down input
+  COPY_FIELD(before, info.field);
+  ::userInput(Action, false);
+  COMPARE_FIELD(before, info.field, changed);
+  EXPECT_TRUE(changed);  // Field should change after action input
+  COPY_FIELD(before, info.field);
+  ::userInput(Start, false);
+  COMPARE_FIELD(before, info.field, changed);
+  EXPECT_FALSE(changed);  // Field shouldn't be changed after start input
   for (int i = 0; i < ROWS_MAP; ++i) {
     ::userInput(Action, false);
   }
-  info = ::updateCurrentState();
+  COPY_FIELD(before, info.field);
+  ::userInput(Left, false);
+  ::userInput(Up, false);
+  ::userInput(Right, false);
+  ::userInput(Down, false);
+  COMPARE_FIELD(before, info.field, changed);
+  EXPECT_FALSE(
+      changed);  // Field shouldn't change after all inputs ion GameOver State
   ::userInput(Start, false);
   info = ::updateCurrentState();
   EXPECT_NE(info.field, nullptr);

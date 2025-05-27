@@ -88,13 +88,13 @@ dist: $(GAMES)
 gcov_report: clean ext1_flag test
 	-mkdir $(DIR_BUILD)report
 	for lib in $(GAMES); do \
-		lcov -t "lib$${lib}_report" -o $(DIR_BUILD)lib$${lib}_report.info -c -d $(DIR_GAMES)$$lib; \
-		geninfo $(DIR_GAMES)$$lib -o $(DIR_BUILD)lib$${lib}_report.info --no-external --rc branch_coverage=0; \
+		lcov -t "lib$${lib}_report" -o $(DIR_BUILD)lib$${lib}_report.info --exclude tests -c -d $(DIR_GAMES)$$lib; \
+		geninfo $(DIR_GAMES)$$lib -o $(DIR_BUILD)lib$${lib}_report.info --exclude tests --no-external --rc branch_coverage=0; \
 	done
 
 	genhtml -o $(DIR_BUILD)report $(DIR_BUILD)lib*_report.info
 	-echo "-----------------------------Trying GCOV----------------------------"
-	python3 -m gcovr --verbose --html --html-details -o $(DIR_BUILD)report/index.html
+	python3 -m gcovr --verbose --html --html-details --exclude tests -o $(DIR_BUILD)report/index.html
 
 	$(OPEN_CMD) $(DIR_BUILD)report/index.html
 
@@ -131,7 +131,7 @@ clang:
 
 check_format: 
 	find . -type f \( -name "*.c" -o -name "*.cpp" -o -name "*.h" -o -name "*.hpp" \) -exec clang-format-18 -n {} \;
-	cppcheck --enable=all --library=qt.cfg -Iinc/ -I/usr/include/x86_64-linux-gnu/qt6/ ./ -v
+	cppcheck --enable=all  --suppress=missingInclude --check-config -Iinc/  ./ -v
 
 cppcheck:
-	cppcheck --enable=all --error-exitcode=1 --check-config --library=qt.cfg -Iinc/ -I/usr/include/x86_64-linux-gnu/qt6/ ./ -v
+	cppcheck --enable=all --suppress=missingInclude --error-exitcode=1 --check-config -Iinc/  ./ -v

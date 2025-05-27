@@ -4,7 +4,7 @@ SHELL?:=/bin/sh
 CC := g++
 CD:=$(shell pwd)/../..
 DIR_INC=../../inc
-FLAGS := -I $(DIR_INC) -std=c++17 -Wall -Wpedantic -fstack-protector-strong -g #-Werror
+FLAGS := -I $(DIR_INC) -std=c++20 -Wall -Wpedantic -fstack-protector-strong -g #-Werror
 CFLAGS:=$(FLAGS) -c
 TSTFLAGS :=-lgtest -lgtest_main -pthread
 LIB_NAME = $(notdir $(CURDIR))

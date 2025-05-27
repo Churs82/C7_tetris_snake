@@ -75,6 +75,7 @@ class Model {
       delete state_;
       state_ = new T(this);
     }
+    Update();
   }
 
   /**
@@ -82,6 +83,12 @@ class Model {
    * @return The updated GameInfo_t struct.
    */
   GameInfo_t UpdateState() noexcept;
+
+  /**
+   * @brief Updates the current game state.
+   * Calls the Update() member function on the current state object.
+   */
+  void Update() noexcept;
 
   /**
    * @brief Handles a user action.

@@ -263,16 +263,21 @@ SCOPE void down() {
 }
 
 /**
- * @brief Attaches the current figure to the field and checks for game over.
+ * @brief Attaches the current figure to the field and checks for shifting rows
+ * and game over.
  */
 SCOPE void attach() {
-  for (short i = 0; i < ROWS_MAP + FIGURE_H; i++)
-    for (short j = 0; j < COLS_MAP; j++)
+  for (short i = 0; i < ROWS_MAP + FIGURE_H; ++i)
+    for (short j = 0; j < COLS_MAP; ++j)
       if (game_info.field[i][j] > 1) game_info.field[i][j] = 1;
+
   anihilate();
   spawn_sw();
-  for (short j = 0; j < COLS_MAP; j++)
-    if (game_info.field[ROWS_MAP - 1][j] == 1) gameover_sw();
+  for (short j = 0; j < COLS_MAP; ++j)
+    if (game_info.field[ROWS_MAP - 1][j] == 1) {
+      gameover_sw();
+      j = COLS_MAP;  // Exit loop if game over
+    }
 }
 
 /**

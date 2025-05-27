@@ -92,6 +92,25 @@ START_TEST(tetris_test_timer) {
 }
 END_TEST
 
+START_TEST(tetris_shift) {
+  userInput(Start, false);
+  updateCurrentState();
+  userInput(Start, false);
+  int **field = updateCurrentState().field;
+  for (int i = 0; i < 4; i++) {
+    for (int j = 0; j < COLS_MAP; j++) {
+      field[i][j] = 1;
+    }
+  }
+  userInput(Right, false);
+  updateCurrentState();
+  while (updateCurrentState().score == 0) userInput(Down, false);
+  ck_assert_int_eq(updateCurrentState().score, 1500);
+  userInput(Terminate, false);
+  ck_assert_ptr_eq(updateCurrentState().field, NULL);
+}
+END_TEST
+
 Suite *tetris_test_fsm() {
   Suite *s = suite_create("\033[33m-=Tetris FSM tests=-\033[0m");
   TCase *tc = tcase_create("fsm");
@@ -101,6 +120,7 @@ Suite *tetris_test_fsm() {
   tcase_add_test(tc, tetris_test_pause);
   tcase_add_test(tc, tetris_test_rotate);
   tcase_add_test(tc, tetris_test_timer);
+  tcase_add_test(tc, tetris_shift);
   suite_add_tcase(s, tc);
   return s;
 }
