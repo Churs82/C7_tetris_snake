@@ -201,7 +201,7 @@ void Model::SetDirection(const int direction) noexcept {
 
 void Model::AddScore(const int score_num) noexcept {
   game_info_->score += score_num;
-  game_info_->speed = game_info_->level = game_info_->score / 5 + 1;
+  game_info_->speed = game_info_->level = (game_info_->score / 5 + 1 > 10) ? 10 : game_info_->score / 5 + 1;
   if (game_info_->score >= ROWS_MAP * COLS_MAP - 4) TransitionTo<WinState>();
   if (game_info_->high_score < game_info_->score)
     game_info_->high_score = game_info_->score;
